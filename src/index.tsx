@@ -11,6 +11,7 @@ ReactDOM.render(
       domain='dev-egx1hh70.us.auth0.com'
       clientId='jA5MmuRvIVxCr4PHKNIj5PNBlPoOht6a'
       redirectUri='http://localhost:3000/home'
+      audience='https://graph.appgility.com'
     >
       <App />
     </Auth0Provider>
