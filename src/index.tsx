@@ -2,11 +2,19 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { Auth0Provider } from '@auth0/auth0-react'
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <Auth0Provider
+      domain='dev-egx1hh70.us.auth0.com'
+      clientId='jA5MmuRvIVxCr4PHKNIj5PNBlPoOht6a'
+      redirectUri='http://localhost:3000/home'
+      audience='https://graph.appgility.com'
+    >
+      <App />
+    </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );
