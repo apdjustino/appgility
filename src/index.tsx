@@ -4,14 +4,21 @@ import './index.css';
 import App from './App';
 import { Auth0Provider } from '@auth0/auth0-react'
 import reportWebVitals from './reportWebVitals';
+import history from './utils/history'
+
+const onRedirectCallback = (appState: any) => {
+  // Use the router's history module to replace the url
+  history.replace(appState?.returnTo || window.location.pathname);
+};
 
 ReactDOM.render(
   <React.StrictMode>
     <Auth0Provider
       domain='dev-egx1hh70.us.auth0.com'
       clientId='jA5MmuRvIVxCr4PHKNIj5PNBlPoOht6a'
-      redirectUri='http://localhost:3000/home'
+      redirectUri={process.env.REACT_APP_HOST_URL}
       audience='https://graph.appgility.com'
+      onRedirectCallback={onRedirectCallback}
     >
       <App />
     </Auth0Provider>
