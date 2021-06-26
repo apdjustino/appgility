@@ -9,7 +9,7 @@ const Home = () => {
   }, [getAccessTokenSilently, getIdTokenClaims, user])
   return (
     <div>
-      This is the home pages
+      This is the home page. UserID: {!!user ? user['https://graph.appgility.com/personId'] : 'n/a'}
       <button onClick={() => {
         localStorage.setItem('accessToken', '')
         logout()
