@@ -1,0 +1,27 @@
+.container {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: auto;
+  height: 100%;
+
+  .noTrials {
+    justify-self: center;
+    align-self: center;
+
+    .title {
+      font-size: 18px;
+      font-style: italic;
+      margin-bottom: 10px;
+    }
+
+    .button {
+      border-radius: 8px;
+      background-color: #000000;
+      color: #FFFFFF;
+      cursor: pointer;
+      height: 35px;
+      line-height: 35px;
+      text-align: center;
+    }
+  }
+}
