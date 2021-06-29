@@ -12,10 +12,13 @@ const TrialList = () => {
       {trials.length > 0 ? (
         <div>Trial List</div>
       ): (
-        <div className={style.noTrials}>
-          <div className={style.title}>No Trials to Display</div>
-          <div className={style.button}>Click to Add Trial</div>
-        </div>
+        <>
+          <div className={style.noTrials}>
+            <div className={style.title}>No Trials to Display</div>
+            <div className={style.button}>Click to Add Trial</div>
+          </div>
+          <div className={style.addButton}></div>
+        </>
       )}
     </div>
   )
