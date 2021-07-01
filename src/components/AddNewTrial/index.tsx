@@ -1,29 +1,48 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useFormik } from 'formik'
 import { Modal, Form, Button, Input } from 'semantic-ui-react'
+import { useMutation } from '@apollo/client'
 import moment from 'moment'
+import { ADD_NEW_TRIAL, GET_PERSON_TRIALS } from '../../queries/trials/trials'
+import { AuthContext } from '../../utils/contexts'
 
 interface InitialValues {
   name: string,
   startDate: Date | undefined,
+  endDate: Date | undefined,
   locationCity: string,
   locationState: string,
   locationVenue?: string,
   hostClub?: string
 }
 
-const AddNewTrial = () => {
+interface OwnProps {
+  setAddDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
+  const userAuth = useContext(AuthContext)
+  const [addNewTrial, result] = useMutation(ADD_NEW_TRIAL, { 
+    update: () => setAddDialogOpen(false),
+    refetchQueries: [
+      { query: GET_PERSON_TRIALS, variables: { personId: userAuth.userId} }
+    ]
+  })
   const formik = useFormik({
     initialValues: {
       name: '',
       startDate: undefined,
+      endDate: undefined,
       locationCity: '',
       locationState: '',
       locationVenue: '',
       hostClub: ''
     },
     onSubmit: (values: InitialValues) => {
-      console.log(values)
+      addNewTrial({ variables: {
+        data: values,
+        personId: userAuth.userId
+      }})
     },
     validate: (values: InitialValues) => {
       const errors: any = {}
@@ -68,24 +87,37 @@ const AddNewTrial = () => {
             control={Input}
             value={formik.values.name}
             onChange={formik.handleChange}
-            error={formik.errors.name ? {
+            error={formik.errors.name && formik.touched.name ? {
               content: formik.errors.name,
               pointing: 'above'
             } : undefined}
           />
           <Form.Field
             id='startDate'
-            label='Date'
-            placeholder='Date'
+            label='Start Date'
+            placeholder='Start Date'
             control='input'
             type='date'
             value={formik.values.startDate}
             onChange={formik.handleChange}
-            error={formik.errors.startDate ? {
+            error={formik.errors.startDate && formik.touched.startDate ? {
               content: formik.errors.startDate,
               pointing: 'above'
             } : undefined}
-          />                             
+          />
+          <Form.Field
+            id='endDate'
+            label='End Date'
+            placeholder='End Date'
+            control='input'
+            type='date'
+            value={formik.values.endDate}
+            onChange={formik.handleChange}
+            error={formik.errors.endDate && formik.touched.endDate ? {
+              content: formik.errors.endDate,
+              pointing: 'above'
+            } : undefined}
+          />                                  
           <Form.Field 
             id='locationCity'
             label='City'
@@ -94,7 +126,7 @@ const AddNewTrial = () => {
             type='text'
             value={formik.values.locationCity} 
             onChange={formik.handleChange}
-            error={formik.errors.locationCity ? {
+            error={formik.errors.locationCity && formik.touched.locationCity ? {
               content: formik.errors.locationCity,
               pointing: 'above'
             } : undefined}
@@ -107,7 +139,7 @@ const AddNewTrial = () => {
             type='text'
             value={formik.values.locationState} 
             onChange={formik.handleChange}
-            error={formik.errors.locationState ? {
+            error={formik.errors.locationState && formik.touched.locationState ? {
               content: formik.errors.locationState,
               pointing: 'above'
             } : undefined}
@@ -120,7 +152,7 @@ const AddNewTrial = () => {
             type='text'
             value={formik.values.locationVenue} 
             onChange={formik.handleChange}
-            error={formik.errors.locationVenue ? {
+            error={formik.errors.locationVenue && formik.touched.locationVenue ? {
               content: formik.errors.locationVenue,
               pointing: 'above'
             } : undefined}
@@ -133,7 +165,7 @@ const AddNewTrial = () => {
             type='text'
             value={formik.values.hostClub} 
             onChange={formik.handleChange}
-            error={formik.errors.hostClub ? {
+            error={formik.errors.hostClub && formik.touched.hostClub ? {
               content: formik.errors.hostClub,
               pointing: 'above'
             } : undefined}
@@ -141,7 +173,7 @@ const AddNewTrial = () => {
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button color='black' onClick={() => formik.handleSubmit()}>Add Trial</Button>
+        <Button color='black' onClick={() => formik.handleSubmit()} loading={result.loading}>Add Trial</Button>
       </Modal.Actions>
     </>
   )
