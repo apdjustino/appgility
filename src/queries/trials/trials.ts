@@ -7,6 +7,7 @@ export const GET_PERSON_TRIALS = gql`
       name,
       personId,
       startDate,
+      endDate,
       locationCity,
       locationState,
       locationVenue
