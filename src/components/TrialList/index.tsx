@@ -23,17 +23,17 @@ const TrialList = () => {
           <div className={style.items}>
             {data.getPersonTrials.map((trial: any) => (
               <div className={style.item} key={trial.trialId} onClick={() => history.push(`/trials/${trial.trialId}`)}>
+                <div className={style.icon} />
                 <div className={style.col1}>
                   <div className={style.title}>{trial.name}</div>
-                  <div>{trial.locationCity}, {trial.locationState}</div>                  
-                  
+                  <div>Status: {trial.status}</div>                  
                 </div>
                 <div className={style.col2}>
                   <div className={style.date}>
                     {moment(trial.startDate).format('MM/DD/YY')} -
                     {moment(trial.endDate).format('MM/DD/YY')}
                   </div>                                    
-                  <div>{trial.locationVenue}</div>
+                  <div>{trial.locationCity}, {trial.locationState}</div>
                 </div>
               </div>
             ))}

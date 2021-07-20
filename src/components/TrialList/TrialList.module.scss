@@ -47,11 +47,18 @@
       border: 1px solid black;
       border-radius: 10px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 75px 1fr 1fr;
       height: 100px;
       width: 50%;
       max-width: 1000px;
       cursor: pointer;
+
+      .icon {
+        background-image: url(../../assets/icons/dog_jump.svg);
+        background-repeat: no-repeat;
+        background-position-y: 5px;
+        margin-left: 8px;
+      }
 
       .col1 {
         padding: 10px 0 0 10px;
