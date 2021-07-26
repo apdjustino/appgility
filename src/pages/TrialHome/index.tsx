@@ -1,5 +1,10 @@
 import React from 'react'
 import { useParams } from 'react-router'
+import { Switch, useRouteMatch } from 'react-router-dom'
+import TrialLayout from '../../layouts/trial'
+import ProtectedRoute from '../../components/ProtectedRoute'
+import Configuration from '../Configuration'
+
 
 type params = {
   trialId: string
@@ -7,8 +12,14 @@ type params = {
 
 const TrialHome = () => {
   const { trialId } = useParams<params>()
+  const { path } = useRouteMatch()
+  console.log(path)
   return (
-    <div>Route param: {trialId}</div>
+    <TrialLayout>
+      <Switch>
+        <ProtectedRoute path={`${path}/configuration`} component={Configuration} />
+      </Switch>
+    </TrialLayout>
   )
 }
 

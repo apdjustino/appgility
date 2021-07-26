@@ -22,7 +22,7 @@ const TrialList = () => {
         <div>          
           <div className={style.items}>
             {data.getPersonTrials.map((trial: any) => (
-              <div className={style.item} key={trial.trialId} onClick={() => history.push(`/trials/${trial.trialId}`)}>
+              <div className={style.item} key={trial.trialId} onClick={() => history.push(`/trials/${trial.trialId}/configuration`)}>
                 <div className={style.icon} />
                 <div className={style.col1}>
                   <div className={style.title}>{trial.name}</div>
