@@ -7,9 +7,11 @@ export const GET_PERSON_TRIALS = gql`
       name,
       personId,
       startDate,
+      endDate,
       locationCity,
       locationState,
-      locationVenue
+      locationVenue,
+      status
     }
   }
 `
@@ -18,7 +20,8 @@ export const ADD_NEW_TRIAL = gql`
   mutation AddTrial($data: CreateNewTrialInput, $personId: String) {
     addTrial(data: $data, personId: $personId) {
       trialId,
-      name
+      name,
+      status
     }
   }
 `

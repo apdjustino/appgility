@@ -1,11 +1,13 @@
 import style from './TrialList.module.scss'
 
 import React, { useContext, useState } from 'react'
+import moment from 'moment'
 import { AuthContext } from '../../utils/contexts'
 import { Loader, Modal } from 'semantic-ui-react'
 import { useQuery } from '@apollo/client'
 import AddNewTrial from '../AddNewTrial'
 import { GET_PERSON_TRIALS } from '../../queries/trials/trials'
+import history from '../../utils/history'
 
 
 const TrialList = () => {
@@ -17,11 +19,26 @@ const TrialList = () => {
   return (
     <div className={style.container}>
       {!!data && data.getPersonTrials.length > 0 ? (
-        <div>
-          Trial List
-          {data.getPersonTrials.map((trial: any) => (
-            <div key={trial.trialId}>{trial.trialId}</div>
-          ))}
+        <div>          
+          <div className={style.items}>
+            {data.getPersonTrials.map((trial: any) => (
+              <div className={style.item} key={trial.trialId} onClick={() => history.push(`/trials/${trial.trialId}/configuration`)}>
+                <div className={style.icon} />
+                <div className={style.col1}>
+                  <div className={style.title}>{trial.name}</div>
+                  <div>Status: {trial.status}</div>                  
+                </div>
+                <div className={style.col2}>
+                  <div className={style.date}>
+                    {moment(trial.startDate).format('MM/DD/YY')} -
+                    {moment(trial.endDate).format('MM/DD/YY')}
+                  </div>                                    
+                  <div>{trial.locationCity}, {trial.locationState}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
         </div>
       ): (
         <>          
