@@ -1,12 +1,12 @@
 import style from './home.module.scss'
 import React from 'react'
-import TrialList from '../../components/TrialList'
+import EventList from '../../components/EventList'
 
 
 const Home = () => {
   return (
     <div className={style.container}>
-        <TrialList />
+        <EventList />
       </div>    
   )
 }

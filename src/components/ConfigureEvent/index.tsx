@@ -1,4 +1,4 @@
-import style from './ConfigureTrial.module.scss'
+import style from './ConfigureEvent.module.scss'
 import React from 'react'
 import { Form, Input, Segment, Dropdown, Checkbox, Button } from 'semantic-ui-react'
 
@@ -8,7 +8,7 @@ type ClassesOptions = {
   value: string
 }
 
-const ConfigureTrial = () => {
+const ConfigureEvent = () => {
 
   const classesOptions: ClassesOptions[] = [
     { key: 'jww', text: 'Jumpers', value: 'jww' },
@@ -160,4 +160,4 @@ const ConfigureTrial = () => {
   )
 }
 
-export default ConfigureTrial
+export default ConfigureEvent

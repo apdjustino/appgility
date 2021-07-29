@@ -1,13 +1,13 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import ConfigureTrial from '../../components/ConfigureTrial'
+import ConfigureEvent from '../../components/ConfigureEvent'
 
 const Configuration = () => {
 
   const params = useParams()
   console.log(params)
   return (
-    <ConfigureTrial />
+    <ConfigureEvent />
   )
 }
 

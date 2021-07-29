@@ -2,17 +2,14 @@ import React, { useContext } from 'react'
 import { useFormik } from 'formik'
 import { Modal, Form, Button, Input } from 'semantic-ui-react'
 import { useMutation } from '@apollo/client'
-import moment from 'moment'
-import { ADD_NEW_TRIAL, GET_PERSON_TRIALS } from '../../queries/trials/trials'
+import { ADD_NEW_EVENT, GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import { AuthContext } from '../../utils/contexts'
 
 interface InitialValues {
-  name: string,
-  startDate: Date | undefined,
-  endDate: Date | undefined,
+  name: string,  
   locationCity: string,
   locationState: string,
-  locationVenue?: string,
+  trialSite?: string,
   hostClub?: string
 }
 
@@ -22,24 +19,22 @@ interface OwnProps {
 
 const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
   const userAuth = useContext(AuthContext)
-  const [addNewTrial, result] = useMutation(ADD_NEW_TRIAL, { 
+  const [addNewEvent, result] = useMutation(ADD_NEW_EVENT, { 
     update: () => setAddDialogOpen(false),
     refetchQueries: [
-      { query: GET_PERSON_TRIALS, variables: { personId: userAuth.userId} }
+      { query: GET_PERSON_EVENTS, variables: { personId: userAuth.userId} }
     ]
   })
   const formik = useFormik({
     initialValues: {
-      name: '',
-      startDate: undefined,
-      endDate: undefined,
+      name: '',      
       locationCity: '',
       locationState: '',
-      locationVenue: '',
+      trialSite: '',
       hostClub: ''
     },
     onSubmit: (values: InitialValues) => {
-      addNewTrial({ variables: {
+      addNewEvent({ variables: {
         data: values,
         personId: userAuth.userId
       }})
@@ -48,20 +43,7 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
       const errors: any = {}
       if (!values.name) {
         errors.name = 'Required'
-      }
-
-      if (!values.startDate) {
-        errors.startDate = 'Required'
-      }
-
-      if (values.startDate) {
-        const start = moment(values.startDate)
-        const now = moment()
-
-        if (!now.isBefore(start)) {
-          errors.startDate = 'Start date must be in the future' 
-        }
-      }
+      }      
 
       if (!values.locationCity) {
         errors.locationCity = 'Required'
@@ -75,7 +57,7 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
     }
 
   })
-  
+  console.log(result.error)
   return (
     <>
       <Modal.Content>
@@ -91,33 +73,7 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
               content: formik.errors.name,
               pointing: 'above'
             } : undefined}
-          />
-          <Form.Field
-            id='startDate'
-            label='Start Date'
-            placeholder='Start Date'
-            control='input'
-            type='date'
-            value={formik.values.startDate}
-            onChange={formik.handleChange}
-            error={formik.errors.startDate && formik.touched.startDate ? {
-              content: formik.errors.startDate,
-              pointing: 'above'
-            } : undefined}
-          />
-          <Form.Field
-            id='endDate'
-            label='End Date'
-            placeholder='End Date'
-            control='input'
-            type='date'
-            value={formik.values.endDate}
-            onChange={formik.handleChange}
-            error={formik.errors.endDate && formik.touched.endDate ? {
-              content: formik.errors.endDate,
-              pointing: 'above'
-            } : undefined}
-          />                                  
+          />                                     
           <Form.Field 
             id='locationCity'
             label='City'
@@ -145,15 +101,15 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
             } : undefined}
           />          
           <Form.Field 
-            id='locationVenue'
-            label='Venue'
-            placeholder='Venue' 
+            id='trialSite'
+            label='Trial Site'
+            placeholder='Trial Site' 
             control={Input}             
             type='text'
-            value={formik.values.locationVenue} 
+            value={formik.values.trialSite} 
             onChange={formik.handleChange}
-            error={formik.errors.locationVenue && formik.touched.locationVenue ? {
-              content: formik.errors.locationVenue,
+            error={formik.errors.trialSite && formik.touched.trialSite ? {
+              content: formik.errors.trialSite,
               pointing: 'above'
             } : undefined}
           />          
@@ -173,7 +129,7 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
         </Form>
       </Modal.Content>
       <Modal.Actions>
-        <Button color='black' onClick={() => formik.handleSubmit()} loading={result.loading}>Add Trial</Button>
+        <Button color='black' onClick={() => formik.handleSubmit()} loading={result.loading}>Add Event</Button>
       </Modal.Actions>
     </>
   )
