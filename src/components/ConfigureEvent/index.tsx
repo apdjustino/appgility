@@ -1,8 +1,10 @@
 import style from './ConfigureEvent.module.scss'
 import React, { useState } from 'react'
 import { useFormik, FieldArray, Formik } from 'formik'
-
-import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon } from 'semantic-ui-react'
+import { useParams } from 'react-router-dom'
+import { useMutation, useQuery } from '@apollo/client'
+import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon, Loader, Dimmer, Message } from 'semantic-ui-react'
+import { GET_EVENT, UPDATE_EVENT } from '../../queries/trials/trials'
 
 type ClassesOptions = {
   key: string,
@@ -16,14 +18,78 @@ type AccordionIndex = {
   trials: boolean  
 }
 
-const BasicForm = () => {
+type ConfigureParams = {
+  eventId: string
+}
+
+const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {  
+  const { name, locationCity, locationState, trialSite, hostClub } = data.getEvent
+  const [showError, setShowError] = useState(false)
+  const params = useParams<ConfigureParams>()
+
+  const [updateEvent, result] = useMutation(UPDATE_EVENT, {
+    refetchQueries: [
+      { query: GET_EVENT, variables: { eventId: params.eventId }}
+    ]
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      name,
+      locationCity,
+      locationState,
+      trialSite,
+      hostClub
+    },
+    onSubmit: (values) => {
+      const updatedEvent = { ...data.getEvent }
+      delete updatedEvent.__typename
+      updatedEvent.name = values.name
+      updatedEvent.locationCity = values.locationCity
+      updatedEvent.locationState = values.locationState
+      updatedEvent.trialSite = values.trialSite
+      updatedEvent.hostClub = values.hostClub      
+      updateEvent({ variables: {
+        eventId: params.eventId,
+        updatedEvent
+      }}).catch(e => {
+        setShowError(true)
+      })
+    },
+    validate: (values) => {
+      const errors: any = {}
+      if (!values.name || values.name.trim() === '') {
+        errors.name = 'Required'
+      }
+      if (!values.locationCity || values.locationCity.trim() === '') {
+        errors.locationCity = 'Required'
+      }
+      if (!values.locationState || values.locationState.trim() === '') {
+        errors.locationState = 'Required'
+      }
+      if (!values.trialSite || values.trialSite.trim() === '') {
+        errors.trialSite = 'Required'
+      }
+      if (!values.hostClub || values.hostClub.trim() === '') {
+        errors.hostClub = 'Required'
+      }
+      return errors
+    }
+  })
+  
   return (
-    <Form>
+    <Form success={result.called && !!result.data} error={!!result.error}>
       <Form.Field 
         id='name'
         label='Name'
         placeholder='Name' 
-        control={Input}             
+        control={Input}
+        value={formik.values.name}
+        onChange={formik.handleChange}
+        error={formik.errors.name && formik.touched.name ? {
+          content: formik.errors.name,
+          pointing: 'above'
+        } : undefined}         
       />              
       <Form.Group>
         <Form.Field 
@@ -31,21 +97,39 @@ const BasicForm = () => {
           label='City'
           placeholder='City' 
           control={Input}             
-          type='text'              
+          type='text'
+          value={formik.values.locationCity}
+          onChange={formik.handleChange}
+          error={formik.errors.locationCity && formik.touched.locationCity ? {
+            content: formik.errors.locationCity,
+            pointing: 'above'
+          } : undefined}      
         />
         <Form.Field 
           id='locationState'
           label='State'
           placeholder='State' 
           control={Input}             
-          type='text'              
+          type='text'
+          value={formik.values.locationState}
+          onChange={formik.handleChange}
+          error={formik.errors.locationState && formik.touched.locationState ? {
+            content: formik.errors.locationState,
+            pointing: 'above'
+          } : undefined}      
         />          
         <Form.Field 
-          id='locationVenue'
-          label='Venue'
-          placeholder='Venue' 
+          id='trialSite'
+          label='Trial Site'
+          placeholder='Trial Site' 
           control={Input}             
-          type='text'              
+          type='text'
+          value={formik.values.trialSite}
+          onChange={formik.handleChange}
+          error={formik.errors.trialSite && formik.touched.trialSite ? {
+            content: formik.errors.trialSite,
+            pointing: 'above'
+          } : undefined}      
         />          
       </Form.Group>
       <Form.Field 
@@ -54,15 +138,27 @@ const BasicForm = () => {
         placeholder='Host Club' 
         control={Input}             
         type='text'
+        value={formik.values.hostClub}
+        onChange={formik.handleChange}
+        error={formik.errors.hostClub && formik.touched.hostClub ? {
+          content: formik.errors.hostClub,
+          pointing: 'above'
+        } : undefined}      
       />
       <div className={style.buttonContainer}>
-        <Button color="black">Update</Button>
+        <Button color="black" loading={result.loading} onClick={() => formik.handleSubmit()}>Update</Button>
       </div>
+      { result.called && !!result.data ? (
+          <Message success header="Updated Completed" content="Event data updated succesfully" />
+        ) : null}
+      { result.error && showError ? (
+        <Message error header="Error" content={result.error.message} />
+      ) : null}
     </Form>  
   )
 }
 
-const RegistrationForm = () => {
+const RegistrationForm = (data: any, loading: boolean) => {
   return (
     <Form>
       <Form.Field 
@@ -100,7 +196,7 @@ const RegistrationForm = () => {
   )
 }
 
-const TrialsForm = () => {
+const TrialsForm = (data: any, loading: boolean) => {
   const classesOptions: ClassesOptions[] = [
     { key: 'nov', text: 'Novice', value: 'nov' },
     { key: 'open', text: 'Open', value: 'open' },
@@ -367,24 +463,29 @@ const TrialsForm = () => {
 }
 
 const ConfigureEvent = () => {
+  const params = useParams<ConfigureParams>()  
+  const { data, loading, error } = useQuery(GET_EVENT, { variables: { eventId: params.eventId }})
   const accordionIndex: AccordionIndex = {
     basic: true,
     registration: false,
     trials: false
   }
-  const [selectedAccordion, setSelectedAccordion] = useState<AccordionIndex>(accordionIndex)
-  
+  const [selectedAccordion, setSelectedAccordion] = useState<AccordionIndex>(accordionIndex)  
   const panes = [
-    { menuItem: 'Basic', render: () => <Tab.Pane><BasicForm /></Tab.Pane> },
-    { menuItem: 'Registration', render: () => <Tab.Pane><RegistrationForm /></Tab.Pane> },
-    { menuItem: 'Trials', render: () => <Tab.Pane><TrialsForm /></Tab.Pane>}
+    { menuItem: 'Basic', render: () => <Tab.Pane><BasicForm data={data} loading={loading}/></Tab.Pane> },
+    { menuItem: 'Registration', render: () => <Tab.Pane><RegistrationForm data={data} loading={loading}/></Tab.Pane> },
+    { menuItem: 'Trials', render: () => <Tab.Pane><TrialsForm data={data} loading={loading}/></Tab.Pane>}
   ]
 
-  return (
+  return !loading && !error ? (
     <div className={style.configureTrialContainer}>
        <Tab panes={panes}/>
     </div>
-  )
+  ) : !error ? (
+    <Dimmer active>
+        <Loader>Loading</Loader>
+      </Dimmer>
+  ) : <div>Error</div>
 }
 
 export default ConfigureEvent

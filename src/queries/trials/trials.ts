@@ -23,3 +23,33 @@ export const ADD_NEW_EVENT = gql`
     }
   }
 `
+
+export const GET_EVENT = gql`
+  query GetEvent($eventId: String!) {
+    getEvent(eventId: $eventId) {
+      id,
+      type,
+      eventId,
+      name,
+      locationCity,
+      locationState,
+      status,
+      trialSite,
+      hostClub,
+      price,
+      altPrice,
+      registrationEnabled,    
+      registrationCutoff,
+      premiumLink
+    }
+  }
+`
+
+export const UPDATE_EVENT = gql`
+  mutation UpdateEvent($eventId: String!, $updatedEvent: UpdateEventInput!) {
+    updateEvent(eventId: $eventId, updatedEvent: $updatedEvent) {
+      eventId,
+      name
+    }
+  }
+`
