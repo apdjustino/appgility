@@ -7,11 +7,11 @@ import Configuration from '../Configuration'
 
 
 type params = {
-  trialId: string
+  eventId: string
 }
 
 const TrialHome = () => {
-  const { trialId } = useParams<params>()
+  const { eventId } = useParams<params>()
   const { path } = useRouteMatch()
   console.log(path)
   return (

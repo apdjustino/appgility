@@ -2,7 +2,7 @@ import React from 'react';
 import { Router, Switch} from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
-import TrialHome from './pages/TrialHome'
+import EventHome from './pages/EventHome'
 import Layout from './layouts/main'
 import history from './utils/history'
 
@@ -13,7 +13,7 @@ function App() {
     <Router history={history}>
       <Layout>
         <Switch>      
-          <ProtectedRoute path='/trials/:trialId' component={TrialHome} />
+          <ProtectedRoute path='/events/:eventId' component={EventHome} />
           <ProtectedRoute path='/' component={Home} />       
         </Switch>
       </Layout>      
