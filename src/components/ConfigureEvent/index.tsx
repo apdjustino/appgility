@@ -158,28 +158,103 @@ const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {
   )
 }
 
-const RegistrationForm = (data: any, loading: boolean) => {
+const RegistrationForm = ({ data, loading } : { data: any, loading: boolean}) => {
+  
+  const { registrationEnabled, registrationCutoff, price, altPrice } = data.getEvent
+  
+  const params = useParams<ConfigureParams>()
+  const [showError, setShowError] = useState(false)
+
+  const [updateEvent, result] = useMutation(UPDATE_EVENT, {
+    refetchQueries: [
+      { query: GET_EVENT, variables: { eventId: params.eventId }}
+    ]
+  })
+
+  const formik = useFormik({
+    initialValues: {
+      registrationEnabled,
+      registrationCutoff,
+      price: (price / 100).toString(),
+      altPrice: (altPrice / 100).toString()
+    },
+    onSubmit: (values) => {
+      const updatedEvent = { ...data.getEvent }
+      delete updatedEvent.__typename
+
+      updatedEvent.registrationEnabled = values.registrationEnabled
+      updatedEvent.registrationCutoff = values.registrationCutoff
+      updatedEvent.price = Math.floor(parseFloat(values.price) * 100)
+      updatedEvent.altPrice = Math.floor(parseFloat(values.altPrice)* 100)
+
+      updateEvent({ variables: {
+        eventId: params.eventId,
+        updatedEvent
+      }}).catch(() => {
+        setShowError(true)
+      })
+    },
+    validate: (values) => {
+      const errors: any = {}
+      if (!values.price || values.price.trim() === '') {
+        errors.price = 'Required'
+      }
+      if (values.price) {
+        const priceInt = parseFloat(values.price)
+        if (isNaN(priceInt)) {
+          errors.price = 'Must be a valid number'
+        }
+      }
+      if (!values.altPrice || values.altPrice.trim() === '') {
+        errors.altPrice = 'Required'
+      }
+      if (values.altPrice) {
+        const altPriceInt = parseFloat(values.altPrice)
+        if (isNaN(altPriceInt)) {
+          errors.altPrice = 'Must be a valid number'
+        }
+      }
+      return errors
+    }
+  })
   return (
-    <Form>
+    <Form success={result.called && !!result.data} error={!!result.error}>
       <Form.Field 
-        id='enableRegistration'
+        id='registrationEnabled'
         label='Enable Registration'
         control={Checkbox}
+        checked={formik.values.registrationEnabled}
+        onChange={formik.handleChange}
+        error={formik.errors.registrationEnabled && formik.touched.registrationEnabled ? {
+          content: formik.errors.registrationEnabled,
+          pointing: 'above'
+        } : undefined}      
       />            
       <Form.Field 
-        id='cutoffDate'
+        id='registrationCutoff'
         label='Registration Cutoff'
         placeholder='Registration Cutoff'
         control='input'
         type='date'
+        value={formik.values.registrationCutoff}
+        onChange={formik.handleChange}
+        error={formik.errors.registrationCutoff && formik.touched.registrationCutoff ? {
+          content: formik.errors.registrationCutoff,
+          pointing: 'above'
+        } : undefined}     
         />
       <Form.Group>
         <Form.Field 
           id='price'
-          label='Price'
-          placeholder='18.00'
+          label='Price'          
           control={Input}
           type='text'
+          value={formik.values.price}
+          onChange={formik.handleChange}
+          error={formik.errors.price && formik.touched.price ? {
+            content: formik.errors.price,
+            pointing: 'above'
+          } : undefined}     
         />
         <Form.Field 
           id='altPrice'
@@ -187,11 +262,23 @@ const RegistrationForm = (data: any, loading: boolean) => {
           placeholder='16.00'
           control={Input}
           type='text'
+          value={formik.values.altPrice}
+          onChange={formik.handleChange}
+          error={formik.errors.altPrice && formik.touched.altPrice ? {
+            content: formik.errors.altPrice,
+            pointing: 'above'
+          } : undefined}    
         />
       </Form.Group>
       <div className={style.buttonContainer}>
-        <Button color="black">Update</Button>
+        <Button color="black" loading={result.loading} onClick={() => formik.handleSubmit()}>Update</Button>
       </div>
+      { result.called && !!result.data ? (
+          <Message success header="Updated Completed" content="Event data updated succesfully" />
+        ) : null}
+      { result.error && showError ? (
+        <Message error header="Error" content={result.error.message} />
+      ) : null}
     </Form>   
   )
 }
