@@ -1,10 +1,11 @@
 import style from './ConfigureEvent.module.scss'
+import * as Yup from 'yup'
 import React, { useState } from 'react'
 import { useFormik, FieldArray, Formik } from 'formik'
 import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
 import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon, Loader, Dimmer, Message } from 'semantic-ui-react'
-import { GET_EVENT, UPDATE_EVENT } from '../../queries/trials/trials'
+import { ADD_TRIAL, GET_EVENT, GET_TRIALS, UPDATE_EVENT } from '../../queries/trials/trials'
 
 type ClassesOptions = {
   key: string,
@@ -290,48 +291,83 @@ const TrialsForm = (data: any, loading: boolean) => {
     { key: 'exc', text: 'Excellent', value: 'exc'},
     { key: 'mast', text: 'Masters', value: 'mast' }    
   ]
-  // const formik = useFormik({
-  //   initialValues: {
-  //     newTrials: []
-  //   },
-  //   onSubmit: (values) => {
-  //     console.log(values)
-  //   }
-  // })
+  
+  const params = useParams<ConfigureParams>()
+  const [showError, setShowError] = useState(false)
+
+  const [addTrial, result] = useMutation(ADD_TRIAL, {
+    refetchQueries: [
+      { query: GET_TRIALS, variables: { eventId: params.eventId }}
+    ]
+  })
+
+  const validationSchema = Yup.object().shape({
+    newTrials: Yup.array().of(
+      Yup.object().shape({
+        trialDate: Yup.string().required('Required'),
+        onlineEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required'),
+        mailEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required')
+      })
+    )
+  })
 
   return (
     <Formik 
       initialValues={{
         newTrials: []
       }}
-      onSubmit={(values) => console.log(values)}
-      render={formikProps => {
-        console.log(formikProps.values)
+      onSubmit={(values) => {        
+        values.newTrials.forEach((trial: any) => {
+          trial.eventId = params.eventId
+          addTrial({
+            variables: {
+              eventTrial: trial
+            }
+          }).catch(() => {
+            setShowError(true)
+          })
+        })
+      }}
+      validationSchema={validationSchema}
+      render={formikProps => {   
+        
         return (
           <FieldArray 
-            name='newTrials'
+            name='newTrials'            
             render={({ push }) => (
-              <Form onSubmit={() => formikProps.submitForm()}>
+              <Form onSubmit={() => formikProps.submitForm()} success={result.called && !!result.data} error={!!result.error}>
                 <div className={style.newTrialContainer}>
-                  <div style={{ marginRight: '8px' }}><Button circular icon="add" onClick={() => {
-                    push({
-                      akcTrialNumber: '',
-                      trialDate: '',
-                      onlineEntries: 0,
-                      mailEntries: 0,
-                      standardClass: true,
-                      jumpersClass: true,
-                      fastClass: false,
-                      t2bClass: false,
-                      standardAbility: ['nov', 'open', 'exc', 'mast'],
-                      standardPreferred: ['nov', 'open', 'exc', 'mast'],
-                      jumpersAbility: ['nov', 'open', 'exc', 'mast'],
-                      jumpersPreferred: ['nov', 'open', 'exc', 'mast'],
-                      fastAbility: [],
-                      fastPreferred: []
-                      
-                    })
-                  }}/></div>
+                  <div style={{ marginRight: '8px' }}>
+                    <Button 
+                      circular 
+                      icon="add" 
+                      onClick={(e: any) => {
+                        e.preventDefault()
+                        push({
+                          akcTrialNumber: '',
+                          trialDate: '',
+                          onlineEntries: undefined,
+                          mailEntries: undefined,
+                          standardClass: true,
+                          jumpersClass: true,
+                          fastClass: false,
+                          t2bClass: false,
+                          standardAbility: ['nov', 'open', 'exc', 'mast'],
+                          standardPreferred: ['nov', 'open', 'exc', 'mast'],
+                          jumpersAbility: ['nov', 'open', 'exc', 'mast'],
+                          jumpersPreferred: ['nov', 'open', 'exc', 'mast'],
+                          fastAbility: [],
+                          fastPreferred: []
+                          
+                        })
+                      }}/>
+                  </div>
+                  { result.called && !!result.data ? (
+                      <Message success header="Updated Completed" content="Event data updated succesfully" />
+                    ) : null}
+                  { result.error && showError ? (
+                    <Message error header="Error" content={result.error.message} />
+                  ) : null}
                   {formikProps.values.newTrials.length === 0 ? (
                     <div>Event has no trials. Add a new trial to the even to proceed</div>        
                   ) : null}
@@ -358,6 +394,10 @@ const TrialsForm = (data: any, loading: boolean) => {
                             label='Date'                
                             control='input'
                             type='date'
+                            error={formikProps.errors.newTrials && (formikProps.errors.newTrials as any)[idx] && (formikProps.errors.newTrials as any)[idx].trialDate ? {
+                              content: (formikProps.errors.newTrials as any)[idx].trialDate,
+                              pointing: 'above'
+                            } : undefined}
                           />
                           <Form.Field 
                             id='onlineEntries'
@@ -367,6 +407,10 @@ const TrialsForm = (data: any, loading: boolean) => {
                             type='number'
                             control={Input}
                             label='Online Entries'
+                            error={formikProps.errors.newTrials && (formikProps.errors.newTrials as any)[idx] && (formikProps.errors.newTrials as any)[idx].onlineEntries ? {
+                              content: (formikProps.errors.newTrials as any)[idx].onlineEntries,
+                              pointing: 'above'
+                            } : undefined}
                           />
                           <Form.Field 
                             id='mailEntries'
@@ -376,6 +420,10 @@ const TrialsForm = (data: any, loading: boolean) => {
                             type='number'
                             control={Input}
                             label='Mail-in Entries'
+                            error={formikProps.errors.newTrials && (formikProps.errors.newTrials as any)[idx] && (formikProps.errors.newTrials as any)[idx].mailEntries ? {
+                              content: (formikProps.errors.newTrials as any)[idx].mailEntries,
+                              pointing: 'above'
+                            } : undefined}
                           />       
                         </Form.Group>                                          
                         <h5>Classes: </h5>
@@ -539,7 +587,7 @@ const TrialsForm = (data: any, loading: boolean) => {
                     ))
                   ) : null}
                 </div>
-                <Button content="Submit" type="submit" />                
+                <Button content="Submit" type="submit" loading={result.loading}/>                
               </Form>
             )}
           />

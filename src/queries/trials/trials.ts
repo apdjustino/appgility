@@ -53,3 +53,40 @@ export const UPDATE_EVENT = gql`
     }
   }
 `
+
+export const GET_TRIALS = gql`
+  query GetTrials($eventId: String!) {
+    getEventTrials(eventId: $eventId) {
+      id,
+      trialId,
+      eventId,
+      type,
+      akcTrialNumber,
+      trialDate,
+      onlineEntries,
+      mailEntries,
+      standardClass,
+      standardAbility,
+      standardPreferred,
+      jumpersClass,
+      jumpersAbility,
+      jumpersPreferred,
+      fastClass,
+      fastAbility,
+      fastPreferred,
+      t2bClass,
+      premierStandard,
+      premierJumpers
+    }
+  }
+`
+
+export const ADD_TRIAL = gql`
+  mutation AddEventTrial($eventTrial: AddEventTrial!) {
+    addEventTrial(eventTrial: $eventTrial) {
+      trialId,
+      eventId,
+      trialDate
+    }
+  }
+`
