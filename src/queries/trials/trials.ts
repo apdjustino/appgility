@@ -90,3 +90,13 @@ export const ADD_TRIAL = gql`
     }
   }
 `
+
+export const UPDATE_TRIAL = gql`
+  mutation UpdateEventTrial($trialId: String!, $eventId: String!, $eventTrial: UpdateEventTrial!) {
+    updateEventTrial(trialId: $trialId, eventId: $eventId, eventTrial: $eventTrial) {
+      trialId,
+      eventId,
+      trialDate
+    }
+  }
+`

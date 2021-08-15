@@ -5,7 +5,7 @@ import { useFormik, FieldArray, Formik } from 'formik'
 import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
 import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon, Loader, Dimmer, Message } from 'semantic-ui-react'
-import { ADD_TRIAL, GET_EVENT, GET_TRIALS, UPDATE_EVENT } from '../../queries/trials/trials'
+import { ADD_TRIAL, GET_EVENT, GET_TRIALS, UPDATE_EVENT, UPDATE_TRIAL } from '../../queries/trials/trials'
 
 type ClassesOptions = {
   key: string,
@@ -301,6 +301,14 @@ const TrialsForm = (data: any, loading: boolean) => {
     ]
   })
 
+  const [updateTrial, updateResult] = useMutation(UPDATE_TRIAL, {
+    refetchQueries: [
+      { query: GET_TRIALS, variables: { eventId: params.eventId }}
+    ]
+  })
+
+  const trialQuery = useQuery(GET_TRIALS, { variables : {eventId: params.eventId}})
+  
   const validationSchema = Yup.object().shape({
     newTrials: Yup.array().of(
       Yup.object().shape({
@@ -313,29 +321,53 @@ const TrialsForm = (data: any, loading: boolean) => {
 
   return (
     <Formik 
+      enableReinitialize={true}
       initialValues={{
-        newTrials: []
+        newTrials: trialQuery.data ? trialQuery.data.getEventTrials : []
       }}
       onSubmit={(values) => {        
-        values.newTrials.forEach((trial: any) => {
-          trial.eventId = params.eventId
-          addTrial({
-            variables: {
-              eventTrial: trial
-            }
-          }).catch(() => {
-            setShowError(true)
-          })
+        values.newTrials.forEach((trial: any) => {  
+          const updatedTrial = { ...trial }        
+          updatedTrial.eventId = params.eventId
+          if (!!trial.id) {            
+            delete updatedTrial.__typename
+
+            updateTrial({
+              variables: {
+                trialId: trial.id,
+                eventId: params.eventId,
+                eventTrial: updatedTrial
+              }
+            }).catch(() => {
+              setShowError(true)
+            })
+            
+          } else {
+            addTrial({
+              variables: {
+                eventTrial: updatedTrial
+              }
+            }).catch(() => {
+              setShowError(true)
+            })
+          }
+          
         })
       }}
       validationSchema={validationSchema}
       render={formikProps => {   
         
-        return (
+        return trialQuery.loading ? (
+        <div style={{height: '100vh'}}>
+          <Dimmer active>
+            <Loader>Loading</Loader>
+          </Dimmer>
+        </div>        
+        ) : (
           <FieldArray 
             name='newTrials'            
             render={({ push }) => (
-              <Form onSubmit={() => formikProps.submitForm()} success={result.called && !!result.data} error={!!result.error}>
+              <Form onSubmit={() => formikProps.submitForm()} success={(result.called && !!result.data) || (updateResult.called && !!updateResult.data)} error={!!result.error || !!updateResult.error}>
                 <div className={style.newTrialContainer}>
                   <div style={{ marginRight: '8px' }}>
                     <Button 
@@ -362,11 +394,13 @@ const TrialsForm = (data: any, loading: boolean) => {
                         })
                       }}/>
                   </div>
-                  { result.called && !!result.data ? (
+                  { (result.called && !!result.data) || (updateResult.called && !!updateResult.data) ? (
                       <Message success header="Updated Completed" content="Event data updated succesfully" />
                     ) : null}
-                  { result.error && showError ? (
+                  { (result.error && showError) ? (
                     <Message error header="Error" content={result.error.message} />
+                  ) : (updateResult.error && showError) ? (
+                    <Message error header="Error" content={updateResult.error.message} />
                   ) : null}
                   {formikProps.values.newTrials.length === 0 ? (
                     <div>Event has no trials. Add a new trial to the even to proceed</div>        
@@ -587,7 +621,7 @@ const TrialsForm = (data: any, loading: boolean) => {
                     ))
                   ) : null}
                 </div>
-                <Button content="Submit" type="submit" loading={result.loading}/>                
+                <Button content="Submit" type="submit" loading={result.loading || updateResult.loading}/>                
               </Form>
             )}
           />
