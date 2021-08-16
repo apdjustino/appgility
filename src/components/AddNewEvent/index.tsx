@@ -57,7 +57,7 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
     }
 
   })
-  console.log(result.error)
+  
   return (
     <>
       <Modal.Content>

@@ -3,11 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { Auth0Provider } from '@auth0/auth0-react'
-import {
-  ApolloClient,
-  InMemoryCache,
-  ApolloProvider
-} from '@apollo/client'
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
 import history from './utils/history'
@@ -16,11 +11,6 @@ const onRedirectCallback = (appState: any) => {
   // Use the router's history module to replace the url
   history.replace(appState?.returnTo || window.location.pathname);
 };
-
-const client = new ApolloClient({
-  uri: process.env.REACT_APP_GRAPH_URL,
-  cache: new InMemoryCache()
-})
 
 ReactDOM.render(
   <React.StrictMode>
@@ -31,9 +21,7 @@ ReactDOM.render(
       audience='https://graph.appgility.com'
       onRedirectCallback={onRedirectCallback}
     >
-      <ApolloProvider client={client}>
-        <App />
-      </ApolloProvider>      
+      <App />
     </Auth0Provider>
   </React.StrictMode>,
   document.getElementById('root')
