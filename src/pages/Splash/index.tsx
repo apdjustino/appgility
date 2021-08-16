@@ -21,7 +21,7 @@ const Splash = () => {
           Learn React
         </a>
         <button onClick={() => loginWithRedirect()}>Log in</button>
-        <button onClick={() => logout({ returnTo: 'http://localhost:3000' })}>Logout</button>
+        <button onClick={() => logout({ returnTo: process.env.REACT_APP_HOST_URL })}>Logout</button>
       </header>
     </div>
   )

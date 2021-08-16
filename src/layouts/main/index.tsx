@@ -18,11 +18,11 @@ const MainLayout = ({
   const history = useHistory() 
 
   useEffect(() => {
-    getAccessTokenSilently({ audience: 'https://graph.appgility.com'}).then(response => {
+    getAccessTokenSilently({ audience: 'https://graph.appgility.com'}).then(response => {      
       setUserAuth({
         accessToken: response,
         userId: !!user ? user['https://graph.appgility.com/personId'] : ''
-      })
+      })      
     })
   }, [user, getAccessTokenSilently])
 
