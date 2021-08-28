@@ -2,16 +2,12 @@ import style from './ConfigureEvent.module.scss'
 import * as Yup from 'yup'
 import React, { useState } from 'react'
 import { useFormik, FieldArray, Formik } from 'formik'
-import { useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
-import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon, Loader, Dimmer, Message } from 'semantic-ui-react'
+import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon, Loader, Dimmer, Message, Modal } from 'semantic-ui-react'
 import { ADD_TRIAL, GET_EVENT, GET_TRIALS, UPDATE_EVENT, UPDATE_TRIAL } from '../../queries/trials/trials'
-
-type ClassesOptions = {
-  key: string,
-  text: string,
-  value: string
-}
+import TrialCards from '../TrialCards'
+import AddTrial from '../AddTrial'
 
 type AccordionIndex = {
   basic: boolean,
@@ -285,349 +281,32 @@ const RegistrationForm = ({ data, loading } : { data: any, loading: boolean}) =>
 }
 
 const TrialsForm = (data: any, loading: boolean) => {
-  const classesOptions: ClassesOptions[] = [
-    { key: 'nov', text: 'Novice', value: 'nov' },
-    { key: 'open', text: 'Open', value: 'open' },
-    { key: 'exc', text: 'Excellent', value: 'exc'},
-    { key: 'mast', text: 'Masters', value: 'mast' }    
-  ]
-  
-  const params = useParams<ConfigureParams>()
-  const [showError, setShowError] = useState(false)
-
-  const [addTrial, result] = useMutation(ADD_TRIAL, {
-    refetchQueries: [
-      { query: GET_TRIALS, variables: { eventId: params.eventId }}
-    ]
-  })
-
-  const [updateTrial, updateResult] = useMutation(UPDATE_TRIAL, {
-    refetchQueries: [
-      { query: GET_TRIALS, variables: { eventId: params.eventId }}
-    ]
-  })
-
+    
+  const params = useParams<ConfigureParams>()  
+  const { path } = useRouteMatch()
   const trialQuery = useQuery(GET_TRIALS, { variables : {eventId: params.eventId}})
-  
-  const validationSchema = Yup.object().shape({
-    newTrials: Yup.array().of(
-      Yup.object().shape({
-        trialDate: Yup.string().required('Required'),
-        onlineEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required'),
-        mailEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required')
-      })
-    )
-  })
-
+  const [addTrialModal, setAddTrialModal] = useState(false)
+  const [selectedTrial, setSelectedTrial] = useState('')
   return (
-    <Formik 
-      enableReinitialize={true}
-      initialValues={{
-        newTrials: trialQuery.data ? trialQuery.data.getEventTrials : []
-      }}
-      onSubmit={(values) => {        
-        values.newTrials.forEach((trial: any) => {  
-          const updatedTrial = { ...trial }        
-          updatedTrial.eventId = params.eventId
-          if (!!trial.id) {            
-            delete updatedTrial.__typename
-
-            updateTrial({
-              variables: {
-                trialId: trial.id,
-                eventId: params.eventId,
-                eventTrial: updatedTrial
-              }
-            }).catch(() => {
-              setShowError(true)
-            })
-            
-          } else {
-            addTrial({
-              variables: {
-                eventTrial: updatedTrial
-              }
-            }).catch(() => {
-              setShowError(true)
-            })
-          }
-          
-        })
-      }}
-      validationSchema={validationSchema}
-      render={formikProps => {   
-        
-        return trialQuery.loading ? (
-        <div style={{height: '100vh'}}>
-          <Dimmer active>
-            <Loader>Loading</Loader>
-          </Dimmer>
-        </div>        
-        ) : (
-          <FieldArray 
-            name='newTrials'            
-            render={({ push }) => (
-              <Form onSubmit={() => formikProps.submitForm()} success={(result.called && !!result.data) || (updateResult.called && !!updateResult.data)} error={!!result.error || !!updateResult.error}>
-                <div className={style.newTrialContainer}>
-                  <div style={{ marginRight: '8px' }}>
-                    <Button 
-                      circular 
-                      icon="add" 
-                      onClick={(e: any) => {
-                        e.preventDefault()
-                        push({
-                          akcTrialNumber: '',
-                          trialDate: '',
-                          onlineEntries: undefined,
-                          mailEntries: undefined,
-                          standardClass: true,
-                          jumpersClass: true,
-                          fastClass: false,
-                          t2bClass: false,
-                          standardAbility: ['nov', 'open', 'exc', 'mast'],
-                          standardPreferred: ['nov', 'open', 'exc', 'mast'],
-                          jumpersAbility: ['nov', 'open', 'exc', 'mast'],
-                          jumpersPreferred: ['nov', 'open', 'exc', 'mast'],
-                          fastAbility: [],
-                          fastPreferred: []
-                          
-                        })
-                      }}/>
-                  </div>
-                  { (result.called && !!result.data) || (updateResult.called && !!updateResult.data) ? (
-                      <Message success header="Updated Completed" content="Event data updated succesfully" />
-                    ) : null}
-                  { (result.error && showError) ? (
-                    <Message error header="Error" content={result.error.message} />
-                  ) : (updateResult.error && showError) ? (
-                    <Message error header="Error" content={updateResult.error.message} />
-                  ) : null}
-                  {formikProps.values.newTrials.length === 0 ? (
-                    <div>Event has no trials. Add a new trial to the even to proceed</div>        
-                  ) : null}
-                </div>
-                <div className={style.fieldsContainer}>
-                    {formikProps.values.newTrials.length > 0 ? (
-                    formikProps.values.newTrials.map((trial: any, idx: number) => (
-                      <>
-                        <Form.Group>
-                          <Form.Field 
-                            id='akcTrialNumber'
-                            name={`newTrials.${idx}.akcTrialNumber`}
-                            value={(formikProps.values.newTrials as any)[idx].akcTrialNumber}
-                            onChange={formikProps.handleChange}
-                            type='text'
-                            label="AKC Trial Number"
-                            control={Input}
-                          />
-                          <Form.Field 
-                            id='trialDate'
-                            name={`newTrials.${idx}.trialDate`}
-                            value={(formikProps.values.newTrials as any)[idx].trialDate}
-                            onChange={formikProps.handleChange}
-                            label='Date'                
-                            control='input'
-                            type='date'
-                            error={formikProps.errors.newTrials && (formikProps.errors.newTrials as any)[idx] && (formikProps.errors.newTrials as any)[idx].trialDate ? {
-                              content: (formikProps.errors.newTrials as any)[idx].trialDate,
-                              pointing: 'above'
-                            } : undefined}
-                          />
-                          <Form.Field 
-                            id='onlineEntries'
-                            name={`newTrials.${idx}.onlineEntries`}
-                            value={(formikProps.values.newTrials as any)[idx].onlineEntries}
-                            onChange={formikProps.handleChange}
-                            type='number'
-                            control={Input}
-                            label='Online Entries'
-                            error={formikProps.errors.newTrials && (formikProps.errors.newTrials as any)[idx] && (formikProps.errors.newTrials as any)[idx].onlineEntries ? {
-                              content: (formikProps.errors.newTrials as any)[idx].onlineEntries,
-                              pointing: 'above'
-                            } : undefined}
-                          />
-                          <Form.Field 
-                            id='mailEntries'
-                            name={`newTrials.${idx}.mailEntries`}
-                            value={(formikProps.values.newTrials as any)[idx].mailEntries}
-                            onChange={formikProps.handleChange}
-                            type='number'
-                            control={Input}
-                            label='Mail-in Entries'
-                            error={formikProps.errors.newTrials && (formikProps.errors.newTrials as any)[idx] && (formikProps.errors.newTrials as any)[idx].mailEntries ? {
-                              content: (formikProps.errors.newTrials as any)[idx].mailEntries,
-                              pointing: 'above'
-                            } : undefined}
-                          />       
-                        </Form.Group>                                          
-                        <h5>Classes: </h5>
-                        <div className={style.checkboxContainer}>
-                          <Form.Field
-                            id='standardClass'
-                            name={`newTrials.${idx}.standardClass`}
-                            value={(formikProps.values.newTrials as any)[idx].standardClass}
-                            checked={(formikProps.values.newTrials as any)[idx].standardClass}
-                            onChange={formikProps.handleChange}
-                            label='Standard'                                                                              
-                            control={Checkbox}
-                            style={{marginRight: '8px'}}                        
-                          />
-                          { (formikProps.values.newTrials as any)[idx].standardClass ? (
-                            <div style={{display: 'flex'}}>
-                            <Form.Field 
-                              id='standardAbility'
-                              name={`newTrials.${idx}.standardAbility`}
-                              value={(formikProps.values.newTrials as any)[idx].standardAbility}
-                              onChange={(e: any, d: any) => {                                                                
-                                formikProps.setFieldValue(`newTrials.${idx}.standardAbility`, [].slice.call(d.value))
-                              }}
-                              label='Regular'
-                              multiple
-                              selection
-                              control={Dropdown}
-                              options={classesOptions}
-                              
-                            />
-                            <Form.Field 
-                              id='standardPreferred'
-                              name={`newTrials.${idx}.standardPreferred`}
-                              value={(formikProps.values.newTrials as any)[idx].standardPreferred}
-                              onChange={(e: any, d: any) => {                                                                
-                                formikProps.setFieldValue(`newTrials.${idx}.standardPreferred`, [].slice.call(d.value))
-                              }}
-                              label='Preferred'
-                              multiple
-                              selection
-                              control={Dropdown}
-                              options={classesOptions}
-                            />
-                            </div>
-                          ): null}
-                        </div>
-                        <div className={style.checkboxContainer}>
-                          <Form.Field
-                            id='jumpersClass'
-                            name={`newTrials.${idx}.jumpersClass`}
-                            value={(formikProps.values.newTrials as any)[idx].jumpersClass}
-                            checked={(formikProps.values.newTrials as any)[idx].jumpersClass}
-                            onChange={formikProps.handleChange}
-                            label='JWW'                                                                              
-                            control={Checkbox}
-                            style={{marginRight: '8px'}}                          
-                          />
-                          { (formikProps.values.newTrials as any)[idx].jumpersClass ? (
-                            <div style={{display: 'flex'}}>
-                            <Form.Field 
-                              id='jumpersAbility'
-                              name={`newTrials.${idx}.jumpersAbility`}
-                              value={(formikProps.values.newTrials as any)[idx].jumpersAbility}
-                              onChange={(e: any, d: any) => {                                                                
-                                formikProps.setFieldValue(`newTrials.${idx}.jumpersAbility`, [].slice.call(d.value))
-                              }}
-                              label='Regular'
-                              multiple
-                              selection
-                              control={Dropdown}
-                              options={classesOptions}
-                              
-                            />
-                            <Form.Field 
-                              id='jumpersPreferred'
-                              name={`newTrials.${idx}.jumpersPreferred`}
-                              value={(formikProps.values.newTrials as any)[idx].jumpersPreferred}
-                              onChange={(e: any, d: any) => {                                                                
-                                formikProps.setFieldValue(`newTrials.${idx}.jumpersPreferred`, [].slice.call(d.value))
-                              }}
-                              label='Preferred'
-                              multiple
-                              selection
-                              control={Dropdown}
-                              options={classesOptions}
-                            />
-                            </div>
-                          ): null}
-                        </div>
-                        <div className={style.checkboxContainer}>
-                          <Form.Field
-                              id='fastClass'
-                              name={`newTrials.${idx}.fastClass`}
-                              value={(formikProps.values.newTrials as any)[idx].fastClass}
-                              checked={(formikProps.values.newTrials as any)[idx].fastClass}
-                              onChange={formikProps.handleChange}
-                              label='FAST'                                                                              
-                              control={Checkbox}                          
-                          />
-                          { (formikProps.values.newTrials as any)[idx].fastClass ? (
-                            <div style={{display: 'flex'}}>
-                            <Form.Field 
-                              id='fastAbility'
-                              name={`newTrials.${idx}.fastAbility`}
-                              value={(formikProps.values.newTrials as any)[idx].fastAbility}
-                              onChange={(e: any, d: any) => {                                                                
-                                formikProps.setFieldValue(`newTrials.${idx}.fastAbility`, [].slice.call(d.value))
-                              }}
-                              label='Regular'
-                              multiple
-                              selection
-                              control={Dropdown}
-                              options={classesOptions}
-                              
-                            />
-                            <Form.Field 
-                              id='fastPreferred'
-                              name={`newTrials.${idx}.fastPreferred`}
-                              value={(formikProps.values.newTrials as any)[idx].fastPreferred}
-                              onChange={(e: any, d: any) => {                                                                
-                                formikProps.setFieldValue(`newTrials.${idx}.fastPreferred`, [].slice.call(d.value))
-                              }}
-                              label='Preferred'
-                              multiple
-                              selection
-                              control={Dropdown}
-                              options={classesOptions}
-                            />
-                            </div>
-                          ): null}
-                        </div>
-                          <Form.Field
-                            id='t2bClass'
-                            name={`newTrials.${idx}.t2bClass`}
-                            value={(formikProps.values.newTrials as any)[idx].t2bClass}
-                            checked={(formikProps.values.newTrials as any)[idx].t2bClass}
-                            onChange={formikProps.handleChange}
-                            label='T2B'                                                                              
-                            control={Checkbox}                          
-                          />
-                          <Form.Field 
-                            id='premierStandard'
-                            name={`newTrials.${idx}.premierStandard`}
-                            value={(formikProps.values.newTrials as any)[idx].premierStandard}
-                            checked={(formikProps.values.newTrials as any)[idx].premierStandard}
-                            onChange={formikProps.handleChange}
-                            label='Premier Standard'
-                            control={Checkbox}
-                          />
-                          <Form.Field 
-                            id='premierJumpers'
-                            name={`newTrials.${idx}.premierJumpers`}
-                            value={(formikProps.values.newTrials as any)[idx].premierJumpers}
-                            checked={(formikProps.values.newTrials as any)[idx].premierJumpers}
-                            onChange={formikProps.handleChange}
-                            label='Premier Jumpers'
-                            control={Checkbox}
-                          />
-                        <br />                      
-                      </>
-                    ))
-                  ) : null}
-                </div>
-                <Button content="Submit" type="submit" loading={result.loading || updateResult.loading}/>                
-              </Form>
-            )}
-          />
-        )
-      }}
-    />    
+    <>
+      <Button color="black" style={{float: 'right'}} onClick={() => {
+        setSelectedTrial('')
+        setAddTrialModal(true)
+      }}>Add Trial</Button>
+      <TrialCards query={trialQuery} setTrial={(trial: string) => {        
+        setSelectedTrial(trial)
+        setAddTrialModal(true)
+      }}/>
+      <Modal 
+        open={addTrialModal}
+        onClose={() => setAddTrialModal(false)}
+      >
+        <Modal.Header>{selectedTrial === '' ? 'Add Trial' : 'Edit Trial'}</Modal.Header>
+        <Modal.Content>
+          <AddTrial trialId={selectedTrial}/>
+        </Modal.Content>
+      </Modal>  
+    </>      
   )
 }
 
