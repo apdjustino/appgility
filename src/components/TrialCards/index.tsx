@@ -3,6 +3,7 @@ import style from './TrialCards.module.scss'
 import React from 'react'
 import { Container, Card, Button, Dropdown, Menu, Icon, Dimmer, Loader } from 'semantic-ui-react'
 import { QueryResult } from '@apollo/client'
+import moment from 'moment'
 
 type SkillLevel = {
   nov: string,
@@ -30,7 +31,7 @@ const TrialCards = ({ query, setTrial }: ownProps) => {
         { query && !query.loading ? query.data.getEventTrials.map((trial: any) => (
           <Card key={`trial-card-${trial.id}`}>
             <Card.Content extra>
-              <Card.Header>{trial.trialDate}</Card.Header>
+              <Card.Header>{moment(trial.trialDate, 'DD-MM-YYYY').format('MMMM Do, YYYY')}</Card.Header>
               <Card.Meta>{trial.akcTrialNumber}</Card.Meta>       
             </Card.Content>
             
