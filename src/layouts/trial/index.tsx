@@ -1,7 +1,6 @@
 import style from './trial.module.scss'
 
 import React from 'react'
-import { Icon } from 'semantic-ui-react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 type TrialLayoutProps = {

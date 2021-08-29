@@ -1,13 +1,14 @@
 import style from './ConfigureEvent.module.scss'
 import * as Yup from 'yup'
-import React, { useState } from 'react'
-import { useFormik, FieldArray, Formik } from 'formik'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import React, { useContext, useState } from 'react'
+import { useFormik } from 'formik'
+import { useParams } from 'react-router-dom'
 import { useMutation, useQuery } from '@apollo/client'
-import { Form, Input, Tab, Dropdown, Checkbox, Button, Icon, Loader, Dimmer, Message, Modal } from 'semantic-ui-react'
-import { ADD_TRIAL, GET_EVENT, GET_TRIALS, UPDATE_EVENT, UPDATE_TRIAL } from '../../queries/trials/trials'
+import { Form, Input, Tab, Button, Loader, Dimmer, Message, Modal } from 'semantic-ui-react'
+import { GET_EVENT, GET_PERSON_EVENTS, GET_TRIALS, UPDATE_EVENT } from '../../queries/trials/trials'
 import TrialCards from '../TrialCards'
 import AddTrial from '../AddTrial'
+import { AuthContext } from '../../utils/contexts'
 
 type AccordionIndex = {
   basic: boolean,
@@ -20,14 +21,32 @@ type ConfigureParams = {
 }
 
 const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {  
-  const { name, locationCity, locationState, trialSite, hostClub } = data.getEvent
+  const { 
+    name,
+    locationCity, 
+    locationState, 
+    trialSite, 
+    hostClub,
+    trialChairName,
+    trialChairEmail,
+    trialChairPhone
+   } = data.getEvent
   const [showError, setShowError] = useState(false)
   const params = useParams<ConfigureParams>()
-
+  const userAuth = useContext(AuthContext)
   const [updateEvent, result] = useMutation(UPDATE_EVENT, {
     refetchQueries: [
-      { query: GET_EVENT, variables: { eventId: params.eventId }}
+      { query: GET_EVENT, variables: { eventId: params.eventId }},
+      { query: GET_PERSON_EVENTS, variables: { personId: userAuth.userId }}
     ]
+  })
+
+  const validationSchema = Yup.object().shape({
+    name: Yup.string().required('Required'),
+    locationCity: Yup.string().required('Required'),
+    locationState: Yup.string().required('Required'),
+    trialSite: Yup.string().required('Required'),
+    hostClub: Yup.string().required('Required'),
   })
 
   const formik = useFormik({
@@ -36,7 +55,10 @@ const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {
       locationCity,
       locationState,
       trialSite,
-      hostClub
+      hostClub,
+      trialChairName,
+      trialChairEmail,
+      trialChairPhone
     },
     onSubmit: (values) => {
       const updatedEvent = { ...data.getEvent }
@@ -45,33 +67,16 @@ const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {
       updatedEvent.locationCity = values.locationCity
       updatedEvent.locationState = values.locationState
       updatedEvent.trialSite = values.trialSite
-      updatedEvent.hostClub = values.hostClub      
+      updatedEvent.hostClub = values.hostClub 
       updateEvent({ variables: {
         eventId: params.eventId,
+        personId:  userAuth.userId,
         updatedEvent
       }}).catch(e => {
         setShowError(true)
       })
     },
-    validate: (values) => {
-      const errors: any = {}
-      if (!values.name || values.name.trim() === '') {
-        errors.name = 'Required'
-      }
-      if (!values.locationCity || values.locationCity.trim() === '') {
-        errors.locationCity = 'Required'
-      }
-      if (!values.locationState || values.locationState.trim() === '') {
-        errors.locationState = 'Required'
-      }
-      if (!values.trialSite || values.trialSite.trim() === '') {
-        errors.trialSite = 'Required'
-      }
-      if (!values.hostClub || values.hostClub.trim() === '') {
-        errors.hostClub = 'Required'
-      }
-      return errors
-    }
+    validationSchema
   })
   
   return (
@@ -142,6 +147,45 @@ const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {
           pointing: 'above'
         } : undefined}      
       />
+      <Form.Field 
+        id='trialChairName'
+        label=''
+        placeholder='Trial Chair' 
+        control={Input}             
+        type='text'
+        value={formik.values.trialChairName}
+        onChange={formik.handleChange}
+        error={formik.errors.trialChairName && formik.touched.trialChairName ? {
+          content: formik.errors.trialChairName,
+          pointing: 'above'
+        } : undefined}      
+      />
+      <Form.Field 
+        id='trialChairEmail'
+        label='Trial Chair Email'
+        placeholder='' 
+        control={Input}             
+        type='text'
+        value={formik.values.trialChairEmail}
+        onChange={formik.handleChange}
+        error={formik.errors.trialChairEmail && formik.touched.trialChairEmail ? {
+          content: formik.errors.trialChairEmail,
+          pointing: 'above'
+        } : undefined}      
+      />
+      <Form.Field 
+        id='trialChairPhone'
+        label='Trial Chair Phone'
+        placeholder='' 
+        control={Input}             
+        type='text'
+        value={formik.values.trialChairPhone}
+        onChange={formik.handleChange}
+        error={formik.errors.trialChairPhone && formik.touched.trialChairPhone ? {
+          content: formik.errors.trialChairPhone,
+          pointing: 'above'
+        } : undefined}      
+      />
       <div className={style.buttonContainer}>
         <Button color="black" loading={result.loading} onClick={() => formik.handleSubmit()}>Update</Button>
       </div>
@@ -157,21 +201,30 @@ const BasicForm = ({ data, loading } : { data: any, loading: boolean}) => {
 
 const RegistrationForm = ({ data, loading } : { data: any, loading: boolean}) => {
   
-  const { registrationEnabled, registrationCutoff, price, altPrice } = data.getEvent
+  const { price, altPrice, openingDate, closingDate } = data.getEvent
   
   const params = useParams<ConfigureParams>()
   const [showError, setShowError] = useState(false)
+  const userAuth = useContext(AuthContext)
 
   const [updateEvent, result] = useMutation(UPDATE_EVENT, {
     refetchQueries: [
-      { query: GET_EVENT, variables: { eventId: params.eventId }}
+      { query: GET_EVENT, variables: { eventId: params.eventId }},
+      { query: GET_PERSON_EVENTS, variables: { personId: userAuth.userId }}
     ]
+  })
+
+  const validationSchema = Yup.object().shape({
+    openingDate: Yup.string().required('Required'),
+    closingDate: Yup.string().required('Required'),
+    price: Yup.number().min(0, 'Minimum price is 0').required('Required'),
+    altPrice: Yup.number().min(0, 'Minimum price is 0').required('Required')
   })
 
   const formik = useFormik({
     initialValues: {
-      registrationEnabled,
-      registrationCutoff,
+      openingDate,
+      closingDate,
       price: (price / 100).toString(),
       altPrice: (altPrice / 100).toString()
     },
@@ -179,64 +232,45 @@ const RegistrationForm = ({ data, loading } : { data: any, loading: boolean}) =>
       const updatedEvent = { ...data.getEvent }
       delete updatedEvent.__typename
 
-      updatedEvent.registrationEnabled = values.registrationEnabled
-      updatedEvent.registrationCutoff = values.registrationCutoff
+      updatedEvent.openingDate = values.openingDate
+      updatedEvent.closingDate = values.closingDate
       updatedEvent.price = Math.floor(parseFloat(values.price) * 100)
       updatedEvent.altPrice = Math.floor(parseFloat(values.altPrice)* 100)
 
       updateEvent({ variables: {
         eventId: params.eventId,
+        personId: userAuth.userId,
         updatedEvent
       }}).catch(() => {
         setShowError(true)
       })
     },
-    validate: (values) => {
-      const errors: any = {}
-      if (!values.price || values.price.trim() === '') {
-        errors.price = 'Required'
-      }
-      if (values.price) {
-        const priceInt = parseFloat(values.price)
-        if (isNaN(priceInt)) {
-          errors.price = 'Must be a valid number'
-        }
-      }
-      if (!values.altPrice || values.altPrice.trim() === '') {
-        errors.altPrice = 'Required'
-      }
-      if (values.altPrice) {
-        const altPriceInt = parseFloat(values.altPrice)
-        if (isNaN(altPriceInt)) {
-          errors.altPrice = 'Must be a valid number'
-        }
-      }
-      return errors
-    }
+    validationSchema
   })
   return (
     <Form success={result.called && !!result.data} error={!!result.error}>
       <Form.Field 
-        id='registrationEnabled'
-        label='Enable Registration'
-        control={Checkbox}
-        checked={formik.values.registrationEnabled}
+        id='openingDate'
+        label='Opening Date'
+        control='input'
+        type='date'
+        checked={formik.values.openingDate}
         onChange={formik.handleChange}
-        error={formik.errors.registrationEnabled && formik.touched.registrationEnabled ? {
-          content: formik.errors.registrationEnabled,
+        error={formik.errors.openingDate && formik.touched.openingDate ? {
+          content: formik.errors.openingDate,
           pointing: 'above'
         } : undefined}      
       />            
       <Form.Field 
-        id='registrationCutoff'
-        label='Registration Cutoff'
-        placeholder='Registration Cutoff'
+        id='closingDate'
+        label='Closing Date'
+        placeholder='Closing Date'
         control='input'
         type='date'
-        value={formik.values.registrationCutoff}
+        value={formik.values.closingDate}
         onChange={formik.handleChange}
-        error={formik.errors.registrationCutoff && formik.touched.registrationCutoff ? {
-          content: formik.errors.registrationCutoff,
+        error={formik.errors.closingDate && formik.touched.closingDate ? {
+          content: formik.errors.closingDate,
           pointing: 'above'
         } : undefined}     
         />
@@ -282,21 +316,23 @@ const RegistrationForm = ({ data, loading } : { data: any, loading: boolean}) =>
 
 const TrialsForm = (data: any, loading: boolean) => {
     
-  const params = useParams<ConfigureParams>()  
-  const { path } = useRouteMatch()
+  const params = useParams<ConfigureParams>()    
   const trialQuery = useQuery(GET_TRIALS, { variables : {eventId: params.eventId}})
   const [addTrialModal, setAddTrialModal] = useState(false)
-  const [selectedTrial, setSelectedTrial] = useState('')
+  const [selectedTrial, setSelectedTrial] = useState('')  
   return (
     <>
       <Button color="black" style={{float: 'right'}} onClick={() => {
         setSelectedTrial('')
         setAddTrialModal(true)
-      }}>Add Trial</Button>
-      <TrialCards query={trialQuery} setTrial={(trial: string) => {        
-        setSelectedTrial(trial)
-        setAddTrialModal(true)
-      }}/>
+      }}>Add Trial
+      </Button>
+        { trialQuery.data && trialQuery.data.getEventTrials.length > 0 ? (
+          <TrialCards query={trialQuery} setTrial={(trial: string) => {        
+            setSelectedTrial(trial)
+            setAddTrialModal(true)
+          }}/>
+        ) : <div style={{height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>No Trials</div>}        
       <Modal 
         open={addTrialModal}
         onClose={() => setAddTrialModal(false)}
@@ -313,12 +349,7 @@ const TrialsForm = (data: any, loading: boolean) => {
 const ConfigureEvent = () => {
   const params = useParams<ConfigureParams>()  
   const { data, loading, error } = useQuery(GET_EVENT, { variables: { eventId: params.eventId }})
-  const accordionIndex: AccordionIndex = {
-    basic: true,
-    registration: false,
-    trials: false
-  }
-  const [selectedAccordion, setSelectedAccordion] = useState<AccordionIndex>(accordionIndex)  
+ 
   const panes = [
     { menuItem: 'Basic', render: () => <Tab.Pane><BasicForm data={data} loading={loading}/></Tab.Pane> },
     { menuItem: 'Registration', render: () => <Tab.Pane><RegistrationForm data={data} loading={loading}/></Tab.Pane> },

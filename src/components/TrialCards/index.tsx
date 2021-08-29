@@ -37,6 +37,7 @@ const TrialCards = ({ query, setTrial }: ownProps) => {
             
             <Card.Content>
               <Card.Description>
+                  <div className={style.entries}>Run Limit: <span>{trial.runLimit}</span></div>
                   <div className={style.entries}>Online Entries: <span>{trial.onlineEntries}</span></div>
                   <div className={style.entries}>Mail-in Entries: <span>{trial.mailEntries}</span></div>
               </Card.Description>              
