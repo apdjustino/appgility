@@ -1,7 +1,7 @@
 import style from './TrialCards.module.scss'
 
 import React from 'react'
-import { Container, Card, Button, Dropdown, Menu, Icon } from 'semantic-ui-react'
+import { Container, Card, Button, Dropdown, Menu, Icon, Dimmer, Loader } from 'semantic-ui-react'
 import { QueryResult } from '@apollo/client'
 
 type SkillLevel = {
@@ -103,7 +103,14 @@ const TrialCards = ({ query, setTrial }: ownProps) => {
               </div>
               </Card.Content>
           </Card>
-        )) : null}
+        )) : (
+          <div style={{height: '100vh'}}>
+            <Dimmer active>
+              <Loader>Loading</Loader>
+            </Dimmer>
+          </div>
+          
+        )}
         </Card.Group>        
       </div>
     </Container>

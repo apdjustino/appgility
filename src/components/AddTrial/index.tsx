@@ -31,13 +31,22 @@ const AddTrial = ({ trialId } : ownProps) => {
   ]
 
   const validationSchema = Yup.object().shape({
-    newTrials: Yup.array().of(
-      Yup.object().shape({
-        trialDate: Yup.string().required('Required'),
-        onlineEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required'),
-        mailEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required')
-      })
-    )
+    akcTrialNumber: Yup.string().required('Required'),
+    trialDate: Yup.string().required('Required'),
+    mailEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required'),
+    onlineEntries: Yup.number().min(0, 'Minimium is 0 entries').required('Required'),
+    standardClass: Yup.boolean(),
+    standardAbility: Yup.array().when('standardClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
+    standardPreferred:  Yup.array().when('standardClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
+    jumpersClass: Yup.boolean(),
+    jumpersAbility: Yup.array().when('jumpersClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
+    jumpersPreferred: Yup.array().when('jumpersClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
+    fastClass: Yup.boolean(),
+    fastAbility: Yup.array().when('fastClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
+    fastPreferred: Yup.array().when('fastClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
+    t2bClass: Yup.boolean(),
+    premierStandard: Yup.boolean(),
+    premierJumpers: Yup.boolean()    
   })
 
   const params = useParams<ConfigureParams>()
@@ -59,7 +68,7 @@ const AddTrial = ({ trialId } : ownProps) => {
     
   const formik = useFormik({
     initialValues: !trialQuery.data ? {} : trialQuery.data.getEventTrial,
-    onSubmit: (values) => {
+    onSubmit: (values) => {      
       if (trialId && trialId !== '') {
         const trialToUpdate = { ...trialQuery.data.getEventTrial }
         delete trialToUpdate.__typename
@@ -77,13 +86,14 @@ const AddTrial = ({ trialId } : ownProps) => {
         return
       }
 
-      const addNewTrial = { ...values }
+      const addNewTrial = { ...values }      
       addNewTrial.eventId = params.eventId
       addTrial({ variables: { eventTrial: addNewTrial }}).catch(() => {
         setShowError(true)
       })
     },
-    enableReinitialize: true
+    enableReinitialize: true,
+    validationSchema    
   })
 
   return trialQuery.loading ? (
@@ -118,6 +128,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                 type='text'
                 label="AKC Trial Number"
                 control={Input}
+                error={formik.errors.akcTrialNumber ? {
+                  content: formik.errors.akcTrialNumber,
+                  pointing: 'above'
+                } : undefined}
               />
               <Form.Field 
                 id='trialDate'
@@ -169,7 +183,11 @@ const AddTrial = ({ trialId } : ownProps) => {
                 onChange={formik.handleChange}
                 label='Standard'                                                                              
                 control={Checkbox}
-                style={{marginRight: '8px'}}                        
+                style={{marginRight: '8px'}}
+                error={formik.errors.standardClass ? {
+                  content: formik.errors.standardClass,
+                  pointing: 'above'
+                } : undefined}                      
               />
               { formik.values.standardClass ? (
                 <div style={{display: 'flex'}}>
@@ -185,7 +203,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                   selection
                   control={Dropdown}
                   options={classesOptions}
-                  
+                  error={formik.errors.standardAbility ? {
+                    content: formik.errors.standardAbility,
+                    pointing: 'above'
+                  } : undefined}
                 />
                 <Form.Field 
                   id='standardPreferred'
@@ -199,6 +220,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                   selection
                   control={Dropdown}
                   options={classesOptions}
+                  error={formik.errors.standardPreferred ? {
+                    content: formik.errors.standardPreferred,
+                    pointing: 'above'
+                  } : undefined}
                 />
                 </div>
               ): null}
@@ -212,7 +237,11 @@ const AddTrial = ({ trialId } : ownProps) => {
                 onChange={formik.handleChange}
                 label='JWW'                                                                              
                 control={Checkbox}
-                style={{marginRight: '8px'}}                          
+                style={{marginRight: '8px'}}
+                error={formik.errors.jumpersClass ? {
+                  content: formik.errors.jumpersClass,
+                  pointing: 'above'
+                } : undefined}                    
               />
               { formik.values.jumpersClass ? (
                 <div style={{display: 'flex'}}>
@@ -228,6 +257,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                     selection
                     control={Dropdown}
                     options={classesOptions}
+                    error={formik.errors.jumpersAbility ? {
+                      content: formik.errors.jumpersAbility,
+                      pointing: 'above'
+                    } : undefined}
                     
                   />
                   <Form.Field 
@@ -242,6 +275,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                     selection
                     control={Dropdown}
                     options={classesOptions}
+                    error={formik.errors.jumpersPreferred ? {
+                      content: formik.errors.jumpersPreferred,
+                      pointing: 'above'
+                    } : undefined}
                   />
                 </div>
               ): null}
@@ -254,7 +291,11 @@ const AddTrial = ({ trialId } : ownProps) => {
                   checked={formik.values.fastClass}
                   onChange={formik.handleChange}
                   label='FAST'                                                                              
-                  control={Checkbox}                          
+                  control={Checkbox}      
+                  error={formik.errors.fastClass ? {
+                    content: formik.errors.fastClass,
+                    pointing: 'above'
+                  } : undefined}                    
               />
               { formik.values.fastClass ? (
                 <div style={{display: 'flex'}}>
@@ -270,6 +311,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                   selection
                   control={Dropdown}
                   options={classesOptions}
+                  error={formik.errors.fastAbility ? {
+                    content: formik.errors.fastAbility,
+                    pointing: 'above'
+                  } : undefined}
                   
                 />
                 <Form.Field 
@@ -284,6 +329,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                   selection
                   control={Dropdown}
                   options={classesOptions}
+                  error={formik.errors.fastPreferred ? {
+                    content: formik.errors.fastPreferred,
+                    pointing: 'above'
+                  } : undefined}
                 />
                 </div>
               ): null}
@@ -295,7 +344,11 @@ const AddTrial = ({ trialId } : ownProps) => {
                 checked={formik.values.t2bClass}
                 onChange={formik.handleChange}
                 label='T2B'                                                                              
-                control={Checkbox}                          
+                control={Checkbox}
+                error={formik.errors.t2bClass ? {
+                  content: formik.errors.t2bClass,
+                  pointing: 'above'
+                } : undefined}                      
               />
               <Form.Field 
                 id='premierStandard'
@@ -305,6 +358,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                 onChange={formik.handleChange}
                 label='Premier Standard'
                 control={Checkbox}
+                error={formik.errors.premierStandard ? {
+                  content: formik.errors.premierStandard,
+                  pointing: 'above'
+                } : undefined}
               />
               <Form.Field 
                 id='premierJumpers'
@@ -314,6 +371,10 @@ const AddTrial = ({ trialId } : ownProps) => {
                 onChange={formik.handleChange}
                 label='Premier Jumpers'
                 control={Checkbox}
+                error={formik.errors.premierJumpers ? {
+                  content: formik.errors.premierJumpers,
+                  pointing: 'above'
+                } : undefined}
               />
             <br />                      
           </>

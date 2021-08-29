@@ -322,7 +322,7 @@ const ConfigureEvent = () => {
   const panes = [
     { menuItem: 'Basic', render: () => <Tab.Pane><BasicForm data={data} loading={loading}/></Tab.Pane> },
     { menuItem: 'Registration', render: () => <Tab.Pane><RegistrationForm data={data} loading={loading}/></Tab.Pane> },
-    { menuItem: 'Trials', render: () => <Tab.Pane><TrialsForm data={data} loading={loading}/></Tab.Pane>}
+    { menuItem: 'Trials', render: () => <Tab.Pane style={{height: '100%'}}><TrialsForm data={data} loading={loading}/></Tab.Pane>}
   ]
 
   return !loading && !error ? (
