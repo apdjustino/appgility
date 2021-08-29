@@ -1,0 +1,15 @@
+.cardContainer {
+  display: flex;
+  height: 100%;
+}
+
+.menuContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.entries {
+  display: flex;
+  justify-content: space-between;
+}

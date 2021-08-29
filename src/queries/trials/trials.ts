@@ -38,16 +38,19 @@ export const GET_EVENT = gql`
       hostClub,
       price,
       altPrice,
-      registrationEnabled,    
-      registrationCutoff,
+      trialChairName,
+      trialChairEmail,
+      trialChairPhone,
+      openingDate,    
+      closingDate,
       premiumLink
     }
   }
 `
 
 export const UPDATE_EVENT = gql`
-  mutation UpdateEvent($eventId: String!, $updatedEvent: UpdateEventInput!) {
-    updateEvent(eventId: $eventId, updatedEvent: $updatedEvent) {
+  mutation UpdateEvent($eventId: String!, $updatedEvent: UpdateEventInput!, $personId: String!) {
+    updateEvent(eventId: $eventId, updatedEvent: $updatedEvent, personId: $personId) {
       eventId,
       name
     }
@@ -76,7 +79,36 @@ export const GET_TRIALS = gql`
       fastPreferred,
       t2bClass,
       premierStandard,
-      premierJumpers
+      premierJumpers,
+      runLimit
+    }
+  }
+`
+
+export const GET_EVENT_TRIAL = gql`
+  query GetEventTrial($trialId: String!, $eventId: String!) {
+    getEventTrial(trialId: $trialId, eventId: $eventId) {
+      id,
+      trialId,
+      eventId,
+      type,
+      akcTrialNumber,
+      trialDate,
+      onlineEntries,
+      mailEntries,
+      standardClass,
+      standardAbility,
+      standardPreferred,
+      jumpersClass,
+      jumpersAbility,
+      jumpersPreferred,
+      fastClass,
+      fastAbility,
+      fastPreferred,
+      t2bClass,
+      premierStandard,
+      premierJumpers,
+      runLimit
     }
   }
 `
