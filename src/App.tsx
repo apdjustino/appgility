@@ -1,7 +1,8 @@
 import React from 'react';
-import { Router, Switch} from 'react-router-dom'
+import { Router, Switch, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
+import Splash from './pages/Splash'
 import EventHome from './pages/EventHome'
 import Layout from './layouts/main'
 import history from './utils/history'
@@ -20,7 +21,14 @@ function App() {
   const withToken = setContext(async (_, { headers }) => {
     // get the authentication token from local storage if it exists      
     // const token = localStorage.getItem('appgilityAccessToken');
-    const token = await getAccessTokenSilently({ audience: 'https://graph.appgility.com'})
+    let token = localStorage.getItem('accessToken')    
+    if (!token) {
+      try {
+        token = await getAccessTokenSilently({ audience: 'https://graph.appgility.com'})
+      } catch (error) {
+        token = ''
+      }
+    }    
     // return the headers to the context so httpLink can read them
     return {
       headers: {
@@ -31,7 +39,7 @@ function App() {
   });  
   const link = ApolloLink.from([withToken, httpLink]);
   const client = new ApolloClient({    
-    link: link,
+    link,
     cache: new InMemoryCache(),    
   })
   return (
@@ -40,7 +48,8 @@ function App() {
         <Layout>
           <Switch>      
             <ProtectedRoute path='/events/:eventId' component={EventHome} />
-            <ProtectedRoute path='/' component={Home} />       
+            <ProtectedRoute path='/home' component={Home} />
+            <Route path='/' component={Splash} />       
           </Switch>
         </Layout>      
       </Router>
