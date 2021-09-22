@@ -31,7 +31,7 @@ const TrialCards = ({ query, setTrial }: ownProps) => {
         { query && !query.loading ? query.data.getEventTrials.map((trial: any) => (
           <Card key={`trial-card-${trial.id}`}>
             <Card.Content extra>
-              <Card.Header>{moment(trial.trialDate, 'DD-MM-YYYY').format('MMMM Do, YYYY')}</Card.Header>
+              <Card.Header>{moment(trial.trialDate, 'YYYY-MM-DD').format('MMMM Do, YYYY')}</Card.Header>
               <Card.Meta>{trial.akcTrialNumber}</Card.Meta>       
             </Card.Content>
             
