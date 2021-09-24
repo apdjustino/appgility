@@ -1,18 +1,18 @@
 import style from './AddRunLayout.module.scss'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useLocation, useHistory, useRouteMatch} from 'react-router'
 import { Step, Icon } from 'semantic-ui-react'
 
 type OwnProps = {
-  children: React.ReactNode
+  children: any
 }
 
 const AddRunLayout = ({ children } : OwnProps) => {
   const { pathname } = useLocation()
   const history = useHistory()
   const { url } = useRouteMatch()
-  
+
   return (
     <div className={style.container}>
       <div className={style.stepContainer}>

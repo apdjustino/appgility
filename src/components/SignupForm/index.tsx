@@ -33,8 +33,7 @@ const SignupForm = () => {
         password: values.password
       }}).catch(e => {
         setShowError(true)
-      })
-      console.log(values)
+      })      
     },
     initialValues: {
       name: '',
