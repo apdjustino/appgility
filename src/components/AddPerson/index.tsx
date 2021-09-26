@@ -6,6 +6,7 @@ import * as Yup from 'yup'
 import { Container, Card, Form, Button, Input, Item, Header, Icon, Modal, Message } from 'semantic-ui-react'
 import { GET_PERSON_BY_EMAIL, ADD_PERSON } from '../../queries/person/person'
 import { addRunFormVar } from '../../pages/AddRun'
+import { Link } from 'react-router-dom'
 
 const AddPerson = () => {
   const [addPersonIsOpen, setAddPersonIsOpen] = useState(false)  
@@ -14,6 +15,7 @@ const AddPerson = () => {
   const [addPerson, addPersonResult] = useMutation(ADD_PERSON)
   const history = useHistory()
   const location = useLocation()
+  const url = location.pathname 
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email format')
@@ -55,8 +57,7 @@ const AddPerson = () => {
       }}).then(({ data }) => {        
         const runDataCopy = { ...addRunFormVar() }
         runDataCopy.personId = data.addPerson.personId        
-        addRunFormVar(runDataCopy)
-        const url = location.pathname        
+        addRunFormVar(runDataCopy)        
         history.push(url.replace('/person', '/config'))
 
       }).catch(() => {
@@ -97,11 +98,19 @@ const AddPerson = () => {
               { data.getPersonByEmail ? (
                 <Item>
                   <Item.Content>
-                    <Item.Header as='a'>{data.getPersonByEmail.email}</Item.Header>
+                    <Item.Header 
+                      as={Link} 
+                      to={url.replace('/person', '/config')}
+                      onClick={() => {
+                        const runDataCopy = { ...addRunFormVar() }
+                        runDataCopy.personId = data.getPersonByEmail.personId
+                        addRunFormVar(runDataCopy)                            
+                      }}
+                    >{data.getPersonByEmail.email}</Item.Header>
                     <Item.Description>
-                      <div>Justin Martinez</div>
-                      <div>1324 Espejo NE</div>
-                      <div>Albuquerque NM, 87112</div>
+                      <div>{data.getPersonByEmail.name}</div>
+                      <div>{data.getPersonByEmail.phone}</div>
+                      <div>{data.getPersonByEmail.city}, {data.getPersonByEmail.city}</div>
                     </Item.Description>
                   </Item.Content>
                 </Item>

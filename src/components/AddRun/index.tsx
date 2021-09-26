@@ -1,12 +1,13 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { useQuery } from '@apollo/client'
-import { Container, Card, Form, Dropdown, Loader, Dimmer, Message } from 'semantic-ui-react'
+import { Container, Card, Form, Dropdown, Loader, Dimmer, Message, Button, Modal } from 'semantic-ui-react'
 import { CONFIG_NEW_RUN } from '../../queries/runs/runs'
 import { useLocation, useParams } from 'react-router'
 import { EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
 import { addRunFormVar } from '../../pages/AddRun'
 import { Link } from 'react-router-dom'
+import AddDog from '../AddDog'
 
 type DogOption = {
   key: string,
@@ -29,8 +30,9 @@ const AddRun = () => {
   const { personId } = addRunFormVar()
   const { pathname } = useLocation()
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId}})
-  const dogOptions: DogOption[] = [
-    { key: '0', text: 'Jeannie', value: '-1', disabled: false},    
+  const [showAddDog, setShowAddDog] = useState(false)
+  const noDogOptions: DogOption[] = [
+    { key: '-1', text: 'No Dogs Added', value: '-1', disabled: true},    
   ]
 
   return personId ? (
@@ -39,17 +41,24 @@ const AddRun = () => {
         <Card>          
           <Card.Content>
             <Form>
-              <Form.Group>
-              <Form.Field 
-                id='dog'
-                name='dog'              
-                label='Dogs'
-                placeholder='Select a dog'
-                selection
-                control={Dropdown}
-                options={dogOptions}              
-              />
-              </Form.Group>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <Form.Field 
+                  id='dog'
+                  inline
+                  name='dog'              
+                  label='Dogs'
+                  placeholder='Select a dog'
+                  selection
+                  control={Dropdown}
+                  options={data && data.getPersonDogs ? data.getPersonDogs.map(dog => ({
+                    key: dog.dogId, text: dog.callName, value: dog.dogId, disabled: false
+                  })) : noDogOptions}              
+                />
+                <div>
+                  <Button circular icon="add" color="black" onClick={() => setShowAddDog(true)}></Button>
+                </div>                         
+              </div>
+              
             </Form>
           </Card.Content>
         </Card>
@@ -73,7 +82,8 @@ const AddRun = () => {
             </Dimmer>
           </div>
         )}                
-      </Card.Group>    
+      </Card.Group>   
+      <AddDog open={showAddDog} setOpen={setShowAddDog}/>      
     </Container>
   ) : (
     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
