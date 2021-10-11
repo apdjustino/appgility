@@ -9,11 +9,21 @@ import { addRunFormVar } from '../../pages/AddRun'
 import { Link } from 'react-router-dom'
 
 const AddPerson = () => {
-  const [addPersonIsOpen, setAddPersonIsOpen] = useState(false)  
-  const [showError, setShowError] = useState(false)
-  const [getPersonByEmail, { data, loading, error }] = useLazyQuery(GET_PERSON_BY_EMAIL)
-  const [addPerson, addPersonResult] = useMutation(ADD_PERSON)
+  const [addPersonIsOpen, setAddPersonIsOpen] = useState(false)
   const history = useHistory()
+  const [showError, setShowError] = useState(false)
+  const [getPersonByEmail, { data, loading, error }] = useLazyQuery(GET_PERSON_BY_EMAIL, { 
+    onCompleted: (d) => {
+      const { getPersonByEmail } = d
+      if (getPersonByEmail) {
+        const runDataCopy = { ...addRunFormVar() }
+        runDataCopy.personId = getPersonByEmail.personId
+        addRunFormVar(runDataCopy)
+        history.push(url.replace('/person', '/config'))
+      }
+    }
+  })
+  const [addPerson, addPersonResult] = useMutation(ADD_PERSON)  
   const location = useLocation()
   const url = location.pathname 
 
@@ -25,7 +35,9 @@ const AddPerson = () => {
     initialValues: { email: '' },
     onSubmit: (values) => { 
       addPersonFormik.setFieldValue('email', values.email)
-      getPersonByEmail({ variables: { email: values.email }})      
+      getPersonByEmail({ 
+        variables: { email: values.email }
+      })      
     },
     validationSchema
   })
@@ -95,26 +107,7 @@ const AddPerson = () => {
           </Card.Content>
           { data ? (
             <Card.Content>
-              { data.getPersonByEmail ? (
-                <Item>
-                  <Item.Content>
-                    <Item.Header 
-                      as={Link} 
-                      to={url.replace('/person', '/config')}
-                      onClick={() => {
-                        const runDataCopy = { ...addRunFormVar() }
-                        runDataCopy.personId = data.getPersonByEmail.personId
-                        addRunFormVar(runDataCopy)                            
-                      }}
-                    >{data.getPersonByEmail.email}</Item.Header>
-                    <Item.Description>
-                      <div>{data.getPersonByEmail.name}</div>
-                      <div>{data.getPersonByEmail.phone}</div>
-                      <div>{data.getPersonByEmail.city}, {data.getPersonByEmail.city}</div>
-                    </Item.Description>
-                  </Item.Content>
-                </Item>
-              ) : (
+              { !data.getPersonByEmail ? (
                 <>
                   <Header as='h3' icon>
                     <Icon name='exclamation triangle' />
@@ -127,7 +120,7 @@ const AddPerson = () => {
                   </Container>
                   
                 </>
-              )}
+              ) : null}
               
             </Card.Content>
           ) : null}
