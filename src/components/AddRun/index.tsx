@@ -110,6 +110,123 @@ const AddRun = () => {
           const runs = buildRunsToAdd(values.trials, personId, values.dogId)
           console.log(runs)
         }}
+        validate={({ trials, dogId}) => {
+          let hasError = false
+          const errors: any = { trials: trials.map(trial => (
+            {
+              standardLevel: undefined,
+              standardHeight: undefined,
+              standardPrefLevel: undefined,
+              sandardPrefHeight: undefined,
+              jumpersLevel: undefined,
+              jumpersHeight: undefined,
+              jumpersPrefLevel: undefined,
+              jumpersPrefHeight: undefined,
+              fastLevel: undefined,
+              fastHeight: undefined,              
+              fastPrefLevel: undefined,
+              fastPrefHeight: undefined,
+              t2bHeight: undefined,
+              premierStandardHeight: undefined,
+              premierJumpersHeight: undefined
+            }))}
+          trials.forEach((trial, index) => {
+            if (trial.standardType === 'regular' && trial.standardLevel === '') {              
+              if (trial.standardLevel === '') {
+                errors.trials[index].standardLevel = 'Level is required to add this run'
+                hasError = true
+              }
+
+              if (trial.standardHeight === '') {
+                errors.trials[index].standardHeight = 'Height is required to add this run'
+                hasError = true
+              }              
+            }
+
+            if (trial.standardType === 'preferred') {
+              if (trial.standardPrefLevel === '') {
+                errors.trials[index].standardPrefLevel = 'Level is required to add this run'
+                hasError = true
+              }
+
+              if (trial.standardPrefHeight === '') {
+                errors.trials[index].standardPrefHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.jumpersType === 'regular') {
+              if (trial.jumpersLevel === '') {
+                errors.trials[index].jumpersLevel = 'Level is required to add this run'
+                hasError = true
+              }
+
+              if (trial.jumpersHeight === '') {
+                errors.trials[index].jumpersHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.jumpersType === 'preferred') {
+              if (trial.jumpersPrefLevel === '') {
+                errors.trials[index].jumpersPrefLevel = 'Level is required to add this run'
+                hasError = true
+              }
+
+              if (trial.jumpersPrefHeight === '') {
+                errors.trials[index].jumpersPrefHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.fastType === 'regular') {
+              if (trial.fastLevel === '') {
+                errors.trials[index].fastLevel = 'Level is required to add this run'
+                hasError = true
+              }
+
+              if (trial.fastHeight === '') {
+                errors.trials[index].fastHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.fastType === 'preferred') {
+              if (trial.fastPrefLevel === '') {
+                errors.trials[index].fastPrefLevel = 'Level is required to add this run'
+                hasError = true
+              }
+
+              if (trial.fastPrefHeight === '') {
+                errors.trials[index].fastPrefHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.t2b) {              
+              if (trial.t2bHeight === '') {
+                errors.trials[index].t2bHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.premierStandard) {              
+              if (trial.premierStandardHeight === '') {
+                errors.trials[index].premierStandardHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+
+            if (trial.premierJumpers) {              
+              if (trial.premierJumpersHeight === '') {
+                errors.trials[index].premierJumpersHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+          })
+          
+          return hasError ? errors : {}
+        }}
       >
         {(formik) => {
           return (
@@ -173,7 +290,7 @@ const AddRun = () => {
                                             formik.setFieldValue(`trials.${index}.standardPrefLevel`, '')
                                             formik.setFieldValue(`trials.${index}.standardPrefHeight`, '')
                                           }}
-                                          disabled={!!!formik.values.dogId}
+                                          disabled={!!!formik.values.dogId}                                          
                                         />                  
                                       </div>                  
                                       <div className={style.abilityDropdownContainer}>            
@@ -188,6 +305,9 @@ const AddRun = () => {
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.standardLevel`, d.value)}
                                           control={Dropdown}
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].standardType !== 'regular'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].standardLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).standardLevel ? 
+                                            { content: (formik.errors.trials[index] as any).standardLevel, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                       <div className={style.heightDropdownContainer}>
@@ -202,6 +322,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].standardHeight}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.standardHeight`, d.value)}
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].standardType !== 'regular'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].standardHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).standardHeight ? 
+                                            { content: (formik.errors.trials[index] as any).standardHeight, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>                  
                                     </div>
@@ -235,6 +358,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].standardPrefLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.standardPrefLevel`, d.value)}
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].standardType !== 'preferred'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].standardPrefLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).standardPrefLevel ? 
+                                            { content: (formik.errors.trials[index] as any).standardPrefLevel, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                       <div className={style.heightDropdownContainer}>
@@ -249,6 +375,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].standardPrefHeight}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.standardPrefHeight`, d.value)}
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].standardType !== 'preferred'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].standardPrefHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).standardPrefHeight ? 
+                                            { content: (formik.errors.trials[index] as any).standardPrefHeight, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -289,6 +418,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].jumpersLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.jumpersLevel`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].jumpersType !== 'regular'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].jumpersLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).jumpersLevel ? 
+                                            { content: (formik.errors.trials[index] as any).jumpersLevel, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                       <div className={style.heightDropdownContainer}>
@@ -303,6 +435,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].jumpersHeight}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.jumpersHeight`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].jumpersType !== 'regular'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].jumpersHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).jumpersHeight ? 
+                                            { content: (formik.errors.trials[index] as any).jumpersHeight, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -336,6 +471,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].jumpersPrefLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.jumpersPrefLevel`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].jumpersType !== 'preferred'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].jumpersPrefLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).jumpersPrefLevel ? 
+                                            { content: (formik.errors.trials[index] as any).jumpersPrefLevel, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                       <div className={style.heightDropdownContainer}>
@@ -350,6 +488,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].jumpersPrefHeight}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.jumpersPrefHeight`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].jumpersType !== 'preferred'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].jumpersPrefHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).jumpersPrefHeight ? 
+                                            { content: (formik.errors.trials[index] as any).jumpersPrefHeight, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -391,6 +532,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].fastLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.fastLevel`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].fastType !== 'regular'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].fastLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).fastLevel ? 
+                                            { content: (formik.errors.trials[index] as any).fastLevel, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                       <div className={style.heightDropdownContainer}>
@@ -405,6 +549,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].fastHeight}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.fastHeight`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || formik.values.trials[index].fastType !== 'regular'}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].fastHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).fastHeight ? 
+                                            { content: (formik.errors.trials[index] as any).fastHeight, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -438,6 +585,9 @@ const AddRun = () => {
                                             value={formik.values.trials[index].fastPrefLevel}
                                             onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.fastPrefLevel`, d.value)}                                          
                                             disabled={!!!formik.values.dogId || formik.values.trials[index].fastType !== 'preferred'}
+                                            error={!!formik.touched.trials && !!formik.touched.trials[index].fastPrefLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).fastPrefLevel ? 
+                                              { content: (formik.errors.trials[index] as any).fastPrefLevel, pointing: 'above'} : undefined
+                                            }
                                           />                                        
                                         </div>
                                         <div className={style.heightDropdownContainer}>
@@ -452,6 +602,9 @@ const AddRun = () => {
                                               value={formik.values.trials[index].fastPrefHeight}
                                               onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.fastPrefHeight`, d.value)}                                          
                                               disabled={!!!formik.values.dogId || formik.values.trials[index].fastType !== 'preferred'}
+                                              error={!!formik.touched.trials && !!formik.touched.trials[index].fastPrefHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).fastPrefHeight ? 
+                                                { content: (formik.errors.trials[index] as any).fastPrefHeight, pointing: 'above'} : undefined
+                                              }
                                             />
                                         </div>
                                       </div>
@@ -493,6 +646,9 @@ const AddRun = () => {
                                           value={formik.values.trials[index].t2bHeight}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.t2bHeight`, d.value)}                                          
                                           disabled={!!!formik.values.dogId || !formik.values.trials[index].t2b}
+                                          error={!!formik.touched.trials && !!formik.touched.trials[index].t2bHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).t2bHeight ? 
+                                            { content: (formik.errors.trials[index] as any).t2bHeight, pointing: 'above'} : undefined
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -531,6 +687,9 @@ const AddRun = () => {
                                             value={formik.values.trials[index].premierStandardHeight}
                                             onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.premierStandardHeight`, d.value)}                                          
                                             disabled={!!!formik.values.dogId || !formik.values.trials[index].premierStandard}
+                                            error={!!formik.touched.trials && !!formik.touched.trials[index].premierStandardHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).premierStandardHeight ? 
+                                              { content: (formik.errors.trials[index] as any).premierStandardHeight, pointing: 'above'} : undefined
+                                            }
                                           />
                                       </div>
                                     </div>
@@ -569,6 +728,9 @@ const AddRun = () => {
                                         value={formik.values.trials[index].premierJumpersHeight}
                                         onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.premierJumpersHeight`, d.value)}                                          
                                         disabled={!!!formik.values.dogId || !formik.values.trials[index].premierJumpers}
+                                        error={!!formik.touched.trials && !!formik.touched.trials[index].premierJumpersHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).premierJumpersHeight ? 
+                                          { content: (formik.errors.trials[index] as any).premierJumpersHeight, pointing: 'above'} : undefined
+                                        }
                                       />
                                       </div>
                                     </div>
