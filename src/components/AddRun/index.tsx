@@ -3,8 +3,8 @@ import style from './AddRun.module.scss'
 import React, { useContext, useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import { Container, Card, Form, Dropdown, Loader, Dimmer, Message, Button, Modal, Checkbox, Radio } from 'semantic-ui-react'
-import { CONFIG_NEW_RUN, ADD_NEW_RUN } from '../../queries/runs/runs'
-import { useLocation, useParams } from 'react-router'
+import { CONFIG_NEW_RUN, ADD_NEW_RUN, GET_TRIAL_RUNS } from '../../queries/runs/runs'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
 import { EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
 import { addRunFormVar } from '../../pages/AddRun'
@@ -55,7 +55,9 @@ const generateClassOptions = (rawOptions: string[]) : SelectOptions<string>[] =>
 
 }
 
-const AddRun = () => {  
+const AddRun = () => {
+  const history = useHistory()
+  const { url } = useRouteMatch()
   const { eventId } = useParams<ConfigureParams>()  
   const { personId } = addRunFormVar()
   const { pathname } = useLocation()
@@ -124,7 +126,11 @@ const AddRun = () => {
                 preferred: (run as RunToAdd).preferred,
                 group: (run as RunToAdd).group,
               }
-            }}).then((result) => console.log(result)).catch((e) => {
+            }, refetchQueries: [
+              { query: GET_TRIAL_RUNS, variables: { trialId: (run as RunToAdd).trialId }}
+            ]}).then((result) => {
+              console.log(result)
+            }).catch((e) => {
               console.log('error')
               console.log(e)
             })

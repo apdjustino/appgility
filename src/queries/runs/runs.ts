@@ -37,3 +37,36 @@ export const ADD_NEW_RUN = gql`
     }
   }
 `
+
+export const GET_TRIAL_RUNS = gql`
+  query GetTrialRuns($trialId: String!) {
+    getTrialRuns(trialId: $trialId) {
+      runId
+      trialId
+      personId
+      dogId
+      agilityClass
+      level
+      preferred
+      jumpHeight
+      group
+      armband
+      courseLength
+      score
+      timeDeduction
+      time
+      qualified
+      points
+      sendBonus
+      wrongCourse
+      excusal
+      refusal
+      failure
+      table
+      rank
+      obstacles
+      paid
+      deleted
+    }
+  }
+`
