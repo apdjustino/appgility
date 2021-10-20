@@ -23,5 +23,17 @@ export const CONFIG_NEW_RUN = gql`
       dogId,
       callName
     }
-  }  
+  }
+`
+
+export const ADD_NEW_RUN = gql`
+  mutation AddNewRun($eventId: String!, $trialId: String!, $personId: String!, $dogId: String!, $run: RunInput!) {
+    addRun(eventId: $eventId, trialId: $trialId, personId: $personId, dogId: $dogId, run: $run) {
+      runId,
+      agilityClass,
+      level,
+      preferred,
+      jumpHeight
+    }
+  }
 `

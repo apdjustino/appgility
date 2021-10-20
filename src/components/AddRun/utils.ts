@@ -23,20 +23,21 @@ type NewRunForm = {
   premierJumpersHeight: string
 }
 
-type RunToAdd = {
-  agilityClass: 'Standard' | 'Jumpers' | 'FAST' | 'T2B' | 'Premier Standard' | 'Premier Jumpers',
+export type RunToAdd = {
+  agilityClass: 'STANDARD' | 'JUMPERS' | 'FAST' | 'T2B' | 'PREMIER_STANDARD' | 'PREMIER_JUMPERS',
   level: string,
   jumpHeight: string,
   trialId: string,  
   group: string,
   personId: string,
   dogId: string,
-  preferred: boolean
+  preferred: boolean,
+  eventId: string
 }
 
 type EmptyRun = {}
 
-type Run = RunToAdd | EmptyRun
+export type Run = RunToAdd | EmptyRun
 
 export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: string): Run[] => {
   const runsToAdd: Run[] = []
@@ -47,7 +48,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         trialId: trial.trialId,
         personId,
         dogId,
-        agilityClass: 'Standard',
+        agilityClass: 'STANDARD',
         level: trial.standardLevel,
         jumpHeight: trial.standardHeight,
         preferred: false,
@@ -60,7 +61,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         trialId: trial.trialId,
         personId,
         dogId,
-        agilityClass: 'Standard',
+        agilityClass: 'STANDARD',
         level: trial.standardPrefLevel,
         jumpHeight: trial.standardPrefLevel,
         preferred: true,
@@ -73,7 +74,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         trialId: trial.trialId,
         personId,
         dogId,
-        agilityClass: 'Jumpers',
+        agilityClass: 'JUMPERS',
         level: trial.jumpersLevel,
         jumpHeight: trial.jumpersHeight,
         preferred: false,
@@ -86,7 +87,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         trialId: trial.trialId,
         personId,
         dogId,
-        agilityClass: 'Standard',
+        agilityClass: 'JUMPERS',
         level: trial.jumpersPrefLevel,
         jumpHeight: trial.jumpersPrefHeight,
         preferred: true,
@@ -126,7 +127,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         personId,
         dogId,
         agilityClass: 'T2B',
-        level: '',
+        level: null,
         jumpHeight: trial.t2bHeight,
         preferred: false,
         group: `t2b-${trial.t2bHeight}`
@@ -138,8 +139,8 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         trialId: trial.trialId,
         personId,
         dogId,
-        agilityClass: 'Premier Standard',
-        level: '',
+        agilityClass: 'PREMIER_STANDARD',
+        level: null,
         jumpHeight: trial.premierStandardHeight,
         preferred: false,
         group: `t2b-${trial.premierStandardHeight}`
@@ -151,8 +152,8 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         trialId: trial.trialId,
         personId,
         dogId,
-        agilityClass: 'Premier Jumpers',
-        level: '',
+        agilityClass: 'PREMIER_JUMPERS',
+        level: null,
         jumpHeight: trial.premierJumpersHeight,
         preferred: false,
         group: `t2b-${trial.premierJumpersHeight}`

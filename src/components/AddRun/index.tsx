@@ -1,9 +1,9 @@
 import style from './AddRun.module.scss'
 
 import React, { useContext, useState } from 'react'
-import { useQuery } from '@apollo/client'
+import { useQuery, useMutation } from '@apollo/client'
 import { Container, Card, Form, Dropdown, Loader, Dimmer, Message, Button, Modal, Checkbox, Radio } from 'semantic-ui-react'
-import { CONFIG_NEW_RUN } from '../../queries/runs/runs'
+import { CONFIG_NEW_RUN, ADD_NEW_RUN } from '../../queries/runs/runs'
 import { useLocation, useParams } from 'react-router'
 import { EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import { Formik, FieldArray } from 'formik'
 import moment from 'moment'
 import AddDog from '../AddDog'
-import { buildRunsToAdd } from './utils'
+import { buildRunsToAdd, Run, RunToAdd } from './utils'
 
 type DogOption = {
   key: string,
@@ -50,7 +50,7 @@ const generateClassOptions = (rawOptions: string[]) : SelectOptions<string>[] =>
     id: `option-${option}`,
     key: `option-${option}`,
     text: lookup[option],
-    value: option
+    value: lookup[option].toUpperCase()
   }))  
 
 }
@@ -61,17 +61,20 @@ const AddRun = () => {
   const { pathname } = useLocation()
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId}})
   const [showAddDog, setShowAddDog] = useState(false)
+  const [addRun, result] = useMutation(ADD_NEW_RUN)
+  
+  
   const noDogOptions: DogOption[] = [
     { key: '-1', text: 'No Dogs Added', value: '-1', disabled: true},    
   ]
 
-  const heightValues: SelectOptions<string>[] = [
-    { id: '4', key: '4', value: '4', text: '4"'},
-    { id: '8', key: '8', value: '8', text: '8"'},
-    { id: '12', key: '12', value: '12', text: '12"'},
-    { id: '16', key: '16', value: '16', text: '16"'},
-    { id: '20', key: '20', value: '20', text: '20"'},
-    { id: '24', key: '24', value: '24', text: '24"'},
+  const heightValues: SelectOptions<number>[] = [
+    { id: '4', key: '4', value: 4, text: '4"'},
+    { id: '8', key: '8', value: 8, text: '8"'},
+    { id: '12', key: '12', value: 12, text: '12"'},
+    { id: '16', key: '16', value: 16, text: '16"'},
+    { id: '20', key: '20', value: 20, text: '20"'},
+    { id: '24', key: '24', value: 24, text: '24"'},
   ]
 
   return personId ? (
@@ -107,8 +110,25 @@ const AddRun = () => {
           })) : []
         }}
         onSubmit={(values) => {
-          const runs = buildRunsToAdd(values.trials, personId, values.dogId)
-          console.log(runs)
+          const runs = buildRunsToAdd(values.trials, personId, values.dogId)          
+          runs.forEach((run: Run) => {
+            addRun({ variables: {
+              eventId,
+              trialId: (run as RunToAdd).trialId,
+              personId: (run as RunToAdd).personId,
+              dogId: (run as RunToAdd).dogId,
+              run: {
+                agilityClass: (run as RunToAdd).agilityClass,
+                level: (run as RunToAdd).level,
+                jumpHeight: (run as RunToAdd).jumpHeight,
+                preferred: (run as RunToAdd).preferred,
+                group: (run as RunToAdd).group,
+              }
+            }}).then((result) => console.log(result)).catch((e) => {
+              console.log('error')
+              console.log(e)
+            })
+          })
         }}
         validate={({ trials, dogId}) => {
           let hasError = false
@@ -752,7 +772,7 @@ const AddRun = () => {
                   </Dimmer>
                 </div>
             )}
-            <Button color='black' onClick={formik.submitForm}>Next</Button>    
+            <Button color='black' type='submit'>Next</Button>    
             </Form>
           )
         }}        
