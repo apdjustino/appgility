@@ -1,0 +1,17 @@
+.cardContentBody {
+  display: flex;
+
+  .typeRadioContainer {
+    width: 110px;
+    padding-top: 4px;
+  }
+
+  .abilityDropdownContainer {
+    width: 200px;
+    margin: 0px 5px 8px 5px
+  }
+
+  .heightDropdownContainer {
+    width: 100px;
+  }
+}
