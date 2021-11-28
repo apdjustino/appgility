@@ -6,7 +6,7 @@ import { Button, Grid, Icon, Popup, List } from 'semantic-ui-react'
 import { useHistory, useRouteMatch } from 'react-router'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
-import { Run } from '../../types/run'
+import { RunView } from '../../types/run'
 import Table from '../Table'
 
 type ButtonGroupItem = {
@@ -15,7 +15,7 @@ type ButtonGroupItem = {
 }
 
 type RunQuery = {
-  getTrialRuns: Run[]
+  getTrialRuns: RunView[]
 }
 
 type OwnProps = {
@@ -29,7 +29,7 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
 
   console.log(trialRunsQuery.data);
   
-  const columnsRaw: Column<Run>[] = [
+  const columnsRaw: Column<RunView>[] = [
     {
       accessor: 'agilityClass',
       Header: 'Class',
@@ -51,19 +51,19 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
       Cell: ({ value }) => String(value),
     },
     {
-      accessor: 'dogId',
-      Header: 'Dog Id',
-      Cell: ({ value }) => String(value),
+      accessor: 'dog',
+      Header: 'Call Name',
+      Cell: ({ value }) => String(value.callName),
     },
     {
-      accessor: 'personId',
-      Header: 'PersonId',
-      Cell: ({ value }) => String(value),
+      accessor: 'person',
+      Header: 'Owner',
+      Cell: ({ value }) => String(value.name),
     }
   ]
 
   const columns = useMemo(() => columnsRaw, [])
-  const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as Run[]
+  const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as RunView[]
 
   return (
     <div className={style.container}>

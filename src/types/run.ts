@@ -1,4 +1,5 @@
 import { Scalars, Maybe } from './generic'
+import { Dog, Person } from './person';
 
 export enum AgilityClass {
   Standard = 'STANDARD',
@@ -16,16 +17,16 @@ export enum AgilityAbility {
   Masters = 'MASTERS'
 }
 
-export type Run = {
-  __typename?: 'Run';
+export type RunView = {
+  __typename?: 'RunView';
   id: Scalars['String'];
   type: Scalars['String'];
   runId: Scalars['String'];
   trialId: Scalars['String'];
-  personId: Scalars['String'];
-  dogId: Scalars['String'];
+  person: Person;
+  dog: Dog;
   agilityClass: AgilityClass;
-  level: AgilityAbility;
+  level?: Maybe<AgilityAbility>;
   preferred: Scalars['Boolean'];
   jumpHeight: Scalars['Int'];
   group?: Maybe<Scalars['String']>;
@@ -44,6 +45,6 @@ export type Run = {
   table?: Maybe<Scalars['Int']>;
   rank?: Maybe<Scalars['Int']>;
   obstacles?: Maybe<Array<Maybe<Scalars['Boolean']>>>;
-  paid: Scalars['Boolean'];
+  paid?: Maybe<Scalars['Boolean']>;
   deleted: Scalars['Boolean'];
 };

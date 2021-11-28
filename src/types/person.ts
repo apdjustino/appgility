@@ -22,3 +22,19 @@ export type Dog = {
   sex?: Maybe<Sex>;
   deleted?: Maybe<Scalars['Boolean']>;
 };
+
+export type Person = {
+  __typename?: 'Person';
+  id?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  personId?: Maybe<Scalars['String']>;
+  name?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
+  role?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  address?: Maybe<Scalars['String']>;
+  city?: Maybe<Scalars['String']>;
+  state?: Maybe<Scalars['String']>;
+  zip?: Maybe<Scalars['String']>;
+  claimed?: Maybe<Scalars['Boolean']>;
+};
