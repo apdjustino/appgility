@@ -3,6 +3,7 @@ import { Router, Switch, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Splash from './pages/Splash'
+import Signup from "./pages/Signup";
 import EventHome from './pages/EventHome'
 import Layout from './layouts/main'
 import history from './utils/history'
@@ -50,7 +51,7 @@ function App() {
           <Switch>      
             <ProtectedRoute path='/events/:eventId' component={EventHome} />
             <ProtectedRoute path='/home' component={Home} />
-            <Route path='/' component={Splash} />       
+            <Route path='/' component={Signup} />       
           </Switch>
         </Layout>      
       </Router>

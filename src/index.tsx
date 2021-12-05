@@ -5,6 +5,7 @@ import App from './App';
 import { Auth0Provider } from '@auth0/auth0-react'
 import reportWebVitals from './reportWebVitals';
 import 'semantic-ui-css/semantic.min.css'
+import "./styles/theme.scss";
 import history from './utils/history'
 
 const onRedirectCallback = (appState: any) => {
