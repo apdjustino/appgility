@@ -129,7 +129,7 @@ const AddRun = () => {
             }, refetchQueries: [
               { query: GET_TRIAL_RUNS, variables: { trialId: (run as RunToAdd).trialId }}
             ]}).then((result) => {
-              console.log(result)
+              history.push(`/events/${eventId}/registration`)
             }).catch((e) => {
               console.log('error')
               console.log(e)
@@ -778,7 +778,7 @@ const AddRun = () => {
                   </Dimmer>
                 </div>
             )}
-            <Button color='black' type='submit'>Next</Button>    
+            <Button color='black' type='submit' loading={result.loading}>Next</Button>    
             </Form>
           )
         }}        

@@ -43,8 +43,14 @@ export const GET_TRIAL_RUNS = gql`
     getTrialRuns(trialId: $trialId) {
       runId
       trialId
-      personId
-      dogId
+      person {
+        name
+        personId
+      }
+      dog {
+        callName
+        dogId
+      }
       agilityClass
       level
       preferred
