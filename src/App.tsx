@@ -6,6 +6,7 @@ import Splash from './pages/Splash'
 import EventHome from './pages/EventHome'
 import Layout from './layouts/main'
 import history from './utils/history'
+import { ExpiredTokenLink } from './links/ExpiredToken'; 
 
 import './App.css';
 import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
@@ -37,7 +38,7 @@ function App() {
       }
     }
   });  
-  const link = ApolloLink.from([withToken, httpLink]);
+  const link = ApolloLink.from([withToken, ExpiredTokenLink, httpLink]);
   const client = new ApolloClient({    
     link,
     cache: new InMemoryCache(),    
