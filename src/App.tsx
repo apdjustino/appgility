@@ -46,14 +46,11 @@ function App() {
   })
   return (
     <ApolloProvider client={client}>
-      <Router history={history}>
-        <Layout>
-          <Switch>      
-            <ProtectedRoute path='/events/:eventId' component={EventHome} />
+      <Router history={history}>        
+          <Switch>            
             <ProtectedRoute path='/home' component={Home} />
             <Route path='/' component={Signup} />       
-          </Switch>
-        </Layout>      
+          </Switch>        
       </Router>
     </ApolloProvider>
     
