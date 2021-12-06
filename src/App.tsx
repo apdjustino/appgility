@@ -48,7 +48,7 @@ function App() {
     <ApolloProvider client={client}>
       <Router history={history}>        
           <Switch>            
-            <ProtectedRoute path='/home' component={Home} />
+            <ProtectedRoute path='/secretary' component={Home} />
             <Route path='/' component={Signup} />       
           </Switch>        
       </Router>

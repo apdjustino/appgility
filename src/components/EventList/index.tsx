@@ -22,7 +22,7 @@ const EventList = () => {
         <div>          
           <div className={style.items}>
             {data.getPersonEvents.map((event: any) => (
-              <div className={style.item} key={event.eventId} onClick={() => history.push(`/events/${event.eventId}/configuration`)}>
+              <div className={style.item} key={event.eventId} onClick={() => history.push(`/secretary/events/${event.eventId}/configuration`)}>
                 <div className={style.icon} />
                 <div className={style.col1}>
                   <div className={style.title}>{event.name}</div>

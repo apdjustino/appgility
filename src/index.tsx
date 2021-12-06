@@ -18,7 +18,7 @@ ReactDOM.render(
     <Auth0Provider
       domain='dev-egx1hh70.us.auth0.com'
       clientId='jA5MmuRvIVxCr4PHKNIj5PNBlPoOht6a'
-      redirectUri={`${process.env.REACT_APP_HOST_URL}/home`}
+      redirectUri={`${process.env.REACT_APP_HOST_URL}/secretary/home`}
       audience='https://graph.appgility.com'
       onRedirectCallback={onRedirectCallback}
     >
