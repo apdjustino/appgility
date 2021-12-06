@@ -5,10 +5,12 @@ import { useQuery } from '@apollo/client'
 import { GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import history from '../../utils/history'
 
+type OwnProps = {
+  setShowDialog: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-const EventList = () => {
+const EventList = ({ setShowDialog }: OwnProps) => {
   const userAuth = useContext(AuthContext)  
-  const [addDialogOpen, setAddDialogOpen] = useState(false)
   
   const { data, loading } = useQuery(GET_PERSON_EVENTS, { variables: { personId: userAuth.userId }})
   return (    
@@ -19,7 +21,7 @@ const EventList = () => {
             <h4 className="card-header-title">Events</h4>
           </div>
           <div className="col-auto">
-            <button className="btn btn-sm btn-white">Add</button>
+            <button className="btn btn-sm btn-white" onClick={() => setShowDialog(true) }>Add</button>
           </div>
         </div>                  
       </div>
