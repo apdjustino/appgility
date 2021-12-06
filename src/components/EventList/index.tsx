@@ -19,25 +19,48 @@ const EventList = () => {
   return (
     <div className={style.container}>
       {!!data && data.getPersonEvents.length > 0 ? (
-        <div>          
-          <div className={style.items}>
-            {data.getPersonEvents.map((event: any) => (
-              <div className={style.item} key={event.eventId} onClick={() => history.push(`/secretary/events/${event.eventId}/configuration`)}>
-                <div className={style.icon} />
-                <div className={style.col1}>
-                  <div className={style.title}>{event.name}</div>
-                  <div>Status: {event.status}</div>                  
+        <div>
+          <div className="row px-5 py-3">
+            <div className="col-12">
+              <div className="card">
+                <div className="card-header">
+                  <div className="row align-items-center">
+                    <div className="col">
+                      <h4 className="card-header-title">Events</h4>
+                    </div>
+                    <div className="col-auto">
+                      <button className="btn btn-sm btn-white">Add</button>
+                    </div>
+                  </div>                  
                 </div>
-                <div className={style.col2}>
-                  <div className={style.date}>
-                    {moment(event.startDate).format('MM/DD/YY')} -
-                    {moment(event.endDate).format('MM/DD/YY')}
-                  </div>                                    
-                  <div>{event.locationCity}, {event.locationState}</div>
-                </div>
+                <div className="table-responsive mb-0" style={{minHeight: "300px"}}>
+                    <table className="table table-sm table-nowrap card-table">
+                      <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Dates</th>
+                          <th>Location</th>
+                          <th>Trial Site</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="list">
+                        {data.getPersonEvents.map((event: any) => (
+                          <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration`)} style={{cursor: "pointer"}}>
+                            <td>{event.name}</td>
+                            <td>{moment(event.startDate).format('MM/DD/YY')} - {moment(event.endDate).format('MM/DD/YY')}</td>
+                            <td>{event.locationCity}, {event.locationState}</td>
+                            <td>{event.trialSite}</td>
+                            <td>{event.status}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
               </div>
-            ))}
-          </div>
+            </div>
+          </div>          
+         
           
         </div>
       ): (
