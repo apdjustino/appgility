@@ -1,12 +1,7 @@
-import style from './EventList.module.scss'
-
 import React, { useContext, useState } from 'react'
 import moment from 'moment'
 import { AuthContext } from '../../utils/contexts'
-import { Loader, Modal } from 'semantic-ui-react'
 import { useQuery } from '@apollo/client'
-import AddNewEvent from '../AddNewEvent'
-import RecentActivity from '../RecentActivity'
 import { GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import history from '../../utils/history'
 
@@ -14,8 +9,7 @@ import history from '../../utils/history'
 const EventList = () => {
   const userAuth = useContext(AuthContext)  
   const [addDialogOpen, setAddDialogOpen] = useState(false)
-  console.log(userAuth)
-
+  
   const { data, loading } = useQuery(GET_PERSON_EVENTS, { variables: { personId: userAuth.userId }})
   return (    
     <div className="card">
@@ -41,7 +35,7 @@ const EventList = () => {
             </tr>
           </thead>
           <tbody className="list">
-            {!!data && !!data.getPersonEvents ? data.getPersonEvents.map((event: any) => (
+            {!!data && !!data.getPersonEvents && data.getPersonEvents.length > 0 ? data.getPersonEvents.map((event: any) => (
               <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration`)} style={{cursor: "pointer"}}>
                 <td>{event.name}</td>
                 <td>{moment(event.startDate).format('MM/DD/YY')} - {moment(event.endDate).format('MM/DD/YY')}</td>
@@ -49,7 +43,11 @@ const EventList = () => {
                 <td>{event.trialSite}</td>
                 <td>{event.status}</td>
               </tr>
-            )) : null}
+            )) : (
+              <tr>
+                <td colSpan={5} className="text-center fst-italic fs-3">No Events to Show</td>
+              </tr>
+            )}          
           </tbody>
         </table>
       </div>

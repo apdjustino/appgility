@@ -1,7 +1,7 @@
 import React from "react";
 import EventList from "../../components/EventList";
 import RecentActivity from "../../components/RecentActivity";
-import RecentReports from "../../components/RecentReports";
+import RecentCatalogs from "../../components/RecentCatalogs";
 
 const EventDashboard = () => {
   return (
@@ -16,7 +16,7 @@ const EventDashboard = () => {
           <RecentActivity />
         </div>
         <div className="col-6">
-          <RecentReports />
+          <RecentCatalogs />
         </div>
       </div>
     </>
