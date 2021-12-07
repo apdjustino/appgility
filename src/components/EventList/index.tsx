@@ -5,15 +5,20 @@ import { useQuery } from '@apollo/client'
 import { GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import history from '../../utils/history'
 import { Spinner } from 'react-bootstrap'
+import { PersonEvent } from '../../types/event'
 
 type OwnProps = {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
+type QueryResponse = {
+  getPersonEvents: PersonEvent[]
+}
+
 const EventList = ({ setShowDialog }: OwnProps) => {
   const userAuth = useContext(AuthContext)  
   
-  const { data, loading } = useQuery(GET_PERSON_EVENTS, { variables: { personId: userAuth.userId }})
+  const { data, loading } = useQuery<QueryResponse>(GET_PERSON_EVENTS, { variables: { personId: userAuth.userId }})
   return (    
     <div className="card">
       <div className="card-header">
