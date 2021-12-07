@@ -1,21 +1,13 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Link, Switch } from "react-router-dom"
-import ConfigureEvent from '../../components/ConfigureEvent'
 import { useLocation } from 'react-router'
 import ProtectedRoute from '../../components/ProtectedRoute'
-import { makeVar, useQuery } from '@apollo/client'
 import { getEventId } from '../../reactiveVars'
-import { Event } from '../../types/event'
-import { GET_EVENT } from '../../queries/trials/trials'
-import { Spinner } from 'react-bootstrap'
+import ConfigureTrials from '../../components/ConfigureTrials'
 
 type EventParams = {
   eventId: string;
-}
-
-type QueryResponse = {
-  getEvent: Event[]
 }
 
 const Configuration = () => {
@@ -25,8 +17,6 @@ const Configuration = () => {
   React.useEffect(() => {
     getEventId(params.eventId);
   }, [params])
-
-  const { data, loading, error } = useQuery<QueryResponse>(GET_EVENT, { variables: { eventId: params.eventId }})
 
   return (
     <div className="container-fluid">
@@ -61,19 +51,11 @@ const Configuration = () => {
       </div>
       <div className="card">
         <div className="card-body">
-          {loading ? (
-            <div className="d-flex justify-content-center align-items-center vh-100">
-              <Spinner animation="border" />
-            </div>
-          ) : !!data && !!data.getEvent && !error ? (
-            <Switch>
-              <ProtectedRoute path="/secretary/events/:eventId/configuration/trials" component={() => <p>Trials placeholder</p>} />
-              <ProtectedRoute path="/secretary/events/:eventId/configuration/basic" component={() => <p>Basic placeholder</p>} />
-              <ProtectedRoute path="/secretary/events/:eventId/configuration/registration" component={() => <p>Registration placeholder</p>} />            
-            </Switch>
-          ) : (
-            <p>There has been an error</p>
-          )}          
+          <Switch>
+            <ProtectedRoute path="/secretary/events/:eventId/configuration/trials" component={() => <ConfigureTrials eventId={params.eventId}/>} />
+            <ProtectedRoute path="/secretary/events/:eventId/configuration/basic" component={() => <p>Basic placeholder</p>} />
+            <ProtectedRoute path="/secretary/events/:eventId/configuration/registration" component={() => <p>Registration placeholder</p>} />            
+          </Switch>
         </div>
       </div>
     </div>    

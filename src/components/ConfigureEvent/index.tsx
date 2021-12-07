@@ -314,37 +314,37 @@ const RegistrationForm = ({ data, loading } : { data: any, loading: boolean}) =>
   )
 }
 
-const TrialsForm = (data: any, loading: boolean) => {
+// const TrialsForm = (data: any, loading: boolean) => {
     
-  const params = useParams<ConfigureParams>()    
-  const trialQuery = useQuery(GET_TRIALS, { variables : {eventId: params.eventId}})
-  const [addTrialModal, setAddTrialModal] = useState(false)
-  const [selectedTrial, setSelectedTrial] = useState('')  
-  return (
-    <>
-      <Button color="black" style={{float: 'right'}} onClick={() => {
-        setSelectedTrial('')
-        setAddTrialModal(true)
-      }}>Add Trial
-      </Button>
-        { trialQuery.data && trialQuery.data.getEventTrials.length > 0 ? (
-          <TrialCards query={trialQuery} setTrial={(trial: string) => {        
-            setSelectedTrial(trial)
-            setAddTrialModal(true)
-          }}/>
-        ) : <div style={{height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>No Trials</div>}        
-      <Modal 
-        open={addTrialModal}
-        onClose={() => setAddTrialModal(false)}
-      >
-        <Modal.Header>{selectedTrial === '' ? 'Add Trial' : 'Edit Trial'}</Modal.Header>
-        <Modal.Content>
-          <AddTrial trialId={selectedTrial}/>
-        </Modal.Content>
-      </Modal>  
-    </>      
-  )
-}
+//   const params = useParams<ConfigureParams>()    
+//   const trialQuery = useQuery(GET_TRIALS, { variables : {eventId: params.eventId}})
+//   const [addTrialModal, setAddTrialModal] = useState(false)
+//   const [selectedTrial, setSelectedTrial] = useState('')  
+//   return (
+//     <>
+//       <Button color="black" style={{float: 'right'}} onClick={() => {
+//         setSelectedTrial('')
+//         setAddTrialModal(true)
+//       }}>Add Trial
+//       </Button>
+//         { trialQuery.data && trialQuery.data.getEventTrials.length > 0 ? (
+//           <TrialCards query={trialQuery} setTrial={(trial: string) => {        
+//             setSelectedTrial(trial)
+//             setAddTrialModal(true)
+//           }}/>
+//         ) : <div style={{height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>No Trials</div>}        
+//       <Modal 
+//         open={addTrialModal}
+//         onClose={() => setAddTrialModal(false)}
+//       >
+//         <Modal.Header>{selectedTrial === '' ? 'Add Trial' : 'Edit Trial'}</Modal.Header>
+//         <Modal.Content>
+//           <AddTrial trialId={selectedTrial}/>
+//         </Modal.Content>
+//       </Modal>  
+//     </>      
+//   )
+// }
 
 const ConfigureEvent = () => {
   const params = useParams<ConfigureParams>()  
@@ -353,7 +353,7 @@ const ConfigureEvent = () => {
   const panes = [
     { menuItem: 'Basic', render: () => <Tab.Pane><BasicForm data={data} loading={loading}/></Tab.Pane> },
     { menuItem: 'Registration', render: () => <Tab.Pane><RegistrationForm data={data} loading={loading}/></Tab.Pane> },
-    { menuItem: 'Trials', render: () => <Tab.Pane style={{height: '100%'}}><TrialsForm data={data} loading={loading}/></Tab.Pane>}
+    // { menuItem: 'Trials', render: () => <Tab.Pane style={{height: '100%'}}><TrialsForm data={data} loading={loading}/></Tab.Pane>}
   ]
 
   return !loading && !error ? (
