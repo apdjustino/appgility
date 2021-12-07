@@ -109,14 +109,4 @@ const TrialCards = ({ trials, setTrial }: OwnProps) => {
   )
 }
 
-const AbilityPopover = ({ content }: { content: string | undefined }) => {
-  return (
-    <Popover id="ability-popover">
-      <Popover.Body>
-        {content}
-      </Popover.Body>
-    </Popover>
-  )
-}
-
 export default TrialCards
