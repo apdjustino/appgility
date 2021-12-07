@@ -4,6 +4,7 @@ import { AuthContext } from '../../utils/contexts'
 import { useQuery } from '@apollo/client'
 import { GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import history from '../../utils/history'
+import { Spinner } from 'react-bootstrap'
 
 type OwnProps = {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>
@@ -45,9 +46,13 @@ const EventList = ({ setShowDialog }: OwnProps) => {
                 <td>{event.trialSite}</td>
                 <td>{event.status}</td>
               </tr>
-            )) : (
+            )) : !loading ? (
               <tr>
                 <td colSpan={5} className="text-center fst-italic fs-3">No Events to Show</td>
+              </tr>
+            ) : (
+              <tr>
+                <td colSpan={5} className="text-center"><Spinner animation="border"/></td>
               </tr>
             )}          
           </tbody>
