@@ -38,7 +38,7 @@ const EventList = ({ setShowDialog }: OwnProps) => {
           </thead>
           <tbody className="list">
             {!!data && !!data.getPersonEvents && data.getPersonEvents.length > 0 ? data.getPersonEvents.map((event: any) => (
-              <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration`)} style={{cursor: "pointer"}}>
+              <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration/trials`)} style={{cursor: "pointer"}}>
                 <td>{event.name}</td>
                 <td>{moment(event.startDate).format('MM/DD/YY')} - {moment(event.endDate).format('MM/DD/YY')}</td>
                 <td>{event.locationCity}, {event.locationState}</td>

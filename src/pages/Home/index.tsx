@@ -7,7 +7,6 @@ import AddRun from '../AddRun';
 import Registration from '../Registration';
 import EventDashboard from '../EventDashboard';
 
-
 const Home = () => {
   return (
     <Layout>
