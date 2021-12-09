@@ -3,14 +3,14 @@ import style from './AddTrial.module.scss'
 import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import * as Yup from 'yup'
-import { Button, Checkbox, Dimmer, Dropdown, Form, Input, Loader, Message } from 'semantic-ui-react'
+import { Spinner, Form, Alert, Button } from "react-bootstrap";
 import { useFormik } from 'formik'
 import { ADD_TRIAL, GET_EVENT_TRIAL, GET_TRIALS, UPDATE_TRIAL } from '../../queries/trials/trials'
 import { useParams } from 'react-router-dom'
+import Select from "react-select";
 
 type ClassesOptions = {
-  key: string,
-  text: string,
+  label: string,
   value: string
 }
 
@@ -24,10 +24,10 @@ type ConfigureParams = {
 
 const AddTrial = ({ trialId } : ownProps) => {
   const classesOptions: ClassesOptions[] = [
-    { key: 'nov', text: 'Novice', value: 'nov' },
-    { key: 'open', text: 'Open', value: 'open' },
-    { key: 'exc', text: 'Excellent', value: 'exc'},
-    { key: 'mast', text: 'Masters', value: 'mast' }    
+    { label: 'Novice', value: 'nov' },
+    { label: 'Open', value: 'open' },
+    { label: 'Excellent', value: 'exc'},
+    { label: 'Masters', value: 'mast' }    
   ]
 
   const validationSchema = Yup.object().shape({
@@ -35,7 +35,7 @@ const AddTrial = ({ trialId } : ownProps) => {
     trialDate: Yup.string().required('Required'),
     mailEntries: Yup.number().min(1, 'Minimium is 1 entries').required('Required'),
     onlineEntries: Yup.number().min(1, 'Minimium is 1 entries').required('Required'),
-    runLimit: Yup.number().min(1, 'At least one run is required'),
+    runLimit: Yup.number().min(1, 'At least one run is required').required('Required'),
     standardClass: Yup.boolean(),
     standardAbility: Yup.array().when('standardClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
     standardPreferred:  Yup.array().when('standardClass', { is: true, then: Yup.array().required('At least one ability is required'), otherwise: Yup.array()}),
@@ -66,17 +66,18 @@ const AddTrial = ({ trialId } : ownProps) => {
       { query: GET_TRIALS, variables: { eventId: params.eventId }}
     ]
   })
-    
+
+  
   const formik = useFormik({
     initialValues: !trialQuery.data ? {} : trialQuery.data.getEventTrial,
-    onSubmit: (values) => {      
+    onSubmit: (values) => {        
       if (trialId && trialId !== '') {
-        const trialToUpdate = { ...trialQuery.data.getEventTrial }
-        delete trialToUpdate.__typename
+        const trialToUpdate = { ...trialQuery.data.getEventTrial }        
   
         Object.keys(trialToUpdate).forEach(key => {
           trialToUpdate[key] = (values as any)[key] 
         })
+                
         updateTrial({ variables: {
           trialId,
           eventId: params.eventId,
@@ -95,308 +96,300 @@ const AddTrial = ({ trialId } : ownProps) => {
     },
     enableReinitialize: true,
     validationSchema    
-  })
-
+  })  
+  
   return trialQuery.loading ? (
-    <div style={{height: '100vh'}}>
-      <Dimmer active>
-        <Loader>Loading</Loader>
-      </Dimmer>
+    <div className="h-100">
+      <Spinner animation="border" />
     </div>   
   ) : (
+    <>
     <Form 
       onSubmit={() => formik.handleSubmit()}
-      success={(result.called && !!result.data) || (updateResult.called && !!updateResult.data)}
-      error={!!result.error || !!updateResult.error}
     >
       { (result.called && !!result.data) || (updateResult.called && !!updateResult.data) ? (
-          <Message success header="Updated Completed" content="Event data updated succesfully" />
+          <Alert variant="success">Event data updated succesfully</Alert>
         ) : null}
       { (result.error && showError) ? (
-        <Message error header="Error" content={result.error.message} />
+        <Alert variant="danger">{result.error.message}</Alert>
       ) : (updateResult.error && showError) ? (
-        <Message error header="Error" content={updateResult.error.message} />
+        <Alert variant="danger">{updateResult.error.message}</Alert>
       ) : null}
       <div className={style.fieldsContainer}>
         
           <>
-            <Form.Group>
-              <Form.Field 
-                id='akcTrialNumber'
-                name='akcTrialNumber'
-                value={formik.values.akcTrialNumber}
+            <div className="row pb-2">
+              <div className="col-6">
+                <div className="form-group">
+                  <Form.Label>AKC Trial Number</Form.Label>
+                  <Form.Control 
+                    id='akcTrialNumber'
+                    name='akcTrialNumber'
+                    value={formik.values.akcTrialNumber}
+                    onChange={formik.handleChange}
+                    type='text'
+                    isInvalid={!!formik.errors.akcTrialNumber}                  
+                  />
+                  <Form.Control.Feedback type="invalid">{formik.errors.akcTrialNumber}</Form.Control.Feedback>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="form-group">
+                  <Form.Label>Date</Form.Label>
+                  <Form.Control 
+                    id='trialDate'
+                    name='trialDate'
+                    value={formik.values.trialDate}
+                    onChange={formik.handleChange}                  
+                    type='date'
+                    isInvalid={!!formik.errors.trialDate}
+                  />
+                  <Form.Control.Feedback type="invalid">{formik.errors.trialDate}</Form.Control.Feedback>
+                </div>
+              </div>
+            </div>
+            <div className="row pb-2">
+              <div className="col-6">
+                <div className="form-group">
+                  <Form.Label>Online Entries</Form.Label>
+                  <Form.Control 
+                    id='onlineEntries'
+                    name='onlineEntries'
+                    value={formik.values.onlineEntries}
+                    onChange={formik.handleChange}
+                    type='number'                  
+                    isInvalid={!!formik.errors.onlineEntries}
+                  />
+                  <Form.Control.Feedback type="invalid">{formik.errors.onlineEntries}</Form.Control.Feedback>
+                </div>
+              </div>
+              <div className="col-6">
+                <div className="form-group">
+                  <Form.Label>Mail-in Entries</Form.Label>
+                  <Form.Control 
+                    id='mailEntries'
+                    name='mailEntries'
+                    value={formik.values.mailEntries}
+                    type="number"
+                    onChange={formik.handleChange}                  
+                    isInvalid={!!formik.errors.mailEntries}
+                  />
+                  <Form.Control.Feedback type="invalid">{formik.errors.mailEntries}</Form.Control.Feedback>
+                </div>
+              </div>
+            </div>
+                                 
+            
+            <div className="form-group">
+              <Form.Label>Run Limit</Form.Label>
+              <Form.Control 
+                id='runLimit'
+                name='runLimit'
+                value={formik.values.runLimit}
                 onChange={formik.handleChange}
-                type='text'
-                label="AKC Trial Number"
-                control={Input}
-                error={formik.errors.akcTrialNumber && formik.touched.akcTrialNumber ? {
-                  content: formik.errors.akcTrialNumber,
-                  pointing: 'above'
-                } : undefined}
-              />
-              <Form.Field 
-                id='trialDate'
-                name='trialDate'
-                value={formik.values.trialDate}
-                onChange={formik.handleChange}
-                label='Date'                
-                control='input'
-                type='date'
-                error={formik.errors.trialDate && formik.touched.trialDate? {
-                  content: formik.errors.trialDate,
-                  pointing: 'above'
-                } : undefined}
-              />
-              <Form.Field 
-                id='onlineEntries'
-                name='onlineEntries'
-                value={formik.values.onlineEntries}
-                onChange={formik.handleChange}
-                type='number'
-                control={Input}
-                label='Online Entries'
-                error={formik.errors.onlineEntries && formik.touched.onlineEntries ? {
-                  content: formik.errors.onlineEntries,
-                  pointing: 'above'
-                } : undefined}
-              />
-              <Form.Field 
-                id='mailEntries'
-                name='mailEntries'
-                value={formik.values.mailEntries}
-                onChange={formik.handleChange}
-                type='number'
-                control={Input}
-                label='Mail-in Entries'
-                error={formik.errors.mailEntries && formik.touched.mailEntries? {
-                  content: formik.errors.mailEntries,
-                  pointing: 'above'
-                } : undefined}
+                type='number'                
+                isInvalid={!!formik.errors.runLimit}
               />       
-            </Form.Group>
-            <Form.Group>
-              <Form.Field 
-                  id='runLimit'
-                  name='runLimit'
-                  value={formik.values.runLimit}
-                  onChange={formik.handleChange}
-                  type='number'
-                  control={Input}
-                  label='Run Limit'
-                  error={formik.errors.runLimit && formik.touched.runLimit? {
-                    content: formik.errors.runLimit,
-                    pointing: 'above'
-                  } : undefined}
-                />       
-            </Form.Group>                                          
+              <Form.Control.Feedback type="invalid">{formik.errors.runLimit}</Form.Control.Feedback>
+            </div>                                          
             <h5>Classes: </h5>
-            <div className={style.checkboxContainer}>
-              <Form.Field
-                id='standardClass'
-                name='standardClass'
-                value={formik.values.standardClass}
-                checked={formik.values.standardClass}
-                onChange={formik.handleChange}
-                label='Standard'                                                                              
-                control={Checkbox}
-                style={{marginRight: '8px'}}
-                error={formik.errors.standardClass && formik.touched.standardClass? {
-                  content: formik.errors.standardClass,
-                  pointing: 'above'
-                } : undefined}                      
-              />
-              { formik.values.standardClass ? (
-                <div style={{display: 'flex'}}>
-                <Form.Field 
-                  id='standardAbility'
-                  name='standardAbility'
-                  value={formik.values.standardAbility}
-                  onChange={(e: any, d: any) => {                                                                
-                    formik.setFieldValue(`standardAbility`, [].slice.call(d.value))
-                  }}
-                  label='Regular'
-                  multiple
-                  selection
-                  control={Dropdown}
-                  options={classesOptions}
-                  error={formik.errors.standardAbility && formik.touched.standardAbility ? {
-                    content: formik.errors.standardAbility,
-                    pointing: 'above'
-                  } : undefined}
+            <div className="row">
+              <div className="col-3">
+                <Form.Check
+                  id='standardClass'
+                  name='standardClass'
+                  value={formik.values.standardClass}
+                  checked={formik.values.standardClass}
+                  onChange={formik.handleChange}                
+                  type="checkbox"
+                  label="Standard"
+                  style={{marginRight: '8px'}}
+                  isInvalid={!!formik.errors.standardClass}                      
                 />
-                <Form.Field 
-                  id='standardPreferred'
-                  name='standardPreferred'
-                  value={formik.values.standardPreferred}
-                  onChange={(e: any, d: any) => {                                                                
-                    formik.setFieldValue(`standardPreferred`, [].slice.call(d.value))
-                  }}
-                  label='Preferred'
-                  multiple
-                  selection
-                  control={Dropdown}
-                  options={classesOptions}
-                  error={formik.errors.standardPreferred && formik.touched.standardPreferred ? {
-                    content: formik.errors.standardPreferred,
-                    pointing: 'above'
-                  } : undefined}
-                />
-                </div>
-              ): null}
-            </div>
-            <div className={style.checkboxContainer}>
-              <Form.Field
-                id='jumpersClass'
-                name='jumpersClass'
-                value={formik.values.jumpersClass}
-                checked={formik.values.jumpersClass}
-                onChange={formik.handleChange}
-                label='JWW'                                                                              
-                control={Checkbox}
-                style={{marginRight: '8px'}}
-                error={formik.errors.jumpersClass && formik.touched.jumpersClass ? {
-                  content: formik.errors.jumpersClass,
-                  pointing: 'above'
-                } : undefined}                    
-              />
-              { formik.values.jumpersClass ? (
-                <div style={{display: 'flex'}}>
-                  <Form.Field 
-                    id='jumpersAbility'
-                    name='jumpersAbility'
-                    value={formik.values.jumpersAbility}
-                    onChange={(e: any, d: any) => {                                                                
-                      formik.setFieldValue(`jumpersAbility`, [].slice.call(d.value))
-                    }}
-                    label='Regular'
-                    multiple
-                    selection
-                    control={Dropdown}
-                    options={classesOptions}
-                    error={formik.errors.jumpersAbility && formik.touched.jumpersAbility ? {
-                      content: formik.errors.jumpersAbility,
-                      pointing: 'above'
-                    } : undefined}
+                <Form.Control.Feedback type="invalid">{formik.errors.standardClass}</Form.Control.Feedback>
+              </div>
+              <div className="col-9">
+                { formik.values.standardClass ? (
+                  <div>
+                    <Form.Label>Regular</Form.Label>
+                    <Select 
+                      id='standardAbility'
+                      name='standardAbility'
+                      value={formik.values.standardAbility}
+                      onChange={(newValue: any, actionMeta: any) => {                            
+                        formik.setFieldValue(`standardAbility`, newValue)
+                      }}
+                      isMulti                      
+                      options={classesOptions}
+                    /> 
+                    {!!formik.errors.standardAbility ? (
+                      <Alert variant="danger" id="error-standard-ability">{formik.errors.standardAbility}</Alert>
+                    ): null}                                    
                     
-                  />
-                  <Form.Field 
-                    id='jumpersPreferred'
-                    name='jumpersPreferred'
-                    value={formik.values.jumpersPreferred}
-                    onChange={(e: any, d: any) => {                                                                
-                      formik.setFieldValue(`jumpersPreferred`, [].slice.call(d.value))
-                    }}
-                    label='Preferred'
-                    multiple
-                    selection
-                    control={Dropdown}
-                    options={classesOptions}
-                    error={formik.errors.jumpersPreferred && formik.touched.jumpersPreferred ? {
-                      content: formik.errors.jumpersPreferred,
-                      pointing: 'above'
-                    } : undefined}
-                  />
-                </div>
-              ): null}
+                    <Form.Label>Preferred</Form.Label>
+                    <Select 
+                      id='standardPreferred'
+                      name='standardPreferred'
+                      value={formik.values.standardPreferred}
+                      onChange={(newValue: any, actionMeta: any) => {                                                                
+                        formik.setFieldValue(`standardPreferred`, newValue)
+                      }}
+                      isMulti
+                      options={classesOptions}                                          
+                    />
+                    {!!formik.errors.standardPreferred ? (
+                      <Alert variant="danger" id="error-standard-ability">{formik.errors.standardPreferred}</Alert>
+                    ): null}   
+                  </div>
+                ): null}              
+              </div>                                        
             </div>
-            <div className={style.checkboxContainer}>
-              <Form.Field
+            <div className="row">
+              <div className="col-3">
+                <Form.Check
+                  id='jumpersClass'
+                  name='jumpersClass'
+                  value={formik.values.jumpersClass}
+                  checked={formik.values.jumpersClass}
+                  onChange={formik.handleChange}
+                  type="checkbox"
+                  label="JWW"
+                  style={{marginRight: '8px'}}
+                  isInvalid={!!formik.errors.jumpersClass}                    
+                />
+                <Form.Control.Feedback type="invalid">{formik.errors.jumpersClass}</Form.Control.Feedback>
+              </div>
+              <div className="col-9">
+                { formik.values.jumpersClass ? (
+                  <div>
+                    <Form.Label>Regular</Form.Label>
+                    <Select 
+                      id='jumpersAbility'
+                      name='jumpersAbility'
+                      value={formik.values.jumpersAbility}
+                      onChange={(newValue: any, actionMeta: any) => {                                                                
+                        formik.setFieldValue(`jumpersAbility`, newValue)
+                      }}
+                      isMulti                      
+                      options={classesOptions}
+                    />                      
+                    {!!formik.errors.jumpersAbility ? (
+                      <Alert variant="danger" id="error-standard-ability">{formik.errors.jumpersAbility}</Alert>
+                    ): null}  
+                    <Form.Label>Preferred</Form.Label>
+                    <Select 
+                      id='jumpersPreferred'
+                      name='jumpersPreferred'
+                      value={formik.values.jumpersPreferred}
+                      onChange={(newValue: any, actionMeta: any) => {                                                                
+                        formik.setFieldValue(`jumpersPreferred`, newValue)
+                      }}
+                      isMulti
+                      options={classesOptions}
+                    />
+                    {!!formik.errors.jumpersPreferred ? (
+                      <Alert variant="danger" id="error-standard-ability">{formik.errors.jumpersPreferred}</Alert>
+                    ): null}                        
+                  </div>
+                ): null}
+              </div>                                       
+            </div>
+            <div className="row">
+              <div className="col-3">
+                <Form.Check
                   id='fastClass'
                   name='fastClass'
                   value={formik.values.fastClass}
                   checked={formik.values.fastClass}
                   onChange={formik.handleChange}
-                  label='FAST'                                                                              
-                  control={Checkbox}      
-                  error={formik.errors.fastClass && formik.touched.fastClass ? {
-                    content: formik.errors.fastClass,
-                    pointing: 'above'
-                  } : undefined}                    
-              />
-              { formik.values.fastClass ? (
-                <div style={{display: 'flex'}}>
-                <Form.Field 
-                  id='fastAbility'
-                  name={`fastAbility`}
-                  value={formik.values.fastAbility}
-                  onChange={(e: any, d: any) => {                                                                
-                    formik.setFieldValue(`fastAbility`, [].slice.call(d.value))
-                  }}
-                  label='Regular'
-                  multiple
-                  selection
-                  control={Dropdown}
-                  options={classesOptions}
-                  error={formik.errors.fastAbility && formik.touched.fastAbility ? {
-                    content: formik.errors.fastAbility,
-                    pointing: 'above'
-                  } : undefined}
-                  
+                  label="FAST"
+                  type="checkbox"
+                  isInvalid={!!formik.errors.fastClass}                    
                 />
-                <Form.Field 
-                  id='fastPreferred'
-                  name='fastPreferred'
-                  value={formik.values.fastPreferred}
-                  onChange={(e: any, d: any) => {                                                                
-                    formik.setFieldValue(`fastPreferred`, [].slice.call(d.value))
-                  }}
-                  label='Preferred'
-                  multiple
-                  selection
-                  control={Dropdown}
-                  options={classesOptions}
-                  error={formik.errors.fastPreferred && formik.touched.fastPreferred ? {
-                    content: formik.errors.fastPreferred,
-                    pointing: 'above'
-                  } : undefined}
-                />
-                </div>
-              ): null}
-            </div>
-              <Form.Field
+                <Form.Control.Feedback type="invalid">{formik.errors.fastClass}</Form.Control.Feedback>
+              </div>
+              <div className="col-9">
+                { formik.values.fastClass ? (
+                  <div>
+                    <Form.Label>Regular</Form.Label>
+                    <Select 
+                      id='fastAbility'
+                      name='fastAbility'
+                      value={formik.values.fastAbility}
+                      onChange={(newValue: any, actionMeta: any) => {                                                                
+                        formik.setFieldValue(`fastAbility`, newValue)
+                      }}
+                      isMulti
+                      options={classesOptions}                      
+                    />                      
+                    {!!formik.errors.fastAbility ? (
+                      <Alert variant="danger" id="error-standard-ability">{formik.errors.fastAbility}</Alert>
+                    ): null}
+                    <Form.Label>Preferred</Form.Label>
+                    <Select 
+                      id='fastPreferred'
+                      name='fastPreferred'
+                      value={formik.values.fastPreferred}
+                      onChange={(newValue: any, actionMeta: any) => {                                                                
+                        formik.setFieldValue(`fastPreferred`, newValue)
+                      }}
+                      isMulti
+                      options={classesOptions}
+                    />
+                    {!!formik.errors.fastPreferred ? (
+                      <Alert variant="danger" id="error-standard-ability">{formik.errors.fastPreferred}</Alert>
+                    ): null}
+                  </div>
+                ): null}
+              </div>              
+            </div>              
+              <Form.Check
                 id='t2bClass'
                 name='t2bClass'
                 value={formik.values.t2bClass}
                 checked={formik.values.t2bClass}
                 onChange={formik.handleChange}
-                label='T2B'                                                                              
-                control={Checkbox}
-                error={formik.errors.t2bClass && formik.touched.t2bClass ? {
-                  content: formik.errors.t2bClass,
-                  pointing: 'above'
-                } : undefined}                      
+                label="T2B"
+                type="checkbox"                               
+                isInvalid={!!formik.errors.t2bClass}                      
               />
-              <Form.Field 
+              <Form.Control.Feedback type="invalid">{formik.errors.t2bClass}</Form.Control.Feedback>              
+              <Form.Check 
                 id='premierStandard'
                 name='premierStandard'
                 value={formik.values.premierStandard}
                 checked={formik.values.premierStandard}
                 onChange={formik.handleChange}
-                label='Premier Standard'
-                control={Checkbox}
-                error={formik.errors.premierStandard && formik.touched.premierStandard ? {
-                  content: formik.errors.premierStandard,
-                  pointing: 'above'
-                } : undefined}
+                label="Premier Standard"
+                type="checkbox"                
+                isInvalid={!!formik.errors.premierStandard}
               />
-              <Form.Field 
+              <Form.Control.Feedback type="invalid">{formik.errors.premierStandard}</Form.Control.Feedback>              
+              <Form.Check 
                 id='premierJumpers'
                 name='premierJumpers'
                 value={formik.values.premierJumpers}
                 checked={formik.values.premierJumpers}
                 onChange={formik.handleChange}
-                label='Premier Jumpers'
-                control={Checkbox}
-                error={formik.errors.premierJumpers && formik.touched.premierJumpers ? {
-                  content: formik.errors.premierJumpers,
-                  pointing: 'above'
-                } : undefined}
+                label='Premier Jumpers'                
+                isInvalid={!!formik.errors.premierJumpers}
               />
+              <Form.Control.Feedback type="invalid">{formik.errors.premierJumpers}</Form.Control.Feedback>              
             <br />                      
           </>
     </div>
-      <Button content="Submit" type="submit" loading={result.loading || updateResult.loading}/>                
+                  
     </Form>
+    <Button type="button" onClick={(e) => {
+      e.preventDefault();
+      console.log("clicked")
+      formik.submitForm();
+    }}>
+        {result.loading || updateResult.loading ? (
+          <Spinner animation="border" />
+        ): "Submit"}        
+      </Button>    
+    </>
   )
 
   

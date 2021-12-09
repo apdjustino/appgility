@@ -14,6 +14,10 @@ type QueryResponse = {
 }
 
 const ConfigureTrials = ({ eventId }: OwnProps) => {
+
+  const [addTrialModal, setAddTrialModal] = React.useState<boolean>(false);
+  const [selectedTrial, setSelectedTrial] = React.useState<string>("");
+
   const { data, loading, error} = useQuery<QueryResponse>(GET_TRIALS, { variables: { eventId }});
   console.log(data)
   return loading ? (
@@ -27,16 +31,18 @@ const ConfigureTrials = ({ eventId }: OwnProps) => {
           <div className="header-pretitle">Trials</div>
         </div>
         <div className="col-auto">
-          <button className="btn btn-white" type="button">Add New Trial</button>
+          <button className="btn btn-white" type="button" onClick={() => {
+            setSelectedTrial("");
+            setAddTrialModal(true);
+          }}>Add New Trial</button>
         </div>
       </div>
-      {data.getEventTrials.length > 0 ? (
-        <TrialCards trials={data.getEventTrials} setTrial={() => {}}/>
-      ): (
-        <div className="d-flex flex-column justify-content-center align-items-center my-6">
-          <h2 className="text-body fst-italic">No Trials Found</h2>          
-        </div>
-      )}
+      <TrialCards 
+          addTrialModal={addTrialModal} 
+          selectedTrial={selectedTrial} 
+          trials={data.getEventTrials} 
+          setSelectedTrial={setSelectedTrial} 
+          setAddTrialModal={setAddTrialModal} />
       
     </>
   ) : (

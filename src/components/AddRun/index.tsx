@@ -5,7 +5,7 @@ import { useQuery, useMutation } from '@apollo/client'
 import { Container, Card, Form, Dropdown, Loader, Dimmer, Message, Button, Modal, Checkbox, Radio } from 'semantic-ui-react'
 import { CONFIG_NEW_RUN, ADD_NEW_RUN, GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
-import { EventTrial } from '../../types/trial'
+import { Ability, EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
 import { addRunFormVar } from '../../pages/AddRun'
 import { Link } from 'react-router-dom'
@@ -37,20 +37,13 @@ type SelectOptions<T> = {
   value: T
 }
 
-const generateClassOptions = (rawOptions: string[]) : SelectOptions<string>[] => {
-  
-  const lookup: any = {
-    nov: 'Novice',
-    open: 'Open',
-    exc: 'Excellent',
-    mast: 'Masters'
-  }
+const generateClassOptions = (rawOptions: Ability[]) : SelectOptions<string>[] => {
   
   return rawOptions.map(option => ({
-    id: `option-${option}`,
-    key: `option-${option}`,
-    text: lookup[option],
-    value: lookup[option].toUpperCase()
+    id: `option-${option.value}`,
+    key: `option-${option.value}`,
+    text: option.label,
+    value: option.label.toUpperCase()
   }))  
 
 }
@@ -326,7 +319,7 @@ const AddRun = () => {
                                           name={`trials.${index}.standardLevel`}
                                           placeholder='Level'
                                           selection
-                                          options={generateClassOptions(trialObj.standardAbility as string[])}
+                                          options={generateClassOptions(trialObj.standardAbility as Ability[])}
                                           value={formik.values.trials[index].standardLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.standardLevel`, d.value)}
                                           control={Dropdown}
@@ -379,7 +372,7 @@ const AddRun = () => {
                                           name={`trials.${index}.standardPrefLevel`}
                                           placeholder='Level'
                                           selection                        
-                                          options={generateClassOptions(trialObj.standardAbility as string[])}
+                                          options={generateClassOptions(trialObj.standardAbility as Ability[])}
                                           control={Dropdown}
                                           value={formik.values.trials[index].standardPrefLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.standardPrefLevel`, d.value)}
@@ -439,7 +432,7 @@ const AddRun = () => {
                                           name={`trials.${index}.jumpersLevel`}
                                           placeholder='Level'                      
                                           selection
-                                          options={generateClassOptions(trialObj.jumpersAbility as string[])}
+                                          options={generateClassOptions(trialObj.jumpersAbility as Ability[])}
                                           control={Dropdown}
                                           value={formik.values.trials[index].jumpersLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.jumpersLevel`, d.value)}                                          
@@ -492,7 +485,7 @@ const AddRun = () => {
                                           name={`trials.${index}.jumpersPrefLevel`}
                                           placeholder='Level'                       
                                           selection
-                                          options={generateClassOptions(trialObj.jumpersAbility as string[])}
+                                          options={generateClassOptions(trialObj.jumpersAbility as Ability[])}
                                           control={Dropdown}
                                           value={formik.values.trials[index].jumpersPrefLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.jumpersPrefLevel`, d.value)}                                          
@@ -553,7 +546,7 @@ const AddRun = () => {
                                           name={`trials.${index}.fastLevel`}
                                           placeholder='Level'                     
                                           selection
-                                          options={generateClassOptions(trialObj.fastAbility as string[])}
+                                          options={generateClassOptions(trialObj.fastAbility as Ability[])}
                                           control={Dropdown}
                                           value={formik.values.trials[index].fastLevel}
                                           onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.fastLevel`, d.value)}                                          
@@ -606,7 +599,7 @@ const AddRun = () => {
                                             name={`trials.${index}.fastPrefLevel`}
                                             placeholder='Level'                         
                                             selection
-                                            options={generateClassOptions(trialObj.fastAbility as string[])}
+                                            options={generateClassOptions(trialObj.fastAbility as Ability[])}
                                             control={Dropdown}
                                             value={formik.values.trials[index].fastPrefLevel}
                                             onChange={(e: any, d: any) => formik.setFieldValue(`trials.${index}.fastPrefLevel`, d.value)}                                          
