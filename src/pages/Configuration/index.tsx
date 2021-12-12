@@ -6,6 +6,7 @@ import ProtectedRoute from '../../components/ProtectedRoute'
 import { getEventId } from '../../reactiveVars'
 import ConfigureTrials from '../../components/ConfigureTrials'
 import BasicTrialConfig from '../../components/BasicTrialConfig'
+import RegistrationConfig from '../../components/RegistrationConfig'
 
 type EventParams = {
   eventId: string;
@@ -55,7 +56,7 @@ const Configuration = () => {
           <Switch>
             <ProtectedRoute path="/secretary/events/:eventId/configuration/trials" component={() => <ConfigureTrials eventId={params.eventId}/>} />
             <ProtectedRoute path="/secretary/events/:eventId/configuration/basic" component={() => <BasicTrialConfig eventId={params.eventId} />} />
-            <ProtectedRoute path="/secretary/events/:eventId/configuration/registration" component={() => <p>Registration placeholder</p>} />            
+            <ProtectedRoute path="/secretary/events/:eventId/configuration/registration" component={() => <RegistrationConfig eventId={params.eventId}/>} />            
           </Switch>
         </div>
       </div>

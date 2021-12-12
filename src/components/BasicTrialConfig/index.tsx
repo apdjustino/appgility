@@ -92,6 +92,9 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
         { result.error && showError ? (
           <Alert variant="danger">{result.error.message}</Alert>
         ) : null}
+        { !!error ? (
+          <Alert variant="danger">{error.message}</Alert>
+        ) : null }
         <div className="row pb-3">
           <div className="col">
             <Form.Label>Name</Form.Label>
@@ -103,7 +106,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.name && !!formik.touched.name}         
             />
-            <Form.Control.Feedback>{formik.errors.name}</Form.Control.Feedback> 
+            <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback> 
           </div>
         </div>
         <div className="row pb-3">
@@ -117,7 +120,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.locationCity && !!formik.touched.locationCity}         
             />
-            <Form.Control.Feedback>{formik.errors.locationCity}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{formik.errors.locationCity}</Form.Control.Feedback>
           </div>
           <div className="col-xl-6 col-md-12">
             <Form.Label>State</Form.Label>
@@ -129,7 +132,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.locationState && !!formik.touched.locationState}         
             />
-            <Form.Control.Feedback>{formik.errors.locationState}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{formik.errors.locationState}</Form.Control.Feedback>
           </div>
         </div>
         <div className="row pb-3">
@@ -143,7 +146,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.trialSite && !!formik.touched.trialSite}         
             />
-            <Form.Control.Feedback>{formik.errors.trialSite}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{formik.errors.trialSite}</Form.Control.Feedback>
           </div>
         </div>
         <div className="row pb-3">
@@ -157,7 +160,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.trialChairName && !!formik.touched.trialChairName}         
             />
-            <Form.Control.Feedback>{formik.errors.trialChairName}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{formik.errors.trialChairName}</Form.Control.Feedback>
           </div>
         </div>
         <div className="row pb-3">
@@ -172,7 +175,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.trialChairEmail && !!formik.touched.trialChairEmail}         
             />
-            <Form.Control.Feedback>{formik.errors.trialChairEmail}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{formik.errors.trialChairEmail}</Form.Control.Feedback>
           </div>
         </div>
         <div className="row pb-3">
@@ -188,7 +191,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.trialChairPhone && !!formik.touched.trialChairPhone}         
             />
-            <Form.Control.Feedback>{formik.errors.trialChairPhone}</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">{formik.errors.trialChairPhone}</Form.Control.Feedback>
           </div>
         </div>
         <Button type="submit">
