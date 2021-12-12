@@ -342,8 +342,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                   
     </Form>
     <Button type="button" onClick={(e) => {
-      e.preventDefault();
-      console.log("clicked")
+      e.preventDefault();      
       formik.submitForm();
     }}>
         {result.loading || updateResult.loading ? (

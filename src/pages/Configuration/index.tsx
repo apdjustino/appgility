@@ -5,6 +5,7 @@ import { useLocation } from 'react-router'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import { getEventId } from '../../reactiveVars'
 import ConfigureTrials from '../../components/ConfigureTrials'
+import BasicTrialConfig from '../../components/BasicTrialConfig'
 
 type EventParams = {
   eventId: string;
@@ -53,7 +54,7 @@ const Configuration = () => {
         <div className="card-body">
           <Switch>
             <ProtectedRoute path="/secretary/events/:eventId/configuration/trials" component={() => <ConfigureTrials eventId={params.eventId}/>} />
-            <ProtectedRoute path="/secretary/events/:eventId/configuration/basic" component={() => <p>Basic placeholder</p>} />
+            <ProtectedRoute path="/secretary/events/:eventId/configuration/basic" component={() => <BasicTrialConfig eventId={params.eventId} />} />
             <ProtectedRoute path="/secretary/events/:eventId/configuration/registration" component={() => <p>Registration placeholder</p>} />            
           </Switch>
         </div>
