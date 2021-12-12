@@ -218,6 +218,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                       value={formik.values.standardAbility}
                       onChange={(newValue: any, actionMeta: any) => {                            
                         formik.setFieldValue(`standardAbility`, newValue)
+                        formik.setFieldValue(`standardPreferred`, newValue)
                       }}
                       isMulti                      
                       options={classesOptions}
@@ -225,21 +226,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                     {!!formik.errors.standardAbility ? (
                       <Alert variant="danger" id="error-standard-ability">{formik.errors.standardAbility}</Alert>
                     ): null}                                    
-                    
-                    <Form.Label>Preferred</Form.Label>
-                    <Select 
-                      id='standardPreferred'
-                      name='standardPreferred'
-                      value={formik.values.standardPreferred}
-                      onChange={(newValue: any, actionMeta: any) => {                                                                
-                        formik.setFieldValue(`standardPreferred`, newValue)
-                      }}
-                      isMulti
-                      options={classesOptions}                                          
-                    />
-                    {!!formik.errors.standardPreferred ? (
-                      <Alert variant="danger" id="error-standard-ability">{formik.errors.standardPreferred}</Alert>
-                    ): null}   
+                                        
                   </div>
                 ): null}              
               </div>                                        
@@ -269,27 +256,14 @@ const AddTrial = ({ trialId } : ownProps) => {
                       value={formik.values.jumpersAbility}
                       onChange={(newValue: any, actionMeta: any) => {                                                                
                         formik.setFieldValue(`jumpersAbility`, newValue)
+                        formik.setFieldValue(`jumpersPreferred`, newValue);
                       }}
                       isMulti                      
                       options={classesOptions}
                     />                      
                     {!!formik.errors.jumpersAbility ? (
                       <Alert variant="danger" id="error-standard-ability">{formik.errors.jumpersAbility}</Alert>
-                    ): null}  
-                    <Form.Label>Preferred</Form.Label>
-                    <Select 
-                      id='jumpersPreferred'
-                      name='jumpersPreferred'
-                      value={formik.values.jumpersPreferred}
-                      onChange={(newValue: any, actionMeta: any) => {                                                                
-                        formik.setFieldValue(`jumpersPreferred`, newValue)
-                      }}
-                      isMulti
-                      options={classesOptions}
-                    />
-                    {!!formik.errors.jumpersPreferred ? (
-                      <Alert variant="danger" id="error-standard-ability">{formik.errors.jumpersPreferred}</Alert>
-                    ): null}                        
+                    ): null}                                           
                   </div>
                 ): null}
               </div>                                       
@@ -318,27 +292,14 @@ const AddTrial = ({ trialId } : ownProps) => {
                       value={formik.values.fastAbility}
                       onChange={(newValue: any, actionMeta: any) => {                                                                
                         formik.setFieldValue(`fastAbility`, newValue)
+                        formik.setFieldValue(`fastPreferred`, newValue);
                       }}
                       isMulti
                       options={classesOptions}                      
                     />                      
                     {!!formik.errors.fastAbility ? (
                       <Alert variant="danger" id="error-standard-ability">{formik.errors.fastAbility}</Alert>
-                    ): null}
-                    <Form.Label>Preferred</Form.Label>
-                    <Select 
-                      id='fastPreferred'
-                      name='fastPreferred'
-                      value={formik.values.fastPreferred}
-                      onChange={(newValue: any, actionMeta: any) => {                                                                
-                        formik.setFieldValue(`fastPreferred`, newValue)
-                      }}
-                      isMulti
-                      options={classesOptions}
-                    />
-                    {!!formik.errors.fastPreferred ? (
-                      <Alert variant="danger" id="error-standard-ability">{formik.errors.fastPreferred}</Alert>
-                    ): null}
+                    ): null}                    
                   </div>
                 ): null}
               </div>              
