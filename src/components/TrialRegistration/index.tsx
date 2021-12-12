@@ -27,7 +27,6 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
   const { url } = useRouteMatch()
   const trialRunsQuery = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})
 
-  console.log(trialRunsQuery.data);
   
   const columnsRaw: Column<RunView>[] = [
     {

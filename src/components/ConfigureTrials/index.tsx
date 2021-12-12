@@ -19,7 +19,7 @@ const ConfigureTrials = ({ eventId }: OwnProps) => {
   const [selectedTrial, setSelectedTrial] = React.useState<string>("");
 
   const { data, loading, error} = useQuery<QueryResponse>(GET_TRIALS, { variables: { eventId }});
-  console.log(data)
+  
   return loading ? (
     <div className="d-flex justify-content-center align-items-center vh-100">
       <Spinner animation="border" />

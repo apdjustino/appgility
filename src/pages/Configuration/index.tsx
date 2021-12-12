@@ -1,9 +1,9 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { Link, Switch } from "react-router-dom"
-import { useLocation } from 'react-router'
+import { useLocation, useRouteMatch } from 'react-router'
 import ProtectedRoute from '../../components/ProtectedRoute'
-import { getEventId } from '../../reactiveVars'
+import { getEventId, selectedEventMenu } from '../../reactiveVars'
 import ConfigureTrials from '../../components/ConfigureTrials'
 import BasicTrialConfig from '../../components/BasicTrialConfig'
 import RegistrationConfig from '../../components/RegistrationConfig'
@@ -15,9 +15,11 @@ type EventParams = {
 const Configuration = () => {
   const { pathname } = useLocation();
   const params = useParams<EventParams>() 
-  
+  const { path } = useRouteMatch();
+
   React.useEffect(() => {
     getEventId(params.eventId);
+    selectedEventMenu("configuration");
   }, [params])
 
   return (
@@ -54,9 +56,9 @@ const Configuration = () => {
       <div className="card">
         <div className="card-body">
           <Switch>
-            <ProtectedRoute path="/secretary/events/:eventId/configuration/trials" component={() => <ConfigureTrials eventId={params.eventId}/>} />
-            <ProtectedRoute path="/secretary/events/:eventId/configuration/basic" component={() => <BasicTrialConfig eventId={params.eventId} />} />
-            <ProtectedRoute path="/secretary/events/:eventId/configuration/registration" component={() => <RegistrationConfig eventId={params.eventId}/>} />            
+            <ProtectedRoute path={`${path}/trials`} component={() => <ConfigureTrials eventId={params.eventId}/>} />
+            <ProtectedRoute path={`${path}/basic`} component={() => <BasicTrialConfig eventId={params.eventId} />} />
+            <ProtectedRoute path={`${path}/registration`} component={() => <RegistrationConfig eventId={params.eventId}/>} />            
           </Switch>
         </div>
       </div>

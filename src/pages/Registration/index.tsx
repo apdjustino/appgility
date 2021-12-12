@@ -8,13 +8,22 @@ import moment from 'moment'
 import { GET_TRIALS } from '../../queries/trials/trials'
 import { EventTrial } from '../../types/trial'
 import TrialRegistration from '../../components/TrialRegistration'
+import { getEventId, selectedEventMenu } from "../../reactiveVars"
 
 type ConfigureParams = {
   eventId: string
 }
 
 const Registration = () => {
+
   const params = useParams<ConfigureParams>()
+
+  React.useEffect(() => {
+    getEventId(params.eventId);
+    selectedEventMenu("registration");
+  }, [params])
+
+  
   const { data, loading, error} = useQuery(GET_TRIALS, { variables : {eventId: params.eventId}})
   
   let panes = []

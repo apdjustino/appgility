@@ -8,7 +8,7 @@ import { UserAuth } from '../../types/authentication'
 import { AuthContext } from '../../utils/contexts'
 import { Tool, BookOpen, List, Edit3, Sliders, Home, Bell } from "react-feather"
 import { Link, useLocation } from "react-router-dom";
-import { getEventId } from '../../reactiveVars'
+import { getEventId, selectedEventMenu } from '../../reactiveVars'
 
 type LayoutProps = {
   children: React.ReactNode
@@ -21,7 +21,8 @@ const MainLayout = ({
   const [userAuth, setUserAuth] = useState<UserAuth>({accessToken: '', userId: ''})
   const history = useHistory() 
   const { pathname } = useLocation();
-  const eventId = getEventId();  
+  const eventId = getEventId();
+  const eventMenu = selectedEventMenu();
 
   useEffect(() => {   
     const storedToken = localStorage.getItem('accessToken')
@@ -70,13 +71,13 @@ const MainLayout = ({
                 </Navbar.Brand>
               </Link>
               <Nav.Item>
-                <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/configuration/trials`)} role="button" active={pathname.includes("/configuration")}>
+                <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/configuration/trials`)} role="button" active={eventMenu === "configuration"}>
                   <Tool size="17" className="me-3"/>
                   Configuration
                 </Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/registration`)} role="button" active={pathname.includes("/registration")}>
+                <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/registration`)} role="button" active={eventMenu === "registration"}>
                   <BookOpen size="17" className="me-3"/>
                   Registration
                 </Nav.Link>
