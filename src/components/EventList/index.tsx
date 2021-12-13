@@ -32,7 +32,7 @@ const EventList = ({ setShowDialog }: OwnProps) => {
         </div>                  
       </div>
       <div className="table-responsive mb-0" style={{minHeight: "300px"}}>
-        <table className="table table-sm table-nowrap card-table">
+        <table className="table table-sm table-nowrap table-hover card-table">
           <thead>
             <tr>
               <th>Name</th>

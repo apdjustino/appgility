@@ -1,13 +1,12 @@
-import style from './TrialRegistration.module.scss'
-
 import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
-import { Button, Grid, Icon, Popup, List } from 'semantic-ui-react'
+import { Form, InputGroup } from "react-bootstrap"
 import { useHistory, useRouteMatch } from 'react-router'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
+import { Search } from 'react-feather'
 import { RunView } from '../../types/run'
-import Table from '../Table'
+import RunTable from '../RunTable'
 
 type ButtonGroupItem = {
   key: string,
@@ -75,7 +74,13 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
       </div>
       <div className="row pt-3">
         <div className="col">
-            <Table data={tableData} columns={columns} />
+          <InputGroup className="input-group-merge input-group-reverse mb-3">
+            <Form.Control type="search" placeholder="Search runs"/>
+            <InputGroup.Text>
+              <Search size="1em" />
+            </InputGroup.Text>
+          </InputGroup>            
+            <RunTable data={tableData} columns={columns} />
           </div>     
       </div>
     </>

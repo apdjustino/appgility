@@ -1,5 +1,3 @@
-import style from './Registration.module.scss'
-
 import React from 'react'
 import { useQuery } from '@apollo/client'
 import { useLocation, useParams, useRouteMatch, useHistory, Switch, Link, Redirect } from 'react-router-dom'
@@ -10,6 +8,8 @@ import { getEventId, selectedEventMenu } from "../../reactiveVars"
 import { GET_TRIAL_DATES } from './query'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import RedirectComponent from './RedirectComponent';
+import AddRun from '../AddRun';
+import AddRunWizard from '../../components/AddRunWizard';
 
 type ConfigureParams = {
   eventId: string
@@ -79,6 +79,7 @@ const Registration = () => {
       <div className="card">
         <div className="card-body">
           <Switch>
+            <ProtectedRoute path={`${path}/:trialId/add`} component={AddRunWizard} />
             <ProtectedRoute path={`${path}/:trialId`} component={TrialRegistration} />
             <ProtectedRoute path={`${path}`} component={() => <RedirectComponent redirectTrialId={firstTrialId}/>} />
           </Switch>     
