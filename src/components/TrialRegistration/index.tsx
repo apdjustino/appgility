@@ -1,29 +1,25 @@
 import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
 import { Form, InputGroup } from "react-bootstrap"
-import { useHistory, useRouteMatch } from 'react-router'
+import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
 import { Search } from 'react-feather'
 import { RunView } from '../../types/run'
 import RunTable from '../RunTable'
 
-type ButtonGroupItem = {
-  key: string,
-  icon: string
+type ConfigureParams = {
+  eventId: string;
+  trialId: string;
 }
 
 type RunQuery = {
   getTrialRuns: RunView[]
 }
 
-type OwnProps = {
-  trialId: string
-}
 
-const TrialRegistration = ({ trialId } : OwnProps) => { 
-  const history = useHistory()
-  const { url } = useRouteMatch()
+const TrialRegistration = () => { 
+  const { eventId, trialId } = useParams<ConfigureParams>();
   const trialRunsQuery = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})
   
   const columnsRaw: Column<RunView>[] = [
@@ -69,7 +65,9 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
           <div className="header-pretitle">Runs</div>
         </div>
         <div className="col-auto">
-          <button className="btn btn-white" type="button" onClick={() => {}}>Add New Run</button>
+          <Link to={`/secretary/events/${eventId}/registration/${trialId}/add`}>
+            <button className="btn btn-white" type="button">Add New Run</button>
+          </Link>          
         </div>        
       </div>
       <div className="row pt-3">
