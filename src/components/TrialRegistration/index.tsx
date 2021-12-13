@@ -26,7 +26,6 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
   const history = useHistory()
   const { url } = useRouteMatch()
   const trialRunsQuery = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})
-
   
   const columnsRaw: Column<RunView>[] = [
     {
@@ -65,18 +64,21 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
   const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as RunView[]
 
   return (
-    <div className={style.container}>
-      <div className={style.buttonGroupContainer}>          
-          <Button.Group>
-            <Popup content='Add trial run' trigger={<Button icon onClick={() => history.push(`${url}/add/person`)}><Icon name='add circle' /></Button>}/>
-            <Popup content='Configure online registration' trigger={<Button icon><Icon name='settings' /></Button>}/>            
-            <Popup content='Upload trial data' trigger={<Button icon><Icon name='cloud upload' /></Button>}/>                        
-          </Button.Group>          
+    <>
+      <div className="row pb-3">
+        <div className="col">
+          <div className="header-pretitle">Runs</div>
         </div>
-        <div className={style.tableContainer}>
-          <Table data={tableData} columns={columns} />
-        </div>     
-    </div>
+        <div className="col-auto">
+          <button className="btn btn-white" type="button" onClick={() => {}}>Add New Run</button>
+        </div>        
+      </div>
+      <div className="row pt-3">
+        <div className="col">
+            <Table data={tableData} columns={columns} />
+          </div>     
+      </div>
+    </>
   )
 }
 

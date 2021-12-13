@@ -7,15 +7,27 @@ import { getEventId, selectedEventMenu } from '../../reactiveVars'
 import ConfigureTrials from '../../components/ConfigureTrials'
 import BasicTrialConfig from '../../components/BasicTrialConfig'
 import RegistrationConfig from '../../components/RegistrationConfig'
+import { useQuery } from '@apollo/client'
+import { Event } from '../../types/event'
+import { GET_EVENT_NAME } from "./query"; 
 
 type EventParams = {
   eventId: string;
 }
 
+type QueryResponse = {
+  getEvent: {
+    name: string
+  }
+};
+
+
 const Configuration = () => {
   const { pathname } = useLocation();
   const params = useParams<EventParams>() 
   const { path } = useRouteMatch();
+
+  const { data } = useQuery<QueryResponse>(GET_EVENT_NAME, { variables: { eventId: params.eventId }});
 
   React.useEffect(() => {
     getEventId(params.eventId);
@@ -29,7 +41,7 @@ const Configuration = () => {
           <div className="row align-items-end">
             <div className="col">
               <h6 className="header-pretitle">Event Configuration</h6>
-              <h1 className="header-title">Event 1</h1>
+              <h1 className="header-title">{!!data && !!data.getEvent ? data.getEvent.name : null}</h1>
             </div>
             <div className="col-auto">
               <ul className="nav nav-tabs header-tabs fs-3">

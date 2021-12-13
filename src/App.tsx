@@ -2,10 +2,7 @@ import React from 'react';
 import { Router, Switch, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
-import Splash from './pages/Splash'
 import Signup from "./pages/Signup";
-import EventHome from './pages/EventHome'
-import Layout from './layouts/main'
 import history from './utils/history'
 import { ExpiredTokenLink } from './links/ExpiredToken'; 
 import { CleanTypeName } from './links/CleanTypeName';
