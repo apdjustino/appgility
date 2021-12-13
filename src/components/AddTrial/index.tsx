@@ -1,5 +1,3 @@
-import style from './AddTrial.module.scss'
-
 import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import * as Yup from 'yup'
@@ -115,7 +113,7 @@ const AddTrial = ({ trialId } : ownProps) => {
       ) : (updateResult.error && showError) ? (
         <Alert variant="danger">{updateResult.error.message}</Alert>
       ) : null}
-      <div className={style.fieldsContainer}>
+      <div>
         
           <>
             <div className="row pb-2">
