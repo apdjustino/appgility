@@ -1,8 +1,10 @@
 import React from "react";
 import { Form, InputGroup } from "react-bootstrap";
 import { Search } from "react-feather";
-import { AsyncTypeahead } from "react-bootstrap-typeahead";
+import { AsyncTypeahead, Highlighter } from "react-bootstrap-typeahead";
+import { useLazyQuery } from "@apollo/client";
 import 'react-bootstrap-typeahead/css/Typeahead.css';
+import { SEARCH_PERSON } from "./query";
 
 type OwnProps = {
   activeStep: number;
@@ -15,29 +17,32 @@ type TestOptions = {
   login: string;
 }
 
+type PersonView = {
+  personId: string;
+  name: string;
+  email: string;
+}
+
+type QueryResponse = {
+  searchPerson:PersonView[]
+}
+
 const AsyncTypeaheadControl = AsyncTypeahead as any;
 
 const SEARCH_URI = 'https://api.github.com/search/users';
 
-const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [options, setOptions] = React.useState<TestOptions[]>([]);
+const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {  
+  const [options, setOptions] = React.useState<PersonView[]>([]);
+  const [searchPerson, { data, loading, error }] = useLazyQuery<QueryResponse>(SEARCH_PERSON);
+
+  React.useEffect(() => {
+    if (!!data && !!data.searchPerson) {
+      setOptions(data.searchPerson);
+    }
+  }, [data])
   
-  const handleSearch = (query: any) => {
-    setIsLoading(true);
-
-    fetch(`${SEARCH_URI}?q=${query}+in:login&page=1&per_page=50`)
-      .then((resp) => resp.json())
-      .then(({ items }) => {
-        const options = items.map((i: any) => ({
-          avatar_url: i.avatar_url,
-          id: i.id,
-          login: i.login,
-        }));
-
-        setOptions(options);
-        setIsLoading(false);
-      });
+  const handleSearch = (query: string) => {
+    searchPerson({ variables: { query }})
   };
 
   const filterBy = () => true;
@@ -55,25 +60,29 @@ const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
         <AsyncTypeaheadControl 
           filterBy={filterBy}
           id="exhibitor search"
-          isLoading={isLoading}
-          labelKey="login"
-          minLength={3}
+          isLoading={loading}
+          labelKey="name"
+          minLength={2}
           onSearch={handleSearch}
           options={options}
-          renderMenuItemChildren={(option: any, props: any) => (
-            <>
-              <img
-                alt={option.login}
-                src={option.avatar_url}
-                style={{
-                  height: '24px',
-                  marginRight: '10px',
-                  width: '24px',
-                }}
-              />
-              <span>{option.login}</span>
-            </>
-          )}
+          useCache={false}
+          renderMenuItemChildren={(option: PersonView, props: any) => {
+            const splitString = option.name.split(" ")
+            const firstInitial = splitString[0][0];
+            const lastInitial = splitString[splitString.length - 1][0];
+            return (
+              <>
+                <div className="avatar avatar-xs me-2" data-testid="user-icon-wrapper">
+                  <span className="avatar-title rounded-circle">
+                    {firstInitial}{lastInitial}
+                  </span>
+                </div>                
+                <Highlighter search={props.text}>
+                  {`${option.name} - ${option.email}`}
+                </Highlighter>
+              </>
+            )
+          }}
           renderInput={({ inputRef, referenceElementRef, ...inputProps }: any) => (
             <InputGroup className="input-group-merge input-group-reverse mb-3">
               <Form.Control
