@@ -26,8 +26,8 @@ export const GET_PERSON_BY_EMAIL = gql`
 `
 
 export const ADD_DOG = gql`
-  mutation AddDog($personId: String!, $dog: DogInput!) {
-    addDog(personId: $personId, dog: $dog) {
+  mutation AddDog($personId: String!, $secretaryId: String!, $dog: DogInput!) {
+    addDog(personId: $personId, secretaryId: $secretaryId, dog: $dog) {
       dogId,
       personId,
       callName,

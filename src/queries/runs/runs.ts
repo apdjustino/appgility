@@ -6,14 +6,32 @@ export const CONFIG_NEW_RUN = gql`
       trialId,
       trialDate,
       standardClass,
-      standardAbility,
-      standardPreferred,
+      standardAbility {
+        label,
+        value
+      },
+      standardPreferred {
+        label,
+        value
+      },
       jumpersClass,
-      jumpersAbility,
-      jumpersPreferred,
+      jumpersAbility {
+        label,
+        value
+      },
+      jumpersPreferred {
+        label,
+        value
+      },
       fastClass,
-      fastAbility,
-      fastPreferred,
+      fastAbility {
+        label,
+        value
+      },
+      fastPreferred {
+        label,
+        value
+      },
       t2bClass,
       premierStandard,
       premierJumpers,
