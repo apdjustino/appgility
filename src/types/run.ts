@@ -48,3 +48,17 @@ export type RunView = {
   paid?: Maybe<Scalars['Boolean']>;
   deleted: Scalars['Boolean'];
 };
+
+export type RunData = {
+  trialId: string,
+  agilityClass: string,
+  ability: string,
+  preferred: boolean,
+  needsMeasured: boolean,
+}
+
+export type AddRunFormData = {
+  personId: string,
+  dogId: string,
+  runs: RunData[]
+}

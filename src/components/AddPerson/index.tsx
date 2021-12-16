@@ -1,47 +1,20 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { useHistory, useLocation } from 'react-router'
-import { useLazyQuery, useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client'
 import * as Yup from 'yup'
-import { Container, Card, Form, Button, Input, Item, Header, Icon, Modal, Message } from 'semantic-ui-react'
-import { GET_PERSON_BY_EMAIL, ADD_PERSON } from '../../queries/person/person'
-import { addRunFormVar } from '../../pages/AddRun'
-import { Link } from 'react-router-dom'
+import NumberFormat from "react-number-format";
+import { ADD_PERSON } from '../../queries/person/person'
+import { Alert, Button, Form, Spinner } from 'react-bootstrap'
+import { addRunFormVar, selectedPersonForRunVar } from '../../reactiveVars'
 
-const AddPerson = () => {
-  const [addPersonIsOpen, setAddPersonIsOpen] = useState(false)
-  const history = useHistory()
-  const [showError, setShowError] = useState(false)
-  const [getPersonByEmail, { data, loading, error }] = useLazyQuery(GET_PERSON_BY_EMAIL, { 
-    onCompleted: (d) => {
-      const { getPersonByEmail } = d
-      if (getPersonByEmail) {
-        const runDataCopy = { ...addRunFormVar() }
-        runDataCopy.personId = getPersonByEmail.personId
-        addRunFormVar(runDataCopy)
-        history.push(url.replace('/person', '/config'))
-      }
-    }
-  })
+type OwnProps = {
+  setShowAddPersonModal: React.Dispatch<React.SetStateAction<boolean>>;  
+}
+
+const AddPerson = ({ setShowAddPersonModal }: OwnProps) => {  
+  const [showError, setShowError] = useState(false)  
   const [addPerson, addPersonResult] = useMutation(ADD_PERSON)  
-  const location = useLocation()
-  const url = location.pathname 
 
-  const validationSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email format')
-  })
-
-  const formik = useFormik({
-    initialValues: { email: '' },
-    onSubmit: (values) => { 
-      addPersonFormik.setFieldValue('email', values.email)
-      getPersonByEmail({ 
-        variables: { email: values.email }
-      })      
-    },
-    validationSchema
-  })
-  
   const addPersonValidation = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email('Invalid email format'),
@@ -66,11 +39,10 @@ const AddPerson = () => {
     onSubmit: (values) => {            
       addPerson({ variables: {
         data: values
-      }}).then(({ data }) => {        
-        const runDataCopy = { ...addRunFormVar() }
-        runDataCopy.personId = data.addPerson.personId        
-        addRunFormVar(runDataCopy)        
-        history.push(url.replace('/person', '/config'))
+      }}).then(({ data }) => {          
+        addRunFormVar({ personId: data.addPerson.personId, runs: [], dogId: "" });
+        selectedPersonForRunVar([{ personId: data.addPerson.personId, email: data.addPerson.email, name: data.addPerson.name }])      
+        setShowAddPersonModal(false)        
 
       }).catch(() => {
         setShowError(true)
@@ -80,152 +52,107 @@ const AddPerson = () => {
   })
 
   return (
-    <Container>
-      <Card.Group centered>
-        <Card>
-          <Card.Content>
-            <Card.Header>Find Exhibitor by Email</Card.Header>
-          </Card.Content>
-          <Card.Content>
-            <Form onSubmit={formik.handleSubmit}>
-              <Form.Field 
-                id='email'
-                name='email'
-                label='Email:'
-                control={Input}
-                type='email'
-                placeholder='exhibitor@appgility.com'
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                error={formik.errors.email && formik.touched.email ? {
-                  content: formik.errors.email,
-                  pointing: 'above'
-                } : undefined}
-              />
-              <Button type='submit' basic color='black' loading={loading}>Search</Button>
-            </Form>
-          </Card.Content>
-          { data ? (
-            <Card.Content>
-              { !data.getPersonByEmail ? (
-                <>
-                  <Header as='h3' icon>
-                    <Icon name='exclamation triangle' />
-                    <Header.Subheader>
-                      Email not found
-                    </Header.Subheader>
-                  </Header>
-                  <Container textAlign='center'>
-                    <Button basic color='black' onClick={() => setAddPersonIsOpen(true)}>Add Exhibitor</Button>
-                  </Container>
-                  
-                </>
-              ) : null}
-              
-            </Card.Content>
-          ) : null}
-        </Card>
-      </Card.Group>
-      <Modal open={addPersonIsOpen} onClose={() => setAddPersonIsOpen(false)} onOpen={() => setAddPersonIsOpen(true)}>        
-        <Modal.Header>Add Exhibitor</Modal.Header>
-        <Modal.Content>
-          <Form onSubmit={addPersonFormik.handleSubmit}>
-            <Form.Field 
-              id='name'
-              name='name'
-              label='Name:'
-              control={Input}
-              value={addPersonFormik.values.name}
-              onChange={addPersonFormik.handleChange}
-              error={addPersonFormik.errors.name && addPersonFormik.touched.name ? {
-                content: addPersonFormik.errors.name,
-                pointing: 'above'
-              } : undefined}
-            />
-            <Form.Field 
+    
+    <Form onSubmit={addPersonFormik.handleSubmit}>
+      { !!addPersonResult.error && showError ? (
+        <Alert variant="danger">{addPersonResult.error.message}</Alert>
+      ) : null}
+      <div className="row mb-3">
+        <div className="col-12">
+          <Form.Label>Email</Form.Label>
+            <Form.Control 
               id='email'
               name='email'
-              label='Email:'
-              control={Input}
+              type="email"
               value={addPersonFormik.values.email}
-              onChange={addPersonFormik.handleChange}              
-              error={addPersonFormik.errors.email && addPersonFormik.touched.email ? {
-                content: addPersonFormik.errors.email,
-                pointing: 'above'
-              } : undefined}
-            />
-            <Form.Field 
-              id='phone'
-              name='phone'
-              label='Phone:'
-              control={Input}
-              value={addPersonFormik.values.phone}
               onChange={addPersonFormik.handleChange}
-              error={addPersonFormik.errors.name && addPersonFormik.touched.phone ? {
-                content: addPersonFormik.errors.phone,
-                pointing: 'above'
-              } : undefined}
+              isInvalid={!!addPersonFormik.errors.email && !!addPersonFormik.touched.email }
             />
-            <Form.Field 
-                id='address'
-                name='address'
-                label='Address:'
-                control={Input}
-                value={addPersonFormik.values.address}
-                onChange={addPersonFormik.handleChange}
-                error={addPersonFormik.errors.address && addPersonFormik.touched.address ? {
-                  content: addPersonFormik.errors.address,
-                  pointing: 'above'
-                } : undefined}
-              />
-            <Form.Group>              
-              <Form.Field 
-                id='city'
-                name='city'
-                label='City:'
-                control={Input}
-                value={addPersonFormik.values.city}
-                onChange={addPersonFormik.handleChange}
-                error={addPersonFormik.errors.city && addPersonFormik.touched.city ? {
-                  content: addPersonFormik.errors.city,
-                  pointing: 'above'
-                } : undefined}
-              />
-              <Form.Field 
-                id='state'
-                name='state'
-                label='State:'
-                control={Input}
-                value={addPersonFormik.values.state}
-                onChange={addPersonFormik.handleChange}
-                error={addPersonFormik.errors.state && addPersonFormik.touched.state ? {
-                  content: addPersonFormik.errors.state,
-                  pointing: 'above'
-                } : undefined}
-              />
-              <Form.Field 
-                id='zip'
-                name='zip'
-                label='Zip Code:'
-                control={Input}
-                value={addPersonFormik.values.zip}
-                onChange={addPersonFormik.handleChange}
-                error={addPersonFormik.errors.zip && addPersonFormik.touched.zip ? {
-                  content: addPersonFormik.errors.zip,
-                  pointing: 'above'
-                } : undefined}
-              />
-            </Form.Group> 
-          </Form>
-          {addPersonResult.error && showError ? (
-            <Message error header="Error" content={addPersonResult.error.message}/>
-          ) : null}                    
-        </Modal.Content>
-        <Modal.Actions>
-        <Button type='submit' basic color='black' onClick={addPersonFormik.submitForm} loading={addPersonResult.loading}>Add</Button>
-        </Modal.Actions>          
-      </Modal>
-    </Container>
+            <Form.Control.Feedback type="invalid">{addPersonFormik.errors.email}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-6 col-12">
+          <Form.Label>Name</Form.Label>
+          <Form.Control 
+            id='name'
+            name='name'
+            value={addPersonFormik.values.name}
+            onChange={addPersonFormik.handleChange}
+            isInvalid={!!addPersonFormik.errors.name && !!addPersonFormik.touched.name }
+          />
+          <Form.Control.Feedback type="invalid">{addPersonFormik.errors.name}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-6 col-12">
+          <Form.Label>Phone</Form.Label>
+          <Form.Control 
+            id='phone'
+            name='phone'
+            as={NumberFormat}
+            format="(###) ###-####"
+            value={addPersonFormik.values.phone}
+            onChange={addPersonFormik.handleChange}
+            isInvalid={!!addPersonFormik.errors.phone && !!addPersonFormik.touched.phone }
+          />
+          <Form.Control.Feedback type="invalid">{addPersonFormik.errors.phone}</Form.Control.Feedback>
+        </div>
+      </div>      
+      <div className="row mb-3">
+        <div className="col-md-6 col-12">
+          <Form.Label>Address</Form.Label>
+          <Form.Control 
+            id='address'
+            name='address'
+            value={addPersonFormik.values.address}
+            onChange={addPersonFormik.handleChange}
+            isInvalid={!!addPersonFormik.errors.address && !!addPersonFormik.touched.address }
+          />
+          <Form.Control.Feedback type="invalid">{addPersonFormik.errors.address}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-6 col-12">
+          <Form.Label>City</Form.Label>
+          <Form.Control 
+            id='city'
+            name='city'
+            value={addPersonFormik.values.city}
+            onChange={addPersonFormik.handleChange}
+            isInvalid={!!addPersonFormik.errors.city && !!addPersonFormik.touched.city }
+          />
+          <Form.Control.Feedback type="invalid">{addPersonFormik.errors.city}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-6 col-12">
+          <Form.Label>State</Form.Label>
+          <Form.Control 
+            id='state'
+            name='state'
+            value={addPersonFormik.values.state}
+            onChange={addPersonFormik.handleChange}
+            isInvalid={!!addPersonFormik.errors.state && !!addPersonFormik.touched.state }
+          />
+          <Form.Control.Feedback type="invalid">{addPersonFormik.errors.state}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-6 col-12">
+          <Form.Label>Zipcode</Form.Label>
+          <Form.Control 
+            id='zip'
+            name='zip'
+            value={addPersonFormik.values.zip}
+            onChange={addPersonFormik.handleChange}
+            isInvalid={!!addPersonFormik.errors.zip && !!addPersonFormik.touched.zip }
+          />
+          <Form.Control.Feedback type="invalid">{addPersonFormik.errors.zip}</Form.Control.Feedback>
+        </div>
+      </div>
+                  
+      <Button type='submit' className="btn btn-white">
+        {addPersonResult.loading ? (
+          <Spinner animation="border" />
+        ): "Add"}                
+      </Button>
+    </Form>      
+    
   )
 }
 

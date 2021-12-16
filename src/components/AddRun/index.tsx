@@ -7,7 +7,7 @@ import { CONFIG_NEW_RUN, ADD_NEW_RUN, GET_TRIAL_RUNS } from '../../queries/runs/
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router'
 import { Ability, EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
-import { addRunFormVar } from '../../pages/AddRun'
+import { addRunFormVar } from "../../reactiveVars";
 import { Link } from 'react-router-dom'
 import { Formik, FieldArray } from 'formik'
 import moment from 'moment'
@@ -775,8 +775,7 @@ const AddRun = () => {
             </Form>
           )
         }}        
-      </Formik>    
-      <AddDog open={showAddDog} setOpen={setShowAddDog}/>      
+      </Formik>
     </Container>
   ) : (
     <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

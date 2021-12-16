@@ -8,7 +8,6 @@ import { getEventId, selectedEventMenu } from "../../reactiveVars"
 import { GET_TRIAL_DATES } from './query'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import RedirectComponent from './RedirectComponent';
-import AddRun from '../AddRun';
 import AddRunWizard from '../../components/AddRunWizard';
 
 type ConfigureParams = {
