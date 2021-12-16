@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import { Formik, useFormik } from 'formik'
+import { useFormik } from 'formik'
 import { useMutation } from '@apollo/client'
-import { Input, Button, Container, Checkbox, Dropdown, Message, Modal } from 'semantic-ui-react'
 import { Form, Alert, Spinner } from "react-bootstrap";
 import * as Yup from 'yup'
 import { ADD_DOG } from '../../queries/person/person'
@@ -297,14 +296,12 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
           />
           <Form.Control.Feedback type="invalid">{formik.errors.dam}</Form.Control.Feedback>
         </div>
-      </div>                                  
-      {(result.error && showError) ? (
-          <Message error header="Error" content={result.error.message} />) : null}
-        <button type="submit" className="btn btn-white">
-          {result.loading ? (
-            <Spinner animation="border" />
-          ): "Add"}
-        </button>
+      </div>                                        
+      <button type="submit" className="btn btn-white">
+        {result.loading ? (
+          <Spinner animation="border" />
+        ): "Add"}
+      </button>
     </Form>
   )
 }
