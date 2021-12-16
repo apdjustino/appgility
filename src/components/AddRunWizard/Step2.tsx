@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { AuthContext } from "../../utils/contexts"
 import Select from "react-select";
 import { addRunFormVar } from "../../reactiveVars";
+import AddRun from "../AddRun";
 
 type OwnProps ={ 
   activeStep: number;
@@ -76,6 +77,13 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
           <button className="btn btn-white mb-1" onClick={() => setShowAddDogModal(true)}>Add Dog</button>
         </div>
       </div>
+      {!!runFormData.dogId ? (
+        <div className="row mb-3">
+          <div className="col">
+            <AddRun />
+          </div>
+        </div>
+      ) : null}
       <hr className="my-5"/>
       <Nav className="row align-items-center">
         <div className="col-auto">
