@@ -30,7 +30,7 @@ const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, se
         {trials.length > 0 ? chunkedTrials.map((trialSet) => (
           <div className="row py-4">
             { trialSet.map(trial => (
-              <div className="col-4">
+              <div className="col-md-4 col-12">
                 <div className="card card-fill" key={`trial-card-${trial.id}`}>
                   <div className="card-header">
                     <h4 className="card-header-title">{moment(trial.trialDate, 'YYYY-MM-DD').format('MMMM Do, YYYY')}</h4>

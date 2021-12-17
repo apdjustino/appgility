@@ -110,7 +110,12 @@ const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
           </div>
         </div>
         <div className="col-auto">
-          <button className="btn btn-white" onClick={() => setShowAddPersonModal(true)}>Add New Exhibitor</button>
+          <div className="d-block d-md-none">
+            <button className="btn btn-white btn-rounded-circle" onClick={() => setShowAddPersonModal(true)}>+</button>
+          </div>
+          <div className="d-none d-md-block">
+            <button className="btn btn-white" onClick={() => setShowAddPersonModal(true)}>Add New Exhibitor</button>
+          </div>          
         </div>
       </div>
       <hr className="my-5"/>
