@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
-import { Dropdown, Form, InputGroup } from "react-bootstrap"
+import { Dropdown, Form, InputGroup, ListGroup } from "react-bootstrap"
 import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
@@ -8,6 +8,7 @@ import { Search } from 'react-feather'
 import { RunView } from '../../types/run'
 import RunTable from '../RunTable'
 import { MoreVertical } from "react-feather";
+import { Dog, Person } from '../../types/person'
 
 type ConfigureParams = {
   eventId: string;
@@ -16,6 +17,16 @@ type ConfigureParams = {
 
 type RunQuery = {
   getTrialRuns: RunView[]
+}
+
+type RunSubset = {
+  agilityClass: string;
+  level: string;
+  jumpHeight: number;
+  preferred: boolean;
+  dog: Dog;
+  person: Person;
+  runId: string;
 }
 
 
@@ -73,6 +84,53 @@ const TrialRegistration = () => {
     }
   ]
 
+  const mobileColumns: Column<RunView>[] = [
+    {
+      accessor: ({ agilityClass, level, jumpHeight, preferred, dog, person, runId}) => ({
+        agilityClass,
+        level,
+        jumpHeight,
+        preferred,
+        dog,
+        person,
+        runId
+      }),
+      id: "runId",
+      Header: "",
+      Cell: ({ value }: any) => {
+        return (
+          <ListGroup className="list-group-focus">
+            <ListGroup.Item>
+              <div className="row">
+                <div className="col">
+                  <h4 className="text-body text-focus mb-1">{value.agilityClass} {value.preferred ? "- Preferred" : ""}</h4>
+                  <p className="text-muted">{value.level} {value.jumpHeight}"</p>
+                </div>
+                <div className="col-auto d-flex">
+                  <div>
+                    <h4 className="text-body text-focus mb-1">{!!value.dog ? value.dog.callName : null}</h4>
+                    <p className="text-muted">{!!value.person ? value.person.name : null}</p>
+                  </div>
+                  <div className="ms-4">
+                    <Dropdown align="end">
+                      <Dropdown.Toggle as="span" className="dropdown-ellipses" role="button">
+                        <MoreVertical size={17}/>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu>
+                        <Dropdown.Item href="#!">Move Ups</Dropdown.Item>
+                        <Dropdown.Item href="#!">Remove</Dropdown.Item>              
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>                  
+                </div>
+              </div>
+            </ListGroup.Item>
+          </ListGroup>
+        )
+      }
+    }
+  ]
+
   const columns = useMemo(() => columnsRaw, [])
   const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as RunView[]
 
@@ -95,8 +153,13 @@ const TrialRegistration = () => {
             <InputGroup.Text>
               <Search size="1em" />
             </InputGroup.Text>
-          </InputGroup>            
-            <RunTable data={tableData} columns={columns} />
+          </InputGroup>
+          <div className="d-block d-md-none">
+            <RunTable data={tableData} columns={mobileColumns} showHeader={false}/>
+          </div>       
+          <div className="d-none d-md-block">
+            <RunTable data={tableData} columns={columns} showHeader={true}/>
+          </div>  
           </div>     
       </div>
     </>

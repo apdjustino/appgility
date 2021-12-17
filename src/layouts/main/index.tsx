@@ -49,60 +49,58 @@ const MainLayout = ({
   return (
     <AuthContext.Provider value={userAuth}>
       <Navbar expand="md" className="navbar-vertical fixed-start fs-2" collapseOnSelect={true}>
-        <Container fluid>
+        <Container fluid>        
+        <Navbar.Brand>
+          <Link to="/secretary/home">
+          <img className="navbar-brand-img" src={logo} alt="..." />
+          </Link>
+        </Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse>
           {pathname.includes("home") ? (
-            <Nav>
-              <Link to="/">
-                <Navbar.Brand>
-                  <img className="navbar-brand-img" src={logo} alt="..." />
-                </Navbar.Brand>
-              </Link>
-              <Nav.Item>
-                <Nav.Link href="/secretary/home" role="button" active={pathname.includes("home")}>
-                  <Home size="17" className="me-3"/>
-                  Event Dashboard
-                </Nav.Link>
-              </Nav.Item>
-            </Nav>
-          ) : (
-            <Nav>
-              <Link to="/secretary/home">
-                <Navbar.Brand>
-                  <img className="navbar-brand-img" src="/img/logo.svg" alt="..." />
-                </Navbar.Brand>
-              </Link>
-              <Nav.Item>
-                <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/configuration/trials`)} role="button" active={eventMenu === "configuration"}>
-                  <Tool size="17" className="me-3"/>
-                  Configuration
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/registration`)} role="button" active={eventMenu === "registration"}>
-                  <BookOpen size="17" className="me-3"/>
-                  Registration
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link role="button">
-                  <List size="17" className="me-3"/>
-                  Run Order
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link role="button">
-                  <Edit3 size="17" className="me-3"/>
-                  Scoring
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link role="button">
-                  <Sliders size="17" className="me-3"/>
-                  Reports
-                </Nav.Link>
-              </Nav.Item>
-            </Nav>
-          )}
+              <Nav>              
+                <Nav.Item>
+                  <Nav.Link href="/secretary/home" role="button" active={pathname.includes("home")}>
+                    <Home size="17" className="me-3"/>
+                    Event Dashboard
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            ) : (
+              <Nav>                
+                <Nav.Item>
+                  <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/configuration/trials`)} role="button" active={eventMenu === "configuration"}>
+                    <Tool size="17" className="me-3"/>
+                    Configuration
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/registration`)} role="button" active={eventMenu === "registration"}>
+                    <BookOpen size="17" className="me-3"/>
+                    Registration
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link role="button">
+                    <List size="17" className="me-3"/>
+                    Run Order
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link role="button">
+                    <Edit3 size="17" className="me-3"/>
+                    Scoring
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                  <Nav.Link role="button">
+                    <Sliders size="17" className="me-3"/>
+                    Reports
+                  </Nav.Link>
+                </Nav.Item>
+              </Nav>
+            )}      
+        </Navbar.Collapse>          
           <div className="navbar-user d-none d-md-flex">
             <a className="navbar-user-link" role="button">
               <div className="icon">

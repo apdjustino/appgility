@@ -15,10 +15,10 @@ const EventDashboard = () => {
         </div>
       </div>
       <div className="row px-5 py-3">
-        <div className="col-6">
+        <div className="col-md-6 col-12">
           <RecentActivity />
         </div>
-        <div className="col-6">
+        <div className="col-md-6 col-12">
           <RecentCatalogs />
         </div>
       </div>
