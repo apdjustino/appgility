@@ -9,6 +9,7 @@ import { AuthContext } from '../../utils/contexts'
 import { Tool, BookOpen, List, Edit3, Sliders, Home, Bell } from "react-feather"
 import { Link, useLocation } from "react-router-dom";
 import { getEventId, selectedEventMenu } from '../../reactiveVars'
+import logo from "../../assets/icons/logo.svg";
 
 type LayoutProps = {
   children: React.ReactNode
@@ -53,7 +54,7 @@ const MainLayout = ({
             <Nav>
               <Link to="/">
                 <Navbar.Brand>
-                  <img className="navbar-brand-img" src="/img/logo.svg" alt="..." />
+                  <img className="navbar-brand-img" src={logo} alt="..." />
                 </Navbar.Brand>
               </Link>
               <Nav.Item>

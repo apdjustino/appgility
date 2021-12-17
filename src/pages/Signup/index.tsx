@@ -1,6 +1,7 @@
 import React from "react";
 import { Col, Container, Row } from 'react-bootstrap';
 import SignupForm from "../../components/SignupForm";
+import molly from "../../assets/img/agility/molly-splash-2.jpeg"
 
 const Signup = () => {
   return (
@@ -14,7 +15,7 @@ const Signup = () => {
             <div
               className="bg-cover vh-100 mt-n1 me-n3"
               style={{
-                backgroundImage: 'url(/img/agility/molly-splash-2.jpeg)',
+                backgroundImage: `url(${molly})`,
               }}
             />
           </Col>
