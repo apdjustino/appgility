@@ -1,15 +1,16 @@
 import React from "react";
-import { Nav, Button, Modal, Form } from "react-bootstrap";
+import { Nav, Button, Modal, Form, Spinner, Alert } from "react-bootstrap";
 import AddDog from "../AddDog";
 import { EventTrial } from "../../types/trial";
 import { AddRunDogView } from "../../types/person";
-import { useQuery, useReactiveVar } from "@apollo/client";
-import { CONFIG_NEW_RUN } from "../../queries/runs/runs";
-import { useParams } from "react-router-dom";
-import { AuthContext } from "../../utils/contexts"
+import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
+import { ADD_NEW_RUN, CONFIG_NEW_RUN, GET_TRIAL_RUNS } from "../../queries/runs/runs";
+import { useParams, useHistory } from "react-router-dom";
 import Select from "react-select";
 import { addRunFormVar } from "../../reactiveVars";
 import AddRun from "../AddRun";
+import { Formik } from "formik";
+import { buildRunsToAdd, NewRunForm, Run, RunToAdd } from "../AddRun/utils";
 
 type OwnProps ={ 
   activeStep: number;
@@ -31,13 +32,19 @@ type DogOptions = {
   value: string;
 }
 
+type InitialValues = {
+  trials: NewRunForm[]
+}
+
 const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
   const [showAddDogModal, setShowAddDogModal] = React.useState<boolean>(false);
-  const { eventId } = useParams<Params>();
-  const { userId } = React.useContext(AuthContext)
+  const { eventId, trialId } = useParams<Params>();  
   const [dogOptions, setDogOptions] = React.useState<DogOptions[]>([]);  
   const runFormData = useReactiveVar(addRunFormVar);
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { eventId, personId: runFormData.personId }});
+  const [addRun, result] = useMutation(ADD_NEW_RUN)
+  const [showError, setShowError] = React.useState<string>("");  
+  const history = useHistory();
 
   React.useEffect(() => {
     if (!!data && !!data.getPersonDogs) {
@@ -49,6 +56,25 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
       setDogOptions(options);
     }
   }, [data, setDogOptions])
+
+  const initialValues: InitialValues = {
+    trials: !!data && !loading ? data.getEventTrials.map(trial => ({
+      trialId: trial.trialId,
+      trialDate: trial.trialDate as string,            
+      standardPreferred: false,
+      standardLevel: undefined,            
+      standardHeight: undefined,            
+      jumpersPreferred: false,
+      jumpersLevel: undefined,
+      jumpersHeight: undefined,            
+      fastPreferred: false,
+      fastLevel: undefined,
+      fastHeight: undefined,                  
+      t2bHeight: undefined,      
+      premierStandardHeight: undefined,      
+      premierJumpersHeight: undefined
+    })) : []
+  }
 
   return (
     <>
@@ -77,27 +103,129 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
           <button className="btn btn-white mb-1" onClick={() => setShowAddDogModal(true)}>Add Dog</button>
         </div>
       </div>
-      {!!runFormData.dogId ? (
-        <div className="row mb-3">
-          <div className="col">
-            <AddRun />
-          </div>
-        </div>
-      ) : null}
-      <hr className="my-5"/>
-      <Nav className="row align-items-center">
-        <div className="col-auto">
-          <Button variant="white" type="button" size="lg" onClick={() => setActiveStep(1)}>Back</Button>
-        </div>
-        <div className="col text-center">
-          <h6 className="text-uppercase text-muted mb-0">Step {activeStep} of 2</h6>
-        </div>
-        <div className="col-auto">
-          <Button size="lg" disabled={true} onClick={() => {}}>
-            Finish
-          </Button>
-        </div>
-      </Nav>
+      <Formik
+        enableReinitialize={true}
+        initialValues={initialValues}
+        onSubmit={(values) => {
+          const runs = buildRunsToAdd(values.trials, runFormData.personId, runFormData.dogId)
+          if (runs.length === 0) {
+            setShowError("No runs to add.");
+            return;
+          }
+          console.log(runs);
+          setShowError("");     
+          runs.forEach((run: Run) => {
+            addRun({ variables: {
+              eventId,
+              trialId: (run as RunToAdd).trialId,
+              personId: (run as RunToAdd).personId,
+              dogId: (run as RunToAdd).dogId,
+              run: {
+                agilityClass: (run as RunToAdd).agilityClass,
+                level: (run as RunToAdd).level,
+                jumpHeight: (run as RunToAdd).jumpHeight,
+                preferred: (run as RunToAdd).preferred,
+                group: (run as RunToAdd).group,
+              }
+            }, refetchQueries: [
+              { query: GET_TRIAL_RUNS, variables: { trialId: (run as RunToAdd).trialId }}
+            ]}).then((result) => {
+              history.push(`/secretary/events/${eventId}/registration/${trialId}`);
+            }).catch((e) => {
+              setShowError(e.message)
+            })
+          })
+        }}
+        validate={({ trials }) => {
+          let hasError = false
+          const errors: any = { trials: trials.map(trial => (
+            {
+              standardLevel: undefined,
+              standardHeight: undefined,              
+              jumpersLevel: undefined,
+              jumpersHeight: undefined,              
+              fastLevel: undefined,
+              fastHeight: undefined,                            
+              t2bHeight: undefined,
+              premierStandardHeight: undefined,
+              premierJumpersHeight: undefined
+            }))}
+          trials.forEach((trial, index) => {            
+            if (!!trial.standardLevel || !!trial.standardHeight) {
+              if (!trial.standardLevel) {
+                errors.trials[index].standardLevel = 'Level is required to add this run'
+                hasError = true
+              }
+  
+              if (!trial.standardHeight) {
+                errors.trials[index].standardHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }
+            
+            if (!!trial.jumpersLevel || !!trial.jumpersHeight) {
+              if (!trial.jumpersLevel) {
+                errors.trials[index].jumpersLevel = 'Level is required to add this run'
+                hasError = true
+              }
+  
+              if (!trial.jumpersHeight) {
+                errors.trials[index].jumpersHeight = 'Height is required to add this run'
+                hasError = true
+              }            
+            }
+            
+
+            if (!!trial.fastLevel || !!trial.fastHeight) {
+              if (!trial.fastLevel) {
+                errors.trials[index].fastLevel = 'Level is required to add this run'
+                hasError = true
+              }
+  
+              if (!trial.fastHeight) {
+                errors.trials[index].fastHeight = 'Height is required to add this run'
+                hasError = true
+              }
+            }                        
+          })
+          
+          return hasError ? errors : {}
+        }}
+      >
+        {(formik) => {
+          console.log(formik.touched);
+          return (
+            <>
+            {!!runFormData.dogId ? (
+              <div className="row mb-3">
+                <div className="col">
+                  <AddRun formik={formik}/>
+                </div>
+              </div>
+            ) : null}
+            {!!showError ? (
+              <Alert variant="danger">{showError}</Alert>
+            ) : null}
+            <hr className="my-5"/>
+            <Nav className="row align-items-center">
+              <div className="col-auto">
+                <Button variant="white" type="button" size="lg" onClick={() => setActiveStep(1)}>Back</Button>
+              </div>
+              <div className="col text-center">
+                <h6 className="text-uppercase text-muted mb-0">Step {activeStep} of 2</h6>
+              </div>
+              <div className="col-auto">
+                <Button size="lg" type="button" onClick={() => formik.submitForm()}>
+                  {result.loading ? (
+                    <Spinner animation="border" />
+                  ) : "Finish"}
+                </Button>
+              </div>
+            </Nav>
+          </>
+          )          
+        }}
+      </Formik>             
       <Modal className="modal-lighter" centered show={showAddDogModal} onHide={() => setShowAddDogModal(false)}>
         <Modal.Header>
           <Modal.Title>Add New Dog</Modal.Title>          
