@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
-import { Form, InputGroup } from "react-bootstrap"
+import { Dropdown, Form, InputGroup } from "react-bootstrap"
 import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
 import { Search } from 'react-feather'
 import { RunView } from '../../types/run'
 import RunTable from '../RunTable'
+import { MoreVertical } from "react-feather";
 
 type ConfigureParams = {
   eventId: string;
@@ -52,6 +53,23 @@ const TrialRegistration = () => {
       accessor: 'person',
       Header: 'Owner',
       Cell: ({ value }) => String(value.name),
+    },
+    {
+      accessor: "runId",
+      Header: "",
+      Cell: ({ value }) => {        
+        return (
+          <Dropdown align="end">
+            <Dropdown.Toggle as="span" className="dropdown-ellipses" role="button">
+              <MoreVertical size={17}/>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item href="#!">Move Ups</Dropdown.Item>
+              <Dropdown.Item href="#!">Remove</Dropdown.Item>              
+            </Dropdown.Menu>
+          </Dropdown>
+        )
+      }
     }
   ]
 
