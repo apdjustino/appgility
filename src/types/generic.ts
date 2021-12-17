@@ -7,3 +7,8 @@ export type Scalars = {
 };
 
 export type Maybe<T> = T | null;
+
+export type SelectOptions<T> = {
+  label: string;
+  value: T
+}

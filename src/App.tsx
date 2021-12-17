@@ -2,11 +2,10 @@ import React from 'react';
 import { Router, Switch, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
 import Home from './pages/Home'
-import Splash from './pages/Splash'
-import EventHome from './pages/EventHome'
-import Layout from './layouts/main'
+import Signup from "./pages/Signup";
 import history from './utils/history'
 import { ExpiredTokenLink } from './links/ExpiredToken'; 
+import { CleanTypeName } from './links/CleanTypeName';
 
 import './App.css';
 import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
@@ -38,21 +37,18 @@ function App() {
       }
     }
   });  
-  const link = ApolloLink.from([withToken, ExpiredTokenLink, httpLink]);
+  const link = ApolloLink.from([withToken, CleanTypeName, ExpiredTokenLink, httpLink]);
   const client = new ApolloClient({    
     link,
     cache: new InMemoryCache(),    
   })
   return (
     <ApolloProvider client={client}>
-      <Router history={history}>
-        <Layout>
-          <Switch>      
-            <ProtectedRoute path='/events/:eventId' component={EventHome} />
-            <ProtectedRoute path='/home' component={Home} />
-            <Route path='/' component={Splash} />       
-          </Switch>
-        </Layout>      
+      <Router history={history}>        
+          <Switch>            
+            <ProtectedRoute path='/secretary' component={Home} />
+            <Route path='/' component={Signup} />       
+          </Switch>        
       </Router>
     </ApolloProvider>
     

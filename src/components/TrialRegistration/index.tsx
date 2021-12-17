@@ -1,33 +1,27 @@
-import style from './TrialRegistration.module.scss'
-
 import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
-import { Button, Grid, Icon, Popup, List } from 'semantic-ui-react'
-import { useHistory, useRouteMatch } from 'react-router'
+import { Dropdown, Form, InputGroup } from "react-bootstrap"
+import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
+import { Search } from 'react-feather'
 import { RunView } from '../../types/run'
-import Table from '../Table'
+import RunTable from '../RunTable'
+import { MoreVertical } from "react-feather";
 
-type ButtonGroupItem = {
-  key: string,
-  icon: string
+type ConfigureParams = {
+  eventId: string;
+  trialId: string;
 }
 
 type RunQuery = {
   getTrialRuns: RunView[]
 }
 
-type OwnProps = {
-  trialId: string
-}
 
-const TrialRegistration = ({ trialId } : OwnProps) => { 
-  const history = useHistory()
-  const { url } = useRouteMatch()
+const TrialRegistration = () => { 
+  const { eventId, trialId } = useParams<ConfigureParams>();
   const trialRunsQuery = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})
-
-  console.log(trialRunsQuery.data);
   
   const columnsRaw: Column<RunView>[] = [
     {
@@ -59,6 +53,23 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
       accessor: 'person',
       Header: 'Owner',
       Cell: ({ value }) => String(value.name),
+    },
+    {
+      accessor: "runId",
+      Header: "",
+      Cell: ({ value }) => {        
+        return (
+          <Dropdown align="end">
+            <Dropdown.Toggle as="span" className="dropdown-ellipses" role="button">
+              <MoreVertical size={17}/>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item href="#!">Move Ups</Dropdown.Item>
+              <Dropdown.Item href="#!">Remove</Dropdown.Item>              
+            </Dropdown.Menu>
+          </Dropdown>
+        )
+      }
     }
   ]
 
@@ -66,18 +77,29 @@ const TrialRegistration = ({ trialId } : OwnProps) => {
   const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as RunView[]
 
   return (
-    <div className={style.container}>
-      <div className={style.buttonGroupContainer}>          
-          <Button.Group>
-            <Popup content='Add trial run' trigger={<Button icon onClick={() => history.push(`${url}/add/person`)}><Icon name='add circle' /></Button>}/>
-            <Popup content='Configure online registration' trigger={<Button icon><Icon name='settings' /></Button>}/>            
-            <Popup content='Upload trial data' trigger={<Button icon><Icon name='cloud upload' /></Button>}/>                        
-          </Button.Group>          
+    <>
+      <div className="row pb-3">
+        <div className="col">
+          <div className="header-pretitle">Runs</div>
         </div>
-        <div className={style.tableContainer}>
-          <Table data={tableData} columns={columns} />
-        </div>     
-    </div>
+        <div className="col-auto">
+          <Link to={`/secretary/events/${eventId}/registration/${trialId}/add`}>
+            <button className="btn btn-white" type="button">Add New Run</button>
+          </Link>          
+        </div>        
+      </div>
+      <div className="row pt-3">
+        <div className="col">
+          <InputGroup className="input-group-merge input-group-reverse mb-3">
+            <Form.Control type="search" placeholder="Search runs"/>
+            <InputGroup.Text>
+              <Search size="1em" />
+            </InputGroup.Text>
+          </InputGroup>            
+            <RunTable data={tableData} columns={columns} />
+          </div>     
+      </div>
+    </>
   )
 }
 

@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { useFormik } from 'formik'
-import { Modal, Form, Button, Input } from 'semantic-ui-react'
+import { Modal, Form, Button, Spinner } from "react-bootstrap";
 import { useMutation } from '@apollo/client'
 import { ADD_NEW_EVENT, GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import { AuthContext } from '../../utils/contexts'
@@ -14,13 +14,14 @@ interface InitialValues {
 }
 
 interface OwnProps {
-  setAddDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
+  showDialog: boolean;
+  setShowDialog: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
+const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
   const userAuth = useContext(AuthContext)
   const [addNewEvent, result] = useMutation(ADD_NEW_EVENT, { 
-    update: () => setAddDialogOpen(false),
+    update: () => setShowDialog(false),
     refetchQueries: [
       { query: GET_PERSON_EVENTS, variables: { personId: userAuth.userId} }
     ]
@@ -60,77 +61,77 @@ const AddNewTrial = ({ setAddDialogOpen }: OwnProps) => {
   
   return (
     <>
-      <Modal.Content>
-        <Form>
-          <Form.Field
-            id='name'
-            label='Name'
-            placeholder='Name'
-            control={Input}
-            value={formik.values.name}
-            onChange={formik.handleChange}
-            error={formik.errors.name && formik.touched.name ? {
-              content: formik.errors.name,
-              pointing: 'above'
-            } : undefined}
-          />                                     
-          <Form.Field 
-            id='locationCity'
-            label='City'
-            placeholder='City' 
-            control={Input}             
-            type='text'
-            value={formik.values.locationCity} 
-            onChange={formik.handleChange}
-            error={formik.errors.locationCity && formik.touched.locationCity ? {
-              content: formik.errors.locationCity,
-              pointing: 'above'
-            } : undefined}
-          />
-          <Form.Field 
-            id='locationState'
-            label='State'
-            placeholder='State' 
-            control={Input}             
-            type='text'
-            value={formik.values.locationState} 
-            onChange={formik.handleChange}
-            error={formik.errors.locationState && formik.touched.locationState ? {
-              content: formik.errors.locationState,
-              pointing: 'above'
-            } : undefined}
-          />          
-          <Form.Field 
-            id='trialSite'
-            label='Trial Site'
-            placeholder='Trial Site' 
-            control={Input}             
-            type='text'
-            value={formik.values.trialSite} 
-            onChange={formik.handleChange}
-            error={formik.errors.trialSite && formik.touched.trialSite ? {
-              content: formik.errors.trialSite,
-              pointing: 'above'
-            } : undefined}
-          />          
-          <Form.Field 
-            id='hostClub'
-            label='Host Club'
-            placeholder='Host Club' 
-            control={Input}             
-            type='text'
-            value={formik.values.hostClub} 
-            onChange={formik.handleChange}
-            error={formik.errors.hostClub && formik.touched.hostClub ? {
-              content: formik.errors.hostClub,
-              pointing: 'above'
-            } : undefined}
-          />          
-        </Form>
-      </Modal.Content>
-      <Modal.Actions>
-        <Button color='black' onClick={() => formik.handleSubmit()} loading={result.loading}>Add Event</Button>
-      </Modal.Actions>
+      <Modal className="modal-lighter" centered show={showDialog} onHide={() => setShowDialog(false)}>
+        <Modal.Header>
+          <Modal.Title>Create New Event</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <div className="form-group"> 
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                id="name"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                isInvalid={!!formik.errors.name && !!formik.touched.name}
+              />
+              <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
+            </div>
+            <div className="form-group"> 
+              <Form.Label>City</Form.Label>
+              <Form.Control
+                id="locationCity"
+                name="locationCity"
+                value={formik.values.locationCity}
+                onChange={formik.handleChange}
+                isInvalid={!!formik.errors.locationCity && !!formik.touched.locationCity}
+              />
+              <Form.Control.Feedback type="invalid">{formik.errors.locationCity}</Form.Control.Feedback>
+            </div>
+            <div className="form-group">
+              <Form.Label>State</Form.Label>
+              <Form.Control
+                id="locationState"
+                name="locationState"
+                value={formik.values.locationState}
+                onChange={formik.handleChange}
+                isInvalid={!!formik.errors.locationState && !!formik.touched.locationState}
+              />
+              <Form.Control.Feedback type="invalid">{formik.errors.locationState}</Form.Control.Feedback>
+            </div>
+            <div className="form-group">
+              <Form.Label>Trial Site</Form.Label>
+              <Form.Control
+                id="trialSite"
+                name="trialSite"
+                value={formik.values.trialSite}
+                onChange={formik.handleChange}
+                isInvalid={!!formik.errors.trialSite && !!formik.touched.trialSite}
+              />
+              <Form.Control.Feedback type="invalid">{formik.errors.trialSite}</Form.Control.Feedback>
+            </div>
+            <div className="form-group">
+              <Form.Label>Host Club</Form.Label>
+              <Form.Control
+                id="hostClub"
+                name="hostClub"
+                value={formik.values.hostClub}
+                onChange={formik.handleChange}
+                isInvalid={!!formik.errors.hostClub && !!formik.touched.hostClub}
+              />
+              <Form.Control.Feedback type="invalid">{formik.errors.hostClub}</Form.Control.Feedback>
+            </div>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => formik.handleSubmit()}>
+            {result.loading ? (
+              <Spinner animation="border"/>
+            ): "Add Event"}          
+          </Button>
+        </Modal.Footer>
+      </Modal>            
     </>
   )
 }

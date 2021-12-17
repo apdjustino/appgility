@@ -1,9 +1,10 @@
-import style from './TrialCards.module.scss'
-
 import React from 'react'
-import { Container, Card, Button, Dropdown, Menu, Icon, Dimmer, Loader } from 'semantic-ui-react'
-import { QueryResult } from '@apollo/client'
+import { Card, Modal } from "react-bootstrap";
+import { Edit } from "react-feather"
 import moment from 'moment'
+import { chunk } from "lodash";
+import { EventTrial } from '../../types/trial'
+import AddTrial from '../AddTrial';
 
 type SkillLevel = {
   nov: string,
@@ -12,110 +13,112 @@ type SkillLevel = {
   mast: string
 }
 
-type ownProps = {
-  query: QueryResult<any, {eventId: string}>,
-  setTrial: (trialId: string) => void
+type OwnProps = {
+  trials: EventTrial[];
+  selectedTrial: string;
+  addTrialModal: boolean;
+  setSelectedTrial: React.Dispatch<React.SetStateAction<string>>;
+  setAddTrialModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const TrialCards = ({ query, setTrial }: ownProps) => {   
-  const lookup: SkillLevel = {
-    nov: 'Novice',
-    open: 'Open',
-    exc: 'Excellent',
-    mast: 'Masters'
-  }
-  return (
-    <Container>      
-      <div className={style.cardContainer}>
-        <Card.Group>
-        { query && !query.loading ? query.data.getEventTrials.map((trial: any) => (
-          <Card key={`trial-card-${trial.id}`}>
-            <Card.Content extra>
-              <Card.Header>{moment(trial.trialDate, 'YYYY-MM-DD').format('MMMM Do, YYYY')}</Card.Header>
-              <Card.Meta>{trial.akcTrialNumber}</Card.Meta>       
-            </Card.Content>
-            
-            <Card.Content>
-              <Card.Description>
-                  <div className={style.entries}>Run Limit: <span>{trial.runLimit}</span></div>
-                  <div className={style.entries}>Online Entries: <span>{trial.onlineEntries}</span></div>
-                  <div className={style.entries}>Mail-in Entries: <span>{trial.mailEntries}</span></div>
-              </Card.Description>              
-                <div className={style.menuContainer}>
-                  <Menu vertical>
-                    {trial.standardAbility && trial.standardAbility.length > 0 ? (
-                      <Dropdown text="Standard" simple item options={trial.standardAbility.map((ability: any, i: number) => ({
-                        key: i,
-                        text: lookup[ability as keyof SkillLevel],
-                        value: 0
-                      }))}/>
-                    ): null }               
-                    {trial.standardPreferred && trial.standardPreferred.length > 0 ? (
-                      <Dropdown text="Standard Preferred" simple item options={trial.standardPreferred.map((ability: any, i: number) => ({
-                        key: i,
-                        text: lookup[ability as keyof SkillLevel],
-                        value: 0
-                      }))}/> 
-                    ): null }
-                    
-                    {trial.jumpersAbility && trial.jumpersAbility.length > 0 ? (
-                      <Dropdown text="Jumpers" simple item options={trial.jumpersAbility.map((ability: any, i: number) => ({
-                        key: i,
-                        text: lookup[ability as keyof SkillLevel],
-                        value: 0
-                      }))}/>
-                    ): null }             
-                    
-                    {trial.jumpersPreferred && trial.jumpersPreferred.length > 0 ? (
-                      <Dropdown text="Jumpers Preferred" simple item options={trial.jumpersPreferred.map((ability: string, i: number) => ({
-                        key: i,
-                        text: lookup[ability as keyof SkillLevel],
-                        value: 0
-                      }))}/>
-                    ): null }
-                    
-                    {trial.fastAbility && trial.fastAbility.length > 0 ? (
-                      <Dropdown text="FAST" simple item options={trial.fastAbility.map((ability: any, i: number) => ({
-                        key: i,
-                        text: lookup[ability as keyof SkillLevel],
-                        value: 0
-                      }))}/>
-                    ) : null }
-                    
+const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, setAddTrialModal }: OwnProps) => {   
+    
+  const chunkedTrials = chunk(trials, 3);
 
-                    {trial.fastPreferred && trial.fastPreferred.length > 0 ? (
-                      <Dropdown text="FAST Preferred" simple item options={trial.fastPreferred.map((ability: any, i: number) => ({
-                        key: i,
-                        text: lookup[ability as keyof SkillLevel],
-                        value: 0
-                      }))}/>
-                    ) : null }               
-                    {trial.t2bClass ? <Menu.Item>T2B</Menu.Item> : null}
-                    {trial.premierStandard ? <Menu.Item>Premier Standard</Menu.Item> : null}
-                    {trial.premierJumpers ? <Menu.Item>Premier Jumpers</Menu.Item> : null}
-                  </Menu>                            
-                </div>              
-              </Card.Content>
-              <Card.Content extra>
-              <div className='ui two buttons'>
-                <Button color='black' icon onClick={() => setTrial(trial.id)}>
-                  <Icon name="edit outline" style={{ paddinRight: "1em"}} />
-                  Edit
-                </Button>              
+  return (          
+      <>   
+        {trials.length > 0 ? chunkedTrials.map((trialSet) => (
+          <div className="row py-4">
+            { trialSet.map(trial => (
+              <div className="col-4">
+                <div className="card card-fill" key={`trial-card-${trial.id}`}>
+                  <div className="card-header">
+                    <h4 className="card-header-title">{moment(trial.trialDate, 'YYYY-MM-DD').format('MMMM Do, YYYY')}</h4>
+                    <button className="btn btn-rounded-circle" onClick={() => {
+                      setSelectedTrial(trial.trialId);
+                      setAddTrialModal(true);
+                    }}>
+                      <Edit />
+                    </button>
+                  </div>
+                  
+                  <div className="card-body">
+                    <div className="row py-2">
+                      <Card.Text>
+                          <div>Run Limit: <span>{trial.runLimit}</span></div>
+                          <div>Online Entries: <span>{trial.onlineEntries}</span></div>
+                          <div>Mail-in Entries: <span>{trial.mailEntries}</span></div>
+                      </Card.Text>              
+                    </div>
+                    <div className="row py-2">
+                      <div className="list-group list-group-focus">
+                        {!!trial.standardAbility && trial.standardAbility.length > 0 ? (
+                          <div className="list-group-item">
+                            <h4 className="text-body text-focus mb-1 fw-bold">Standard:</h4>
+                            <p className="text-muted mb-0">{trial.standardAbility?.map(x => x?.label).join(", ")}</p>
+                          </div>                          
+                        ): null }               
+                        
+                        {!!trial.standardPreferred && trial.standardPreferred.length > 0 ? (
+                          <div className="list-group-item">
+                            <h4 className="text-body text-focus mb-1 fw-bold">Standard Preferred:</h4>
+                            <p className="text-muted mb-0">{trial.standardPreferred?.map(x => x?.label).join(", ")}</p>
+                          </div> 
+                        ): null }
+                        
+                        {!!trial.jumpersAbility && trial.jumpersAbility.length > 0 ? (
+                          <div className="list-group-item">
+                            <h4 className="text-body text-focus mb-1 fw-bold">Jumpers:</h4>
+                            <p className="text-muted mb-0">{trial.jumpersAbility?.map(x => x?.label).join(", ")}</p>
+                          </div> 
+                        ): null }           
+                        
+                        {!!trial.jumpersPreferred && trial.jumpersPreferred.length > 0 ? (
+                          <div className="list-group-item">
+                            <h4 className="text-body text-focus mb-1 fw-bold">Jumpers Preferred:</h4>
+                            <p className="text-muted mb-0">{trial.jumpersPreferred?.map(x => x?.label).join(", ")}</p>
+                          </div>
+                        ): null }  
+                        
+                        {!!trial.fastAbility && trial.fastAbility.length > 0 ? (
+                          <div className="list-group-item">
+                            <h4 className="text-body text-focus mb-1 fw-bold">FAST:</h4>
+                            <p className="text-muted mb-0">{trial.fastAbility?.map(x => x?.label).join(", ")}</p>
+                          </div>
+                        ): null }  
+                        
+                        {!!trial.fastPreferred && trial.fastPreferred.length > 0 ? (
+                          <div className="list-group-item">
+                            <h4 className="text-body text-focus mb-1 fw-bold">FAST Preferred:</h4>
+                            <p className="text-muted mb-0">{trial.fastPreferred?.map(x => x?.label).join(", ")}</p>
+                          </div>
+                        ): null }  
+
+                        {trial.t2bClass ? <div className="list-group-item fw-bold">T2B</div> : null}
+                        {trial.premierStandard ? <div className="list-group-item fw-bold">Premier Standard</div> : null}
+                        {trial.premierJumpers ? <div className="list-group-item fw-bold">Premier Jumpers</div> : null}
+                      </div> 
+                    </div>                    
+              
+                  </div>
+                </div>
               </div>
-              </Card.Content>
-          </Card>
+            ))}
+          </div>          
         )) : (
-          <div style={{height: '100vh'}}>
-            <Dimmer active>
-              <Loader>Loading</Loader>
-            </Dimmer>
+          <div className="d-flex flex-column justify-content-center align-items-center my-6">
+            <h2 className="text-body fst-italic">No Trials Found</h2>          
           </div>
-          
-        )}
-        </Card.Group>        
-      </div>
-    </Container>
+        ) }
+        <Modal className="modal-lighter modal-card" centered show={addTrialModal} onHide={() => setAddTrialModal(false)}>
+          <Modal.Header>
+            <Modal.Title>{selectedTrial === "" ? "Add Trial" : "Edit Trial"}</Modal.Title>            
+          </Modal.Header>
+          <Modal.Body>
+            <AddTrial trialId={selectedTrial} />
+          </Modal.Body>
+        </Modal>            
+      </>    
   )
 }
 

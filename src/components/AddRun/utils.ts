@@ -1,32 +1,26 @@
-type NewRunForm = {
-  trialId: string,  
-  standardType: string,
-  standardLevel: string,            
-  standardHeight: string,
-  standardPrefLevel: string,
-  standardPrefHeight: string,
-  jumpersType: string,
-  jumpersLevel: string,
-  jumpersHeight: string,
-  jumpersPrefLevel: string,
-  jumpersPrefHeight: string,
-  fastType: string,
-  fastLevel: string,
-  fastHeight: string, 
-  fastPrefLevel: string,
-  fastPrefHeight: string,
-  t2b: boolean,
-  t2bHeight: string,
-  premierStandard: boolean,
-  premierStandardHeight: string,
-  premierJumpers: boolean
-  premierJumpersHeight: string
+import { SelectOptions } from "../../types/generic"
+
+export type NewRunForm = {
+  trialId: string,
+  trialDate: string,
+  standardPreferred: boolean,
+  standardLevel: SelectOptions<string> | undefined,
+  standardHeight: SelectOptions<number> | undefined,
+  jumpersPreferred: boolean,
+  jumpersLevel: SelectOptions<string> | undefined,
+  jumpersHeight: SelectOptions<number> | undefined,  
+  fastPreferred: boolean,
+  fastLevel: SelectOptions<string> | undefined,
+  fastHeight: SelectOptions<number> | undefined,     
+  t2bHeight: SelectOptions<number> | undefined,  
+  premierStandardHeight: SelectOptions<number> | undefined,  
+  premierJumpersHeight: SelectOptions<number> | undefined
 }
 
 export type RunToAdd = {
   agilityClass: 'STANDARD' | 'JUMPERS' | 'FAST' | 'T2B' | 'PREMIER_STANDARD' | 'PREMIER_JUMPERS',
   level: string,
-  jumpHeight: string,
+  jumpHeight: number,
   trialId: string,  
   group: string,
   personId: string,
@@ -43,120 +37,120 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
   const runsToAdd: Run[] = []
 
   formData.forEach(trial => {
-    if (trial.standardType === 'regular') {
+    if (!trial.standardPreferred && !!trial.standardLevel && !!trial.standardHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'STANDARD',
-        level: trial.standardLevel,
-        jumpHeight: trial.standardHeight,
+        level: trial.standardLevel.value,
+        jumpHeight: trial.standardHeight.value,
         preferred: false,
-        group: `standard-${trial.standardLevel}-${trial.standardHeight}`
+        group: `standard-${trial.standardLevel.value}-${trial.standardHeight.value}`
       })
     }
     
-    if (trial.standardType === 'preferred') {
+    if (trial.standardPreferred && !!trial.standardLevel && !!trial.standardHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'STANDARD',
-        level: trial.standardPrefLevel,
-        jumpHeight: trial.standardPrefLevel,
+        level: trial.standardLevel.value,
+        jumpHeight: trial.standardHeight.value,
         preferred: true,
-        group: `standard-${trial.standardPrefLevel}-${trial.standardPrefHeight}`
+        group: `standard-${trial.standardLevel.value}-${trial.standardHeight.value}`
       })
     }
 
-    if (trial.jumpersType === 'regular') {
+    if (!trial.jumpersPreferred && !!trial.jumpersLevel && !!trial.jumpersHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'JUMPERS',
-        level: trial.jumpersLevel,
-        jumpHeight: trial.jumpersHeight,
+        level: trial.jumpersLevel.value,
+        jumpHeight: trial.jumpersHeight.value,
         preferred: false,
-        group: `jumpers-${trial.jumpersLevel}-${trial.jumpersHeight}`
+        group: `jumpers-${trial.jumpersLevel.value}-${trial.jumpersHeight.value}`
       })
     }
 
-    if (trial.jumpersType === 'preferred') {
+    if (trial.jumpersPreferred && !!trial.jumpersLevel && !!trial.jumpersHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'JUMPERS',
-        level: trial.jumpersPrefLevel,
-        jumpHeight: trial.jumpersPrefHeight,
+        level: trial.jumpersLevel.value,
+        jumpHeight: trial.jumpersHeight.value,
         preferred: true,
-        group: `jumpers-${trial.standardPrefLevel}-${trial.standardPrefHeight}`
+        group: `jumpers-${trial.jumpersLevel.value}-${trial.jumpersHeight.value}`
       })
     }
 
-    if (trial.fastType === 'regular') {
+    if (!trial.fastPreferred && !!trial.fastHeight && !!trial.fastLevel) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'FAST',
-        level: trial.fastLevel,
-        jumpHeight: trial.fastHeight,
+        level: trial.fastLevel.value,
+        jumpHeight: trial.fastHeight.value,
         preferred: false,
-        group: `fast-${trial.fastLevel}-${trial.fastHeight}`
+        group: `fast-${trial.fastLevel.value}-${trial.fastHeight.value}`
       })
     }
 
-    if (trial.fastType === 'preferred') {
+    if (trial.fastPreferred && !!trial.fastHeight && !!trial.fastLevel) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'FAST',
-        level: trial.fastPrefLevel,
-        jumpHeight: trial.fastPrefHeight,
+        level: trial.fastLevel.value,
+        jumpHeight: trial.fastHeight.value,
         preferred: true,
-        group: `fast-${trial.fastPrefLevel}-${trial.fastPrefHeight}`
+        group: `fast-${trial.fastLevel.value}-${trial.fastHeight.value}`
       })
     }
 
-    if (trial.t2b) {
+    if (!!trial.t2bHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'T2B',
         level: null,
-        jumpHeight: trial.t2bHeight,
+        jumpHeight: trial.t2bHeight.value,
         preferred: false,
-        group: `t2b-${trial.t2bHeight}`
+        group: `t2b-${trial.t2bHeight.value}`
       })
     }
 
-    if (trial.premierStandard) {
+    if (!!trial.premierStandardHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'PREMIER_STANDARD',
         level: null,
-        jumpHeight: trial.premierStandardHeight,
+        jumpHeight: trial.premierStandardHeight.value,
         preferred: false,
-        group: `t2b-${trial.premierStandardHeight}`
+        group: `t2b-${trial.premierStandardHeight.value}`
       })
     }
 
-    if (trial.premierJumpers) {
+    if (!!trial.premierJumpersHeight) {
       runsToAdd.push({
         trialId: trial.trialId,
         personId,
         dogId,
         agilityClass: 'PREMIER_JUMPERS',
         level: null,
-        jumpHeight: trial.premierJumpersHeight,
+        jumpHeight: trial.premierJumpersHeight.value,
         preferred: false,
-        group: `t2b-${trial.premierJumpersHeight}`
+        group: `t2b-${trial.premierJumpersHeight.value}`
       })
     }
 

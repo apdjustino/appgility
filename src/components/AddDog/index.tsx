@@ -1,40 +1,35 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { useMutation } from '@apollo/client'
-import { Form, Input, Button, Container, Checkbox, Dropdown, Message, Modal } from 'semantic-ui-react'
+import { Form, Alert, Spinner } from "react-bootstrap";
 import * as Yup from 'yup'
 import { ADD_DOG } from '../../queries/person/person'
-import { addRunFormVar } from '../../pages/AddRun'
+import { addRunFormVar } from "../../reactiveVars";
 import { CONFIG_NEW_RUN } from '../../queries/runs/runs'
 import { useParams } from 'react-router'
+import { AuthContext } from '../../utils/contexts'
+import Select from "react-select";
+import { SelectOptions } from '../../types/generic';
 
 export enum Sex {
   MALE,
   FEMALE
 }
 
-type SelectOptions<T> = {
-  id: string,
-  key: string,
-  text: string,
-  value: T
+type OwnProps = {  
+  setShowAddDogModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-type OwnProps = {
-  open: boolean,
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
+const AddDog = ({ setShowAddDogModal }: OwnProps) => {
 
-const AddDog = ({ open, setOpen }: OwnProps) => {
-
+  const { userId } = React.useContext(AuthContext);
   const { personId } = addRunFormVar()
   const { eventId } = useParams<any>()
   const [showError, setShowError] = useState(false)  
 
   const [addDog, result] = useMutation(ADD_DOG, {
-    update: (values) => {
-      console.log(values)
-      setOpen(false)
+    update: (values) => {      
+      setShowAddDogModal(false)
     },
     refetchQueries: [
       { query: CONFIG_NEW_RUN, variables: { personId, eventId }}
@@ -51,8 +46,14 @@ const AddDog = ({ open, setOpen }: OwnProps) => {
     variety: Yup.string(),
     placeOfBirth: Yup.string(),
     dob: Yup.string().required('Date of Birth is required'),
-    jumpHeight: Yup.string().required('Jump Height is required'),
-    sex: Yup.string().required('Sex is required'),
+    jumpHeight: Yup.object().required('Jump Height is required').shape({
+      label: Yup.string(),
+      value: Yup.string()
+    }),
+    sex: Yup.object().required('Sex is required').shape({
+      label: Yup.string(),
+      value: Yup.string()
+    }),
     breeder: Yup.string(),
     sire: Yup.string(),
     dam: Yup.string()
@@ -71,16 +72,24 @@ const AddDog = ({ open, setOpen }: OwnProps) => {
       variety: '',
       placeOfBirth: '',
       dob: '',
-      jumpHeight: '',
-      sex: 'FEMALE',
+      jumpHeight: undefined,
+      sex: undefined,
       breeder: '',
       sire: '',
       dam: ''
     },
     onSubmit: (values) => {
+      const valuesCopy = { ...values };
+      
+      if (!!values.jumpHeight && !!values.sex) {
+        valuesCopy.jumpHeight = (values.jumpHeight as any).value;
+        valuesCopy.sex = (values.sex as any).value;
+      }
+
       addDog({variables: {
         personId,
-        dog: values
+        secretaryId: userId,
+        dog: valuesCopy
       }}).catch(() => {
         setShowError(true)
       })
@@ -89,213 +98,211 @@ const AddDog = ({ open, setOpen }: OwnProps) => {
   })
 
   const heightValues: SelectOptions<string>[] = [
-    { id: '4', key: '4', value: '4', text: '4"'},
-    { id: '8', key: '8', value: '8', text: '8"'},
-    { id: '12', key: '12', value: '12', text: '12"'},
-    { id: '16', key: '16', value: '16', text: '16"'},
-    { id: '20', key: '20', value: '20', text: '20"'},
-    { id: '24', key: '24', value: '24', text: '24"'},
+    { value: "4", label: '4"'},
+    { value: "8", label: '8"'},
+    { value: "12", label: '12"'},
+    { value: "16", label: '16"'},
+    { value: "20", label: '20"'},
+    { value: "24", label: '24"'},
   ]
 
   const sexValues: SelectOptions<string>[] = [
-    { id: '0', key: '0', value: 'MALE', text: 'Male'},
-    { id: '1', key: '1', value: 'FEMALE', text: 'Female'},
+    { value: 'MALE', label: 'Male'},
+    { value: 'FEMALE', label: 'Female'},
   ]
 
   return (
-    <Modal open={open} onClose={() => setOpen(false)}>
-        <Modal.Header>Add Dog</Modal.Header>
-          <Modal.Content>
-            <Form onSubmit={formik.handleSubmit} error={!!result.called && !!result.error}>
-              <Form.Input 
-                id='callName'
-                name='callName'
-                label="Call Name:"
-                control={Input}
-                value={formik.values.callName}
-                onChange={formik.handleChange}
-                error={formik.errors.callName && formik.touched.callName ? {
-                  content: formik.errors.callName,
-                  pointing: 'above'
-                }: undefined}          
-              />
-              <Form.Input 
-                id='akcName'
-                name='akcName'
-                label="AKC Name:"
-                control={Input}
-                value={formik.values.akcName}
-                onChange={formik.handleChange}
-                error={formik.errors.akcName && formik.touched.akcName ? {
-                  content: formik.errors.akcName,
-                  pointing: 'above'
-                }: undefined}          
-              />
-              <Form.Input 
-                id='akcNumber'
-                name='akcNumber'
-                label="AKC Number:"
-                control={Input}
-                value={formik.values.akcNumber}
-                onChange={formik.handleChange}
-                error={formik.errors.akcNumber && formik.touched.akcNumber ? {
-                  content: formik.errors.akcNumber,
-                  pointing: 'above'
-                }: undefined}          
-              />
-              <Form.Group>
-                <Form.Input 
-                    id='needsMeasured'
-                    name='needsMeasured'
-                    label="This dog needs to be measured:"
-                    control={Checkbox}
-                    value={formik.values.needsMeasured}
-                    onChange={formik.handleChange}
-                    error={formik.errors.needsMeasured && formik.touched.needsMeasured ? {
-                      content: formik.errors.needsMeasured,
-                      pointing: 'above'
-                    }: undefined}          
-                  />
-                  <Form.Input 
-                    id='withersHeight'
-                    name='withersHeight'
-                    label="Height at withers:"
-                    control={Input}
-                    value={formik.values.withersHeight}
-                    onChange={formik.handleChange}
-                    error={formik.errors.withersHeight && formik.touched.withersHeight ? {
-                      content: formik.errors.withersHeight,
-                      pointing: 'above'
-                    }: undefined}          
-                  />
-                  <Form.Input 
-                    id='jumpHeight'
-                    name='jumpHeight'
-                    label="Jump Height:"
-                    selection
-                    control={Dropdown}
-                    value={formik.values.jumpHeight}
-                    options={heightValues}
-                    onChange={(e: any, d: any) => {
-                      formik.setFieldValue('jumpHeight', d.value)
-                    }}
-                    error={formik.errors.jumpHeight && formik.touched.jumpHeight ? {
-                      content: formik.errors.jumpHeight,
-                      pointing: 'above'
-                    }: undefined}          
-                  />
-              </Form.Group>
-              <Form.Group>
-                <Form.Input 
-                  id='breed'
-                  name='breed'
-                  label="Breed:"
-                  control={Input}
-                  value={formik.values.breed}
-                  onChange={formik.handleChange}
-                  error={formik.errors.breed && formik.touched.breed ? {
-                    content: formik.errors.breed,
-                    pointing: 'above'
-                  }: undefined}          
-                />
-                <Form.Input 
-                  id='variety'
-                  name='variety'
-                  label="Variety:"
-                  control={Input}
-                  value={formik.values.variety}
-                  onChange={formik.handleChange}
-                  error={formik.errors.variety && formik.touched.variety ? {
-                    content: formik.errors.variety,
-                    pointing: 'above'
-                  }: undefined}          
-                />
-                <Form.Input 
-                  id='sex'
-                  name='sex'
-                  label="Sex:"
-                  control={Dropdown}
-                  selection
-                  options={sexValues}
-                  value={formik.values.sex}
-                  onChange={(e: any, d: any) => {
-                    formik.setFieldValue('sex', d.value)
-                  }}
-                  error={formik.errors.sex && formik.touched.sex ? {
-                    content: formik.errors.sex,
-                    pointing: 'above'
-                  }: undefined}          
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Input 
-                  id='dob'
-                  name='dob'
-                  label="Date of Birth:"
-                  control='input'
-                  type='date'
-                  value={formik.values.dob}
-                  onChange={formik.handleChange}            
-                />
-                <Form.Input 
-                  id='placeOfBirth'
-                  name='placeOfBirth'
-                  label="Place of Birth:"
-                  control={Input}
-                  value={formik.values.placeOfBirth}
-                  onChange={formik.handleChange}
-                  error={formik.errors.placeOfBirth && formik.touched.placeOfBirth ? {
-                    content: formik.errors.placeOfBirth,
-                    pointing: 'above'
-                  }: undefined}          
-                />
-              </Form.Group>
-              <Form.Group>
-                <Form.Input 
-                  id='breeder'
-                  name='breeder'
-                  label="Breeder:"
-                  control={Input}
-                  value={formik.values.breeder}
-                  onChange={formik.handleChange}
-                  error={formik.errors.breeder && formik.touched.breeder ? {
-                    content: formik.errors.breeder,
-                    pointing: 'above'
-                  }: undefined}          
-                />
-                <Form.Input 
-                  id='sire'
-                  name='sire'
-                  label="Sire:"
-                  control={Input}
-                  value={formik.values.sire}
-                  onChange={formik.handleChange}
-                  error={formik.errors.sire && formik.touched.sire ? {
-                    content: formik.errors.sire,
-                    pointing: 'above'
-                  }: undefined}          
-                />
-                <Form.Input 
-                  id='dam'
-                  name='dam'
-                  label="Dam:"
-                  control={Input}
-                  value={formik.values.dam}
-                  onChange={formik.handleChange}
-                  error={formik.errors.dam && formik.touched.dam ? {
-                    content: formik.errors.dam,
-                    pointing: 'above'
-                  }: undefined}          
-                />                
-              </Form.Group>              
-              {(result.error && showError) ? (
-                  <Message error header="Error" content={result.error.message} />) : null}
-            </Form>
-          </Modal.Content>
-          <Modal.Actions>
-            <Button type='submit' basic color="black" onClick={formik.submitForm} loading={result.loading}>Add Dog</Button>
-          </Modal.Actions>
-      </Modal> 
+    <Form onSubmit={formik.handleSubmit}>
+      {!!result.error && showError ? (
+        <Alert variant="danger">{result.error.message}</Alert>
+      ) : null}
+      
+      <div className="row mb-3">
+        <div className="col-12">
+          <Form.Label>Call Name</Form.Label>
+          <Form.Control 
+            id='callName'
+            name='callName'                   
+            value={formik.values.callName}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.callName && !!formik.touched.callName}          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.callName}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-12">
+          <Form.Label>AKC Name</Form.Label>
+          <Form.Control 
+            id='akcName'
+            name='akcName'            
+            value={formik.values.akcName}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.akcName && !!formik.touched.akcName }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.akcName}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-12">
+          <Form.Label>AKC Number</Form.Label>
+            <Form.Control 
+              id='akcNumber'
+              name='akcNumber'            
+              value={formik.values.akcNumber}
+              onChange={formik.handleChange}
+              isInvalid={!!formik.errors.akcNumber && !!formik.touched.akcNumber }          
+            />
+            <Form.Control.Feedback type="invalid">{formik.errors.akcNumber}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-4 col-12">
+          <Form.Check 
+            id='needsMeasured'
+            name='needsMeasured'
+            label="This dog needs to be measured"
+            type="checkbox"            
+            checked={formik.values.needsMeasured}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.needsMeasured}
+          />
+        </div>
+        <div className="col-md-4 col-12">
+          <Form.Label>Height at withers</Form.Label>
+          <Form.Control 
+            id='withersHeight'
+            name='withersHeight'            
+            value={formik.values.withersHeight}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.withersHeight && !!formik.touched.withersHeight }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.withersHeight}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-4 col-12">
+          <Form.Label>Jump Height</Form.Label>
+          <Form.Control 
+            id="jumpHeight"
+            name="jumpHeight"
+            className="bg-transparent border-0 p-0"
+            as={Select}
+            value={formik.values.jumpHeight}
+            onChange={(newValue: any) => {
+              formik.setFieldValue("jumpHeight", newValue)
+            }}
+            options={heightValues}
+            placeholder="Choose a jump height"
+            isInvalid={!!formik.errors.jumpHeight && !!formik.touched.jumpHeight}
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.jumpHeight}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-4 col-12">
+          <Form.Label>Breed</Form.Label>
+          <Form.Control 
+            id='breed'
+            name='breed'            
+            value={formik.values.breed}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.breed && !!formik.touched.breed }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.breed}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-4 col-12">
+          <Form.Label>Variety</Form.Label>
+          <Form.Control 
+            id='variety'
+            name='variety'            
+            value={formik.values.variety}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.variety && !!formik.touched.variety }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.variety}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-4 col-12">
+          <Form.Label>Sex</Form.Label>
+          <Form.Control 
+            id="sex"
+            name="sex"
+            className="bg-transparent border-0 p-0"
+            as={Select}
+            value={formik.values.sex}
+            onChange={(newValue: any) => {
+              formik.setFieldValue("sex", newValue)
+            }}
+            options={sexValues}            
+            isInvalid={!!formik.errors.sex && !!formik.touched.sex}
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.sex}</Form.Control.Feedback>
+        </div>
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-6 col-12">
+          <Form.Label>Birthdate</Form.Label>
+          <Form.Control 
+            id='dob'
+            name='dob'
+            type="date"       
+            value={formik.values.dob}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.dob && !!formik.touched.dob }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.dob}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-6 col-12">
+          <Form.Label>Place of birth</Form.Label>
+          <Form.Control 
+            id='placeOfBirth'
+            name='placeOfBirth'            
+            value={formik.values.placeOfBirth}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.placeOfBirth && !!formik.touched.placeOfBirth }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.placeOfBirth}</Form.Control.Feedback>
+        </div>        
+      </div>
+      <div className="row mb-3">
+        <div className="col-md-4 col-12">
+          <Form.Label>Breeder</Form.Label>
+          <Form.Control 
+            id='breeder'
+            name='breeder'            
+            value={formik.values.breeder}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.breeder && !!formik.touched.breeder }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.breeder}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-4 col-12">
+          <Form.Label>Sire</Form.Label>
+          <Form.Control 
+            id='sire'
+            name='sire'            
+            value={formik.values.sire}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.sire && !!formik.touched.sire }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.sire}</Form.Control.Feedback>
+        </div>
+        <div className="col-md-4 col-12">
+          <Form.Label>Dam</Form.Label>
+          <Form.Control 
+            id='dam'
+            name='dam'            
+            value={formik.values.dam}
+            onChange={formik.handleChange}
+            isInvalid={!!formik.errors.dam && !!formik.touched.dam }          
+          />
+          <Form.Control.Feedback type="invalid">{formik.errors.dam}</Form.Control.Feedback>
+        </div>
+      </div>                                        
+      <button type="submit" className="btn btn-white">
+        {result.loading ? (
+          <Spinner animation="border" />
+        ): "Add"}
+      </button>
+    </Form>
   )
 }
 

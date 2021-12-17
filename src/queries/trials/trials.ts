@@ -69,14 +69,32 @@ export const GET_TRIALS = gql`
       onlineEntries,
       mailEntries,
       standardClass,
-      standardAbility,
-      standardPreferred,
+      standardAbility { 
+        label,
+        value
+      },
+      standardPreferred {
+        label,
+        value
+      },
       jumpersClass,
-      jumpersAbility,
-      jumpersPreferred,
+      jumpersAbility {
+        label,
+        value
+      },
+      jumpersPreferred {
+        label,
+        value
+      },
       fastClass,
-      fastAbility,
-      fastPreferred,
+      fastAbility {
+        label,
+        value
+      },
+      fastPreferred {
+        label,
+        value
+      },
       t2bClass,
       premierStandard,
       premierJumpers,
@@ -97,14 +115,32 @@ export const GET_EVENT_TRIAL = gql`
       onlineEntries,
       mailEntries,
       standardClass,
-      standardAbility,
-      standardPreferred,
+      standardAbility {
+        label,
+        value
+      },
+      standardPreferred {
+        label,
+        value
+      },
       jumpersClass,
-      jumpersAbility,
-      jumpersPreferred,
+      jumpersAbility {
+        label,
+        value
+      },
+      jumpersPreferred {
+        label,
+        value
+      },
       fastClass,
-      fastAbility,
-      fastPreferred,
+      fastAbility {
+        label,
+        value
+      },
+      fastPreferred {
+        label,
+        value
+      },
       t2bClass,
       premierStandard,
       premierJumpers,

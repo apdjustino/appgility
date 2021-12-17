@@ -1,13 +1,17 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
 import { useHistory } from 'react-router-dom'
-import { Form, Input, Button, Message } from 'semantic-ui-react'
+import { Button, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
+import { Link } from "react-router-dom";
 import { useMutation } from '@apollo/client'
 import * as Yup from 'yup'
 import { ADD_PERSON } from '../../queries/person/person'
+import { Eye } from "react-feather";
+import { useAuth0 } from '@auth0/auth0-react';
 
 const SignupForm = () => {
   const [showError, setShowError] = useState(false)
+  const { loginWithRedirect } = useAuth0()
 
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
@@ -45,62 +49,60 @@ const SignupForm = () => {
   })
 
   return (
-    <Form error={!!result.error} onSubmit={formik.handleSubmit}>
-      <Form.Field 
-        id='email'
-        name='email'
-        label='Email:'
-        control={Input}
-        type='email'
-        value={formik.values.email}
-        onChange={formik.handleChange}
-        error={formik.errors.email && formik.touched.email ? {
-          content: formik.errors.email,
-          pointing: 'above',
-        }: undefined}
-      />
-      <Form.Field 
-        id='password'
-        name='password'
-        label='Password:'
-        control={Input}
-        type='password'
-        value={formik.values.password}
-        onChange={formik.handleChange}
-        error={formik.errors.password && formik.touched.password ? {
-          content: formik.errors.password,
-          pointing: 'above'
-        } : undefined}
-      />
-      <Form.Field 
-        id='name'
-        name='name'
-        label='Name:'
-        control={Input}
-        value={formik.values.name}
-        onChange={formik.handleChange}
-        error={formik.errors.name && formik.touched.name ? {
-          content: formik.errors.name,
-          pointing: 'above'
-        } : undefined}   
-      />      
-      <Form.Field 
-        id='phone'
-        name='phone'
-        label='Phone Number:'
-        control={Input}
-        value={formik.values.phone}
-        onChange={formik.handleChange}
-        error={formik.errors.phone && formik.touched.phone ? {
-          content: formik.errors.phone,
-          pointing: 'above',
-        }: undefined}
-      />
-      <Button basic color='black' type='submit' loading={result.loading}>Submit</Button>
-      {result.error && showError ? (
-        <Message error header="Error" content={result.error.message} />
-      ) : null}
-    </Form>
+    <>
+      <h1 className="display-4 text-center mb-3">Appgility</h1>
+      <p className="text-muted text-center mb-5">Trial secretary software</p>
+      <Form noValidate onSubmit={formik.handleSubmit}>
+        <div className="form-group">
+          <Form.Label>Email Address</Form.Label>
+          <Form.Control name="email" type="email" value={formik.values.email} onChange={formik.handleChange} isInvalid={!!formik.errors.email && !!formik.touched.email}/>
+          <Form.Control.Feedback type="invalid">{formik.errors.email}</Form.Control.Feedback>
+        </div>
+        <div className="form-group">
+          <Row>
+            <Col>
+              <Form.Label>Password</Form.Label>
+            </Col>
+            <Col xs="auto">
+              <Link to="/password-reset">
+                <Form.Text as="a" className="small text-muted">
+                  Forgot password?
+                </Form.Text>
+              </Link>
+            </Col>
+          </Row>
+          <InputGroup className="input-group-merge">
+            <Form.Control name="password" type="password" value={formik.values.password} onChange={formik.handleChange} isInvalid={!!formik.errors.password && !!formik.touched.password} />
+            <InputGroup.Text>
+              <Eye size="1em"/>
+            </InputGroup.Text>
+            <Form.Control.Feedback type="invalid">{formik.errors.password}</Form.Control.Feedback>
+          </InputGroup>
+        </div>
+        <div className="form-group">
+          <Form.Label>Name</Form.Label>
+          <Form.Control name="name" type="text" value={formik.values.name} onChange={formik.handleChange} isInvalid={!!formik.errors.name && !!formik.touched.name} />
+          <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
+        </div>
+        <div className="form-group">
+          <Form.Label>Phone Number</Form.Label>
+          <Form.Control name="phone" type="text" value={formik.values.phone} onChange={formik.handleChange} isInvalid={!!formik.errors.phone && !!formik.touched.phone} />
+          <Form.Control.Feedback type="invalid">{formik.errors.phone}</Form.Control.Feedback>
+        </div>
+        <Button size="lg" className="w-100 mb-3" type="submit">
+          {result.loading ? (
+            <Spinner animation="border"/>
+          ): "Sign up"}          
+        </Button>
+        <p className="text-center">
+          <span className="text-muted text-center fs-3">
+            Already have an account?{' '}
+            <button type="button" className="btn btn-link p-0" onClick={() => loginWithRedirect()}>Log in</button>
+            .
+          </span>
+        </p>
+      </Form>
+    </>
   )
 }
 

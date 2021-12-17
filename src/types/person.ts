@@ -38,3 +38,8 @@ export type Person = {
   zip?: Maybe<Scalars['String']>;
   claimed?: Maybe<Scalars['Boolean']>;
 };
+
+export type AddRunDogView = {
+  dogId: Scalars['String'];
+  callName: Scalars['String'];
+}
