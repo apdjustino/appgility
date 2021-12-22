@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
 import { Search } from 'react-feather'
-import { RunView } from '../../types/run'
+import { Run } from '../../types/run'
 import RunTable from '../RunTable'
 import { MoreVertical } from "react-feather";
 import { Dog, Person } from '../../types/person'
@@ -16,7 +16,7 @@ type ConfigureParams = {
 }
 
 type RunQuery = {
-  getTrialRuns: RunView[]
+  getTrialRuns: Run[]
 }
 
 type RunSubset = {
@@ -34,7 +34,7 @@ const TrialRegistration = () => {
   const { eventId, trialId } = useParams<ConfigureParams>();
   const trialRunsQuery = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})
   
-  const columnsRaw: Column<RunView>[] = [
+  const columnsRaw: Column<Run>[] = [
     {
       accessor: 'agilityClass',
       Header: 'Class',
@@ -56,14 +56,14 @@ const TrialRegistration = () => {
       Cell: ({ value }) => String(value),
     },
     {
-      accessor: 'dog',
+      accessor: 'callName',
       Header: 'Call Name',
-      Cell: ({ value }) => String(value.callName),
+      Cell: ({ value }) => String(value),
     },
     {
-      accessor: 'person',
+      accessor: 'personName',
       Header: 'Owner',
-      Cell: ({ value }) => String(value.name),
+      Cell: ({ value }) => String(value),
     },
     {
       accessor: "runId",
@@ -84,15 +84,17 @@ const TrialRegistration = () => {
     }
   ]
 
-  const mobileColumns: Column<RunView>[] = [
+  const mobileColumns: Column<Run>[] = [
     {
-      accessor: ({ agilityClass, level, jumpHeight, preferred, dog, person, runId}) => ({
+      accessor: ({ agilityClass, level, jumpHeight, preferred, dogId, callName, personId, personName, runId}) => ({
         agilityClass,
         level,
         jumpHeight,
         preferred,
-        dog,
-        person,
+        dogId,
+        callName,
+        personId,
+        personName,
         runId
       }),
       id: "runId",
@@ -108,8 +110,8 @@ const TrialRegistration = () => {
                 </div>
                 <div className="col-auto d-flex">
                   <div>
-                    <h4 className="text-body text-focus mb-1">{!!value.dog ? value.dog.callName : null}</h4>
-                    <p className="text-muted">{!!value.person ? value.person.name : null}</p>
+                    <h4 className="text-body text-focus mb-1">{value.callName}</h4>
+                    <p className="text-muted">{value.personName}</p>
                   </div>
                   <div className="ms-4">
                     <Dropdown align="end">
@@ -132,8 +134,8 @@ const TrialRegistration = () => {
   ]
 
   const columns = useMemo(() => columnsRaw, [])
-  const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as RunView[]
-
+  const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as any
+  console.log(tableData)
   return (
     <>
       <div className="row pb-3">
@@ -154,13 +156,15 @@ const TrialRegistration = () => {
               <Search size="1em" />
             </InputGroup.Text>
           </InputGroup>
-          <div className="d-block d-md-none">
+          {/* <div className="d-block d-md-none">
             <RunTable data={tableData} columns={mobileColumns} showHeader={false}/>
-          </div>       
-          <div className="d-none d-md-block">
-            <RunTable data={tableData} columns={columns} showHeader={true}/>
-          </div>  
-          </div>     
+          </div> */}
+          {!!tableData ? (
+            <div className="d-none d-md-block">
+              <RunTable data={tableData} columns={columns} showHeader={true}/>
+            </div>  
+          ) : null}          
+        </div>     
       </div>
     </>
   )

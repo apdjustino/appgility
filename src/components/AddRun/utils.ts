@@ -137,7 +137,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         level: null,
         jumpHeight: trial.premierStandardHeight.value,
         preferred: false,
-        group: `t2b-${trial.premierStandardHeight.value}`
+        group: `prem_standard-${trial.premierStandardHeight.value}`
       })
     }
 
@@ -150,7 +150,7 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
         level: null,
         jumpHeight: trial.premierJumpersHeight.value,
         preferred: false,
-        group: `t2b-${trial.premierJumpersHeight.value}`
+        group: `prem_jumpers-${trial.premierJumpersHeight.value}`
       })
     }
 
