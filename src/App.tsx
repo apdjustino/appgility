@@ -40,7 +40,17 @@ function App() {
   const link = ApolloLink.from([withToken, CleanTypeName, ExpiredTokenLink, httpLink]);
   const client = new ApolloClient({    
     link,
-    cache: new InMemoryCache(),    
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            getTrialRunsPaginated: {
+              keyArgs: ["trialId"]
+            }
+          }
+        }
+      }
+    }),    
   })
   return (
     <ApolloProvider client={client}>

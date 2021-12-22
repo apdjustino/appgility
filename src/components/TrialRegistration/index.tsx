@@ -5,7 +5,7 @@ import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
 import { Search } from 'react-feather'
-import { Run } from '../../types/run'
+import { PaginatedRunResponse, Run } from '../../types/run'
 import RunTable from '../RunTable'
 import { MoreVertical } from "react-feather";
 import { Dog, Person } from '../../types/person'
@@ -16,14 +16,14 @@ type ConfigureParams = {
 }
 
 type RunQuery = {
-  getTrialRuns: Run[]
+  getTrialRunsPaginated: PaginatedRunResponse
 }
 
 
 const TrialRegistration = () => { 
   const { eventId, trialId } = useParams<ConfigureParams>();
-  const trialRunsQuery = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})
-  
+  const { data, fetchMore } = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})  
+  console.log(data)
   const columnsRaw: Column<Run>[] = [
     {
       accessor: 'agilityClass',
@@ -124,8 +124,8 @@ const TrialRegistration = () => {
   ]
 
   const columns = useMemo(() => columnsRaw, [])
-  const tableData = useMemo(() => trialRunsQuery.data ? trialRunsQuery.data.getTrialRuns : [], [trialRunsQuery]) as any
-  console.log(tableData)
+  const tableData = useMemo(() => !!data && !!data.getTrialRunsPaginated ? data.getTrialRunsPaginated.runs : [], [data]) as any
+  
   return (
     <>
       <div className="row pb-3">
@@ -152,6 +152,7 @@ const TrialRegistration = () => {
           {!!tableData ? (
             <div className="d-none d-md-block">
               <RunTable data={tableData} columns={columns} showHeader={true}/>
+              <button className="btn btn-white" onClick={() => fetchMore({ variables: { continuationToken: data?.getTrialRunsPaginated.continuationToken}})}>Next</button>
             </div>  
           ) : null}          
         </div>     
