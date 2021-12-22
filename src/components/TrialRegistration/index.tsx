@@ -19,16 +19,6 @@ type RunQuery = {
   getTrialRuns: Run[]
 }
 
-type RunSubset = {
-  agilityClass: string;
-  level: string;
-  jumpHeight: number;
-  preferred: boolean;
-  dog: Dog;
-  person: Person;
-  runId: string;
-}
-
 
 const TrialRegistration = () => { 
   const { eventId, trialId } = useParams<ConfigureParams>();
