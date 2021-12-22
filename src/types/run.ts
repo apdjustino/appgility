@@ -17,14 +17,16 @@ export enum AgilityAbility {
   Masters = 'MASTERS'
 }
 
-export type RunView = {
-  __typename?: 'RunView';
+export type Run = {
+  __typename?: 'Run';
   id: Scalars['String'];
   type: Scalars['String'];
   runId: Scalars['String'];
   trialId: Scalars['String'];
-  person: Person;
-  dog: Dog;
+  personId: Scalars['String'];
+  personName: Scalars['String'];
+  dogId: Scalars['String'];
+  callName: Scalars['String'];
   agilityClass: AgilityClass;
   level?: Maybe<AgilityAbility>;
   preferred: Scalars['Boolean'];

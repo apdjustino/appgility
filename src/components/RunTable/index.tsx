@@ -1,10 +1,10 @@
 import React from 'react'
 import { useTable, Column } from 'react-table';
-import { RunView } from '../../types/run';
+import { Run } from '../../types/run';
 
 type OwnProps = {
-  columns: Column<RunView>[],
-  data: RunView[],
+  columns: Column<Run>[],
+  data: Run[],
   showHeader: boolean;
 }
 
@@ -15,7 +15,7 @@ const RunTable = <T extends object>({ columns, data, showHeader } : OwnProps) =>
     headerGroups,
     rows,
     prepareRow,
-  } = useTable<RunView>({ columns, data})
+  } = useTable<Run>({ columns, data})
 
   return (
     <div className="table-responsive mb-0" style={{minHeight: "300px"}}>
