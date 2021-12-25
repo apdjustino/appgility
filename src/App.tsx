@@ -45,7 +45,16 @@ function App() {
         Query: {
           fields: {
             getTrialRunsPaginated: {
-              keyArgs: ["trialId"]
+              keyArgs: ["trialId"],
+              merge(existing, incoming) {
+                if (!existing) {
+                  return incoming
+                }
+
+                const merged = {...incoming}
+                merged.runs = [...existing.runs, ...incoming.runs]
+                return merged
+              }
             }
           }
         }

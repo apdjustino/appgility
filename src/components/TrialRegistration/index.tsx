@@ -1,14 +1,16 @@
 import React, { useMemo } from 'react'
 import { useQuery } from '@apollo/client'
-import { Dropdown, Form, InputGroup, ListGroup } from "react-bootstrap"
+import { Dropdown, Form, InputGroup, ListGroup, Spinner } from "react-bootstrap"
 import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
+import { MoreVertical } from "react-feather";
 import { Search } from 'react-feather'
 import { PaginatedRunResponse, Run } from '../../types/run'
 import RunTable from '../RunTable'
-import { MoreVertical } from "react-feather";
+
 import { Dog, Person } from '../../types/person'
+import { SizeMe } from "react-sizeme";
 
 type ConfigureParams = {
   eventId: string;
@@ -22,57 +24,7 @@ type RunQuery = {
 
 const TrialRegistration = () => { 
   const { eventId, trialId } = useParams<ConfigureParams>();
-  const { data, fetchMore } = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }})  
-  console.log(data)
-  const columnsRaw: Column<Run>[] = [
-    {
-      accessor: 'agilityClass',
-      Header: 'Class',
-      Cell: ({ value }) => String(value)
-    },
-    {
-      accessor: 'level',
-      Header: 'Level',
-      Cell: ({ value }) => !!value ? String(value) : '--',
-    },
-    {
-      accessor: 'jumpHeight',
-      Header: 'Jump Height',
-      Cell: ({ value }) => String(value),
-    },
-    {
-      accessor: 'preferred',
-      Header: 'Preferred',
-      Cell: ({ value }) => String(value),
-    },
-    {
-      accessor: 'callName',
-      Header: 'Call Name',
-      Cell: ({ value }) => String(value),
-    },
-    {
-      accessor: 'personName',
-      Header: 'Owner',
-      Cell: ({ value }) => String(value),
-    },
-    {
-      accessor: "runId",
-      Header: "",
-      Cell: ({ value }) => {        
-        return (
-          <Dropdown align="end">
-            <Dropdown.Toggle as="span" className="dropdown-ellipses" role="button">
-              <MoreVertical size={17}/>
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
-              <Dropdown.Item href="#!">Move Ups</Dropdown.Item>
-              <Dropdown.Item href="#!">Remove</Dropdown.Item>              
-            </Dropdown.Menu>
-          </Dropdown>
-        )
-      }
-    }
-  ]
+  const { data, fetchMore, loading } = useQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }, notifyOnNetworkStatusChange: true})    
 
   const mobileColumns: Column<Run>[] = [
     {
@@ -122,15 +74,14 @@ const TrialRegistration = () => {
       }
     }
   ]
-
-  const columns = useMemo(() => columnsRaw, [])
-  const tableData = useMemo(() => !!data && !!data.getTrialRunsPaginated ? data.getTrialRunsPaginated.runs : [], [data]) as any
+  
+  
   
   return (
     <>
       <div className="row pb-3">
         <div className="col">
-          <div className="header-pretitle">Runs</div>
+          <div className="header-pretitle">Runs</div>          
         </div>
         <div className="col-auto">
           <Link to={`/secretary/events/${eventId}/registration/${trialId}/add`}>
@@ -149,10 +100,15 @@ const TrialRegistration = () => {
           {/* <div className="d-block d-md-none">
             <RunTable data={tableData} columns={mobileColumns} showHeader={false}/>
           </div> */}
-          {!!tableData ? (
+          {!!data && data.getTrialRunsPaginated ? (
             <div className="d-none d-md-block">
-              <RunTable data={tableData} columns={columns} showHeader={true}/>
-              <button className="btn btn-white" onClick={() => fetchMore({ variables: { continuationToken: data?.getTrialRunsPaginated.continuationToken}})}>Next</button>
+              <div className="row">
+                <SizeMe>
+                  {({ size }) => !!size.width ? (
+                    <RunTable data={data.getTrialRunsPaginated} width={size.width - 20} loading={loading} fetchMore={fetchMore}/>   
+                  ) : <div />}
+                </SizeMe>                
+              </div>          
             </div>  
           ) : null}          
         </div>     
