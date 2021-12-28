@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react'
-import { useQuery, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { Dropdown, Form, InputGroup, ListGroup, Spinner, Card } from "react-bootstrap"
 import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
@@ -13,6 +13,7 @@ import { Formik } from "formik";
 import { SizeMe } from "react-sizeme";
 import { SelectOptions } from '../../types/generic'
 import { isEmpty } from "lodash"
+import { useDebounce } from "use-debounce"
 
 type ConfigureParams = {
   eventId: string;
@@ -45,17 +46,18 @@ const TrialRegistration = () => {
   const [getRuns, { data, fetchMore, loading }]= useLazyQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }, notifyOnNetworkStatusChange: true})    
   const [filterAndSearch, setFilterAndSearch] = React.useState<filterAndSearch>({})
   const [filterIsOpen, setFilterIsOpen] = React.useState<boolean>(false)
+  const [searchText, setSearchText] = React.useState<string>("")
+  const [debouncedSearchText] = useDebounce(searchText, 750)
   
   React.useEffect(() => {    
-    const { agilityClass, level, jumpHeight, preferred, regular } = filterAndSearch
-    
+    const { agilityClass, level, jumpHeight, preferred, regular } = filterAndSearch    
     if (!!data && !!data.getTrialRunsPaginated) {
-      getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular, continuationToken: data.getTrialRunsPaginated.continuationToken }})
+      getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular, search: debouncedSearchText.toLowerCase(), continuationToken: data.getTrialRunsPaginated.continuationToken }})
     } else {
-      getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular }})
+      getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular, search: debouncedSearchText.toLowerCase() }})
     }
     
-  }, [filterAndSearch])
+  }, [filterAndSearch, debouncedSearchText])
 
   const mobileColumns: Column<Run>[] = [
     {
@@ -264,13 +266,13 @@ const TrialRegistration = () => {
                         </div>  
                       </div>
                       <div className="d-flex justify-content-end mt-3">
-                        <button className="btn btn-white" onClick={() => formik.submitForm()}>Apply Filters</button>
+                        <button className="btn btn-white" type="button" onClick={() => formik.submitForm()}>Apply Filters</button>
                       </div>                                  
                     </Card.Body>
                   </Dropdown.Menu>
                 </Dropdown>
                 <InputGroup className="input-group-merge input-group-reverse mb-3 ms-2">
-                  <Form.Control type="search" placeholder="Search by owner or call name"/>
+                  <Form.Control type="search" placeholder="Search by owner or call name" onChange={(e) => setSearchText(e.target.value)}/>
                   <InputGroup.Text>
                     <Search size="1em" />              
                   </InputGroup.Text>            

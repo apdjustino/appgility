@@ -57,8 +57,8 @@ export const ADD_NEW_RUN = gql`
 `
 
 export const GET_TRIAL_RUNS = gql`
-  query GetTrialRuns($trialId: String!, $agilityClass: [AgilityClass], $level: [AgilityAbility], $jumpHeight: [Int], $preferred: Boolean, $regular: Boolean, $continuationToken: String) {
-    getTrialRunsPaginated(trialId: $trialId, agilityClass: $agilityClass, level: $level, jumpHeight: $jumpHeight, preferred: $preferred, regular: $regular, continuationToken: $continuationToken) {
+  query GetTrialRuns($trialId: String!, $agilityClass: [AgilityClass], $level: [AgilityAbility], $jumpHeight: [Int], $preferred: Boolean, $regular: Boolean, $search: String, $continuationToken: String) {
+    getTrialRunsPaginated(trialId: $trialId, agilityClass: $agilityClass, level: $level, jumpHeight: $jumpHeight, preferred: $preferred, regular: $regular, search: $search, continuationToken: $continuationToken) {
       runs {
         runId
         trialId

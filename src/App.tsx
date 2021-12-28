@@ -45,7 +45,7 @@ function App() {
         Query: {
           fields: {
             getTrialRunsPaginated: {
-              keyArgs: ["trialId", "agilityClass", "level", "jumpHeight", "preferred", "regular"],
+              keyArgs: ["trialId", "agilityClass", "level", "jumpHeight", "preferred", "regular", "search"],
               merge(existing, incoming, opts) {                
                 if (!existing) {
                   return incoming
