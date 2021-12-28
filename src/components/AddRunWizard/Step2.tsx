@@ -192,8 +192,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
           return hasError ? errors : {}
         }}
       >
-        {(formik) => {
-          console.log(formik.touched);
+        {(formik) => {          
           return (
             <>
             {!!runFormData.dogId ? (

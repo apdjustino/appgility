@@ -64,3 +64,10 @@ export type AddRunFormData = {
   dogId: string,
   runs: RunData[]
 }
+
+export type PaginatedRunResponse = {
+  __typename?: 'PaginatedRunResponse';
+  runs?: Maybe<Array<Maybe<Run>>>;
+  hasMoreResults?: Maybe<Scalars['Boolean']>;
+  continuationToken?: Maybe<Scalars['String']>;
+};

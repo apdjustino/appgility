@@ -57,36 +57,40 @@ export const ADD_NEW_RUN = gql`
 `
 
 export const GET_TRIAL_RUNS = gql`
-  query GetTrialRuns($trialId: String!) {
-    getTrialRuns(trialId: $trialId) {
-      runId
-      trialId
-      personId
-      personName
-      callName
-      dogId
-      agilityClass
-      level
-      preferred
-      jumpHeight
-      group
-      armband
-      courseLength
-      score
-      timeDeduction
-      time
-      qualified
-      points
-      sendBonus
-      wrongCourse
-      excusal
-      refusal
-      failure
-      table
-      rank
-      obstacles
-      paid
-      deleted
+  query GetTrialRuns($trialId: String!, $agilityClass: [AgilityClass], $level: [AgilityAbility], $jumpHeight: [Int], $preferred: Boolean, $regular: Boolean, $search: String, $continuationToken: String) {
+    getTrialRunsPaginated(trialId: $trialId, agilityClass: $agilityClass, level: $level, jumpHeight: $jumpHeight, preferred: $preferred, regular: $regular, search: $search, continuationToken: $continuationToken) {
+      runs {
+        runId
+        trialId
+        personId
+        personName
+        callName
+        dogId
+        agilityClass
+        level
+        preferred
+        jumpHeight
+        group
+        armband
+        courseLength
+        score
+        timeDeduction
+        time
+        qualified
+        points
+        sendBonus
+        wrongCourse
+        excusal
+        refusal
+        failure
+        table
+        rank
+        obstacles
+        paid
+        deleted
+      },
+      continuationToken,
+      hasMoreResults
     }
   }
 `

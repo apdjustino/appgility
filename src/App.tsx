@@ -40,7 +40,26 @@ function App() {
   const link = ApolloLink.from([withToken, CleanTypeName, ExpiredTokenLink, httpLink]);
   const client = new ApolloClient({    
     link,
-    cache: new InMemoryCache(),    
+    cache: new InMemoryCache({
+      typePolicies: {
+        Query: {
+          fields: {
+            getTrialRunsPaginated: {
+              keyArgs: ["trialId", "agilityClass", "level", "jumpHeight", "preferred", "regular", "search"],
+              merge(existing, incoming, opts) {                
+                if (!existing) {
+                  return incoming
+                }
+
+                const merged = {...incoming}
+                merged.runs = [...existing.runs, ...incoming.runs]
+                return merged
+              }
+            }
+          }
+        }
+      }
+    }),    
   })
   return (
     <ApolloProvider client={client}>
