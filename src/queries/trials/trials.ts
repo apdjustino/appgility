@@ -9,7 +9,8 @@ export const GET_PERSON_EVENTS = gql`
       locationCity,
       locationState,
       trialSite,
-      status
+      status,
+      trialDates
     }
   }
 `

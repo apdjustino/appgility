@@ -32,4 +32,6 @@ export type PersonEvent = {
   locationState: Scalars['String'];
   status: Scalars['String'];
   trialSite?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
+  trialDates?: Maybe<Array<Maybe<Scalars['String']>>>;
 };
