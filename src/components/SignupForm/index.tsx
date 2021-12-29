@@ -8,6 +8,7 @@ import * as Yup from 'yup'
 import { ADD_PERSON } from '../../queries/person/person'
 import { Eye } from "react-feather";
 import { useAuth0 } from '@auth0/auth0-react';
+import NumberFormat from "react-number-format";
 
 const SignupForm = () => {
   const [showError, setShowError] = useState(false)
@@ -16,7 +17,7 @@ const SignupForm = () => {
   const validationSchema = Yup.object().shape({
     name: Yup.string().required('Name is required'),
     email: Yup.string().email('Email is not valid').required('Email is required'),
-    phone: Yup.string().required('Phone number is required').max(10, 'Maximum length is 10').matches(/^[0-9]*$/, 'Phone number can only contain number'),
+    phone: Yup.string().required('Phone number is required'),
     password: Yup.string().required('Password is required').min(8, 'Password must have a minimum of 8 characters').matches(/(?=^.{16,}$)((?=.*\w)(?=.*[A-Z])(?=.*[0-9])(?=.*[|!$% &@#/()?^'\+\-*]))^.*/, 'Password must include lower case, lower case, numbers, and special characters')
   })
   const history = useHistory()
@@ -35,7 +36,9 @@ const SignupForm = () => {
           role: 'secretary'
         },
         password: values.password
-      }}).catch(e => {
+      }}).then(() => {
+        loginWithRedirect()
+      }).catch(e => {
         setShowError(true)
       })      
     },
@@ -86,7 +89,15 @@ const SignupForm = () => {
         </div>
         <div className="form-group">
           <Form.Label>Phone Number</Form.Label>
-          <Form.Control name="phone" type="text" value={formik.values.phone} onChange={formik.handleChange} isInvalid={!!formik.errors.phone && !!formik.touched.phone} />
+          <Form.Control 
+            name="phone"
+            type="text" 
+            value={formik.values.phone} 
+            as={NumberFormat}
+            format="(###)###-####"
+            onChange={formik.handleChange} 
+            isInvalid={!!formik.errors.phone && !!formik.touched.phone} 
+          />
           <Form.Control.Feedback type="invalid">{formik.errors.phone}</Form.Control.Feedback>
         </div>
         <Button size="lg" className="w-100 mb-3" type="submit">
