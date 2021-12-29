@@ -186,7 +186,7 @@ const BasicTrialConfig = ({ eventId }: OwnProps) => {
               placeholder='Phone'
               name="trialChairPhone"              
               value={formik.values.trialChairPhone as string}
-              format="(###) ###-####"
+              format="(###)###-####"
               as={NumberFormat}
               onChange={formik.handleChange}
               isInvalid={!!formik.errors.trialChairPhone && !!formik.touched.trialChairPhone}         
