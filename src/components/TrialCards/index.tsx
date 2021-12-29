@@ -1,7 +1,7 @@
 import React from 'react'
 import { Card, Modal } from "react-bootstrap";
 import { Edit } from "react-feather"
-import moment from 'moment'
+import { parseTimeStamp } from '../../utils/dates';
 import { chunk } from "lodash";
 import { EventTrial } from '../../types/trial'
 import AddTrial from '../AddTrial';
@@ -33,7 +33,7 @@ const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, se
               <div className="col-md-4 col-12">
                 <div className="card card-fill" key={`trial-card-${trial.id}`}>
                   <div className="card-header">
-                    <h4 className="card-header-title">{moment(trial.trialDate, 'YYYY-MM-DD').format('MMMM Do, YYYY')}</h4>
+                    <h4 className="card-header-title">{parseTimeStamp(trial.trialDate, "EEEE MMMM  do, y")}</h4>
                     <button className="btn btn-rounded-circle" onClick={() => {
                       setSelectedTrial(trial.trialId);
                       setAddTrialModal(true);

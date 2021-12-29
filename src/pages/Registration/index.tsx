@@ -2,13 +2,13 @@ import React from 'react'
 import { useQuery } from '@apollo/client'
 import { useLocation, useParams, useRouteMatch, useHistory, Switch, Link, Redirect } from 'react-router-dom'
 import { orderBy } from "lodash";
-import moment from 'moment'
 import TrialRegistration from '../../components/TrialRegistration'
 import { getEventId, selectedEventMenu } from "../../reactiveVars"
 import { GET_TRIAL_DATES } from './query'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import RedirectComponent from './RedirectComponent';
 import AddRunWizard from '../../components/AddRunWizard';
+import { parseTimeStamp } from '../../utils/dates';
 
 type ConfigureParams = {
   eventId: string
@@ -61,7 +61,7 @@ const Registration = () => {
             <div className="col-auto">
               <ul className="nav nav-tabs header-tabs fs-3">
                 {!!data.getEventTrials ? data.getEventTrials.map(({ trialDate, trialId }) => {
-                  const label = moment(trialDate, "YYYY-MM-DD").format("dddd - MM/DD/YYYY");
+                  const label = parseTimeStamp(trialDate, "MMMM  do, y");
                   return (
                     <li className="nav-item">
                       <Link to={`/secretary/events/${params.eventId}/registration/${trialId}`} className={`nav-link text-center ${pathname.includes(trialId) ? "active" : null}`}>

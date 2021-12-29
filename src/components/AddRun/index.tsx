@@ -10,11 +10,11 @@ import { Ability, EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
 import { addRunFormVar } from "../../reactiveVars";
 import { Formik, FieldArray, FormikProps } from 'formik'
-import moment from 'moment'
 import { isEqual } from "lodash";
 import { buildRunsToAdd, NewRunForm, Run, RunToAdd } from './utils'
 import { SelectOptions } from '../../types/generic';
 import { X } from "react-feather"
+import { parseTimeStamp } from '../../utils/dates';
 
 type DogOption = {
   key: string,
@@ -99,7 +99,7 @@ const AddRun = ({ formik }: OwnProps) => {
                       <div className="col">
                         <Card>                                
                           <Card.Header>
-                            <h4 className="card-header-title">{moment(trial.trialDate, 'YYYY-MM-DD').format('MMMM Do, YYYY')}</h4>
+                            <h4 className="card-header-title">{parseTimeStamp(trial.trialDate, "MMMM  do, y")}</h4>
                           </Card.Header> 
                           <Card.Body>
                             <div className="row mb-3">

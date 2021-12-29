@@ -6,6 +6,7 @@ import { useFormik } from 'formik'
 import { ADD_TRIAL, GET_EVENT_TRIAL, GET_TRIALS, UPDATE_TRIAL } from '../../queries/trials/trials'
 import { useParams } from 'react-router-dom'
 import Select from "react-select";
+import { parseInputDate } from "../../utils/dates";
 
 type ClassesOptions = {
   label: string,
@@ -88,6 +89,10 @@ const AddTrial = ({ trialId } : ownProps) => {
 
       const addNewTrial = { ...values }      
       addNewTrial.eventId = params.eventId
+      
+      const newTrialDate = parseInputDate(addNewTrial.trialDate);      
+      addNewTrial.trialDate = newTrialDate
+      
       addTrial({ variables: { eventTrial: addNewTrial }}).catch(() => {
         setShowError(true)
       })

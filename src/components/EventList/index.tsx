@@ -1,11 +1,11 @@
-import React, { useContext, useState } from 'react'
-import moment from 'moment'
+import React, { useContext } from 'react'
 import { AuthContext } from '../../utils/contexts'
 import { useQuery } from '@apollo/client'
 import { GET_PERSON_EVENTS } from '../../queries/trials/trials'
 import history from '../../utils/history'
 import { Spinner } from 'react-bootstrap'
 import { PersonEvent } from '../../types/event'
+import { minMaxDates } from '../../utils/dates'
 
 type OwnProps = {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>
@@ -16,9 +16,9 @@ type QueryResponse = {
 }
 
 const EventList = ({ setShowDialog }: OwnProps) => {
-  const userAuth = useContext(AuthContext)  
-  
+  const userAuth = useContext(AuthContext)    
   const { data, loading } = useQuery<QueryResponse>(GET_PERSON_EVENTS, { variables: { personId: userAuth.userId }})
+
   return (    
     <div className="card">
       <div className="card-header">
@@ -43,15 +43,18 @@ const EventList = ({ setShowDialog }: OwnProps) => {
             </tr>
           </thead>
           <tbody className="list">
-            {!!data && !!data.getPersonEvents && data.getPersonEvents.length > 0 ? data.getPersonEvents.map((event: any) => (
-              <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration/trials`)} style={{cursor: "pointer"}}>
-                <td>{event.name}</td>
-                <td>{moment(event.startDate).format('MM/DD/YY')} - {moment(event.endDate).format('MM/DD/YY')}</td>
-                <td>{event.locationCity}, {event.locationState}</td>
-                <td>{event.trialSite}</td>
-                <td>{event.status}</td>
-              </tr>
-            )) : !loading ? (
+            {!!data && !!data.getPersonEvents && data.getPersonEvents.length > 0 ? data.getPersonEvents.map((event) => {              
+              const minMax = !!event.trialDates && event.trialDates.length > 0 ? minMaxDates(event.trialDates as string[], "MM/dd/y") : null              
+              return (
+                <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration/trials`)} style={{cursor: "pointer"}}>
+                  <td>{event.name}</td>
+                  <td>{!!minMax ? `${minMax[0]} - ${minMax[1]}` :"Dates not set"}</td>
+                  <td>{event.locationCity}, {event.locationState}</td>
+                  <td>{event.trialSite}</td>
+                  <td>{event.status}</td>
+                </tr>
+              )
+            }) : !loading ? (
               <tr>
                 <td colSpan={5} className="text-center fst-italic fs-3">No Events to Show</td>
               </tr>
