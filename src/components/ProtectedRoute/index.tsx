@@ -1,19 +1,13 @@
-import React, { ComponentType } from 'react'
-import { Route } from 'react-router-dom'
+import React from 'react'
 import { withAuthenticationRequired } from '@auth0/auth0-react'
 
-interface OwnProps {
-  component: ComponentType<any>,
-  path: string
+type OwnProps = {
+  children: React.ReactNode
 }
 
-const ProtectedRoute = ({ component, ...rest }: OwnProps) => {
-  return (
-    <Route 
-      { ...rest }
-      component={withAuthenticationRequired(component)}
-    />
-  )
+const ProtectedRoute = ({ children }: OwnProps) => {  
+  const Component = withAuthenticationRequired(() => <>{children}</>);
+  return <Component />
 }
 
 export default ProtectedRoute

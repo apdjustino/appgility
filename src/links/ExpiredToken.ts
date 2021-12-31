@@ -5,8 +5,8 @@ export const ExpiredTokenLink = new ApolloLink((operation, forward) => {
   return forward(operation).map((responseData) => {
     const { data, errors } = responseData;
     if (!!errors && errors[0].message === "jwt expired") {
-      localStorage.removeItem("accessToken");
-      history.push("/");
+      localStorage.removeItem("appgilityAccessToken");
+      window.location.pathname = "/"
     }
     return responseData;
   })

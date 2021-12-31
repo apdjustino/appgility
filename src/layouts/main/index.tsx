@@ -2,29 +2,28 @@ import style from './main.module.scss'
 
 import React, { useEffect, useState } from 'react'
 import { Navbar, Container, Nav, Dropdown } from 'react-bootstrap'
-import { useHistory } from 'react-router-dom'
+import { Outlet, useParams, useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import { UserAuth } from '../../types/authentication'
 import { Tool, BookOpen, List, Edit3, Sliders, Home, Bell } from "react-feather"
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useMatch } from "react-router-dom";
 import { getEventId, selectedEventMenu } from '../../reactiveVars'
 import logo from "../../assets/icons/logo.svg";
 
-type LayoutProps = {
-  children: React.ReactNode
+type RouteParams = {
+  eventId: string
 }
 
-const MainLayout = ({
-  children
-}: LayoutProps) => {
-  const { logout, user, getAccessTokenSilently } = useAuth0()
-  const [userAuth, setUserAuth] = useState<UserAuth>({accessToken: '', userId: ''})
-  const history = useHistory() 
+const MainLayout = () => {
+  const { logout } = useAuth0()
+  const { eventId } = useParams<RouteParams>()
+  const navigate = useNavigate()
   const { pathname } = useLocation();
-  const eventId = getEventId();
   const eventMenu = selectedEventMenu();
-
-  return (    
+  
+  const onConfigRoot = !!useMatch(`secretary/events/${eventId}/configuration/*`)
+  const onRegistrationRoot = !!useMatch(`secretary/events/${eventId}/registration/*`)
+  return (
     <>
       <Navbar expand="md" className="navbar-vertical fixed-start fs-2" collapseOnSelect={true}>
         <Container fluid>        
@@ -47,13 +46,13 @@ const MainLayout = ({
             ) : (
               <Nav>                
                 <Nav.Item>
-                  <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/configuration/trials`)} role="button" active={eventMenu === "configuration"}>
+                  <Nav.Link onClick={() => navigate(`events/${eventId}/configuration/trials`)} role="button" active={onConfigRoot}>
                     <Tool size="17" className="me-3"/>
                     Configuration
                   </Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link onClick={() => history.push(`/secretary/events/${eventId}/registration`)} role="button" active={eventMenu === "registration"}>
+                  <Nav.Link onClick={() => navigate(`events/${eventId}/registration`)} role="button" active={onRegistrationRoot} >
                     <BookOpen size="17" className="me-3"/>
                     Registration
                   </Nav.Link>
@@ -116,7 +115,7 @@ const MainLayout = ({
         </Container>
       </Navbar>
       <div className="main-content">
-        {children}
+        <Outlet />
       </div>
     </>
       

@@ -5,7 +5,7 @@ import { EventTrial } from "../../types/trial";
 import { AddRunDogView } from "../../types/person";
 import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
 import { ADD_NEW_RUN, CONFIG_NEW_RUN, GET_TRIAL_RUNS } from "../../queries/runs/runs";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
 import { addRunFormVar } from "../../reactiveVars";
 import AddRun from "../AddRun";
@@ -44,7 +44,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { eventId, personId: runFormData.personId }});
   const [addRun, result] = useMutation(ADD_NEW_RUN)
   const [showError, setShowError] = React.useState<string>("");  
-  const history = useHistory();
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     if (!!data && !!data.getPersonDogs) {
@@ -130,7 +130,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
             }, refetchQueries: [
               { query: GET_TRIAL_RUNS, variables: { trialId: (run as RunToAdd).trialId }}
             ]}).then((result) => {
-              history.push(`/secretary/events/${eventId}/registration/${trialId}`);
+              navigate("..");
             }).catch((e) => {
               setShowError(e.message)
             })

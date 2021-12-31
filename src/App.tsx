@@ -1,16 +1,23 @@
 import React from 'react';
-import { Router, Switch, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './components/ProtectedRoute'
-import Home from './pages/Home'
 import Signup from "./pages/Signup";
-import history from './utils/history'
 import { ExpiredTokenLink } from './links/ExpiredToken'; 
 import { CleanTypeName } from './links/CleanTypeName';
+import Layout from "./layouts/main";
+import Configuration from "./pages/Configuration"
+import Registration from "./pages/Registration"
+import EventDashboard from './pages/EventDashboard';
 
 import './App.css';
 import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { useAuth0 } from '@auth0/auth0-react';
+import ConfigureTrials from './components/ConfigureTrials';
+import BasicTrialConfig from './components/BasicTrialConfig';
+import RegistrationConfig from './components/RegistrationConfig';
+import TrialRegistration from './components/TrialRegistration';
+import AddRunWizard from './components/AddRunWizard';
 
 function App() {
   const { getAccessTokenSilently } = useAuth0()
@@ -64,12 +71,25 @@ function App() {
   })
   return (
     <ApolloProvider client={client}>
-      <Router history={history}>        
-          <Switch>            
-            <ProtectedRoute path='/secretary' component={Home} />
-            <Route path='/' component={Signup} />       
-          </Switch>        
-      </Router>
+      <BrowserRouter>        
+          <Routes>          
+            <Route path="/" element={<Signup />} />
+            <Route path="/secretary" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
+              <Route path="home" element={<ProtectedRoute><EventDashboard /></ProtectedRoute>}></Route>
+              <Route path="events">
+                <Route path=":eventId/configuration" element={<ProtectedRoute><Configuration /></ProtectedRoute>}>
+                  <Route path="trials" element={<ProtectedRoute><ConfigureTrials /></ProtectedRoute>} />
+                  <Route path="basic" element={<ProtectedRoute><BasicTrialConfig /></ProtectedRoute>} />
+                  <Route path="registration" element={<ProtectedRoute><RegistrationConfig /></ProtectedRoute>} />
+                </Route>
+                <Route path=":eventId/registration" element={<ProtectedRoute><Registration /></ProtectedRoute>}>
+                  <Route path=":trialId" element={<ProtectedRoute><TrialRegistration /></ProtectedRoute>} />
+                  <Route path=":trialId/add" element={<ProtectedRoute><AddRunWizard /></ProtectedRoute>} />
+                </Route>
+              </Route>
+            </Route>                   
+          </Routes>        
+      </BrowserRouter>
     </ApolloProvider>
     
 
