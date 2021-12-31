@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useAuth0 } from "@auth0/auth0-react";
 import { useFormik } from 'formik'
 import { useMutation } from '@apollo/client'
 import { Form, Alert, Spinner } from "react-bootstrap";
@@ -7,7 +8,6 @@ import { ADD_DOG } from '../../queries/person/person'
 import { addRunFormVar } from "../../reactiveVars";
 import { CONFIG_NEW_RUN } from '../../queries/runs/runs'
 import { useParams } from 'react-router'
-import { AuthContext } from '../../utils/contexts'
 import Select from "react-select";
 import { SelectOptions } from '../../types/generic';
 
@@ -21,8 +21,8 @@ type OwnProps = {
 }
 
 const AddDog = ({ setShowAddDogModal }: OwnProps) => {
-
-  const { userId } = React.useContext(AuthContext);
+  const { user } = useAuth0();
+  const userId = !!user ? user['https://graph.appgility.com/personId'] : ""
   const { personId } = addRunFormVar()
   const { eventId } = useParams<any>()
   const [showError, setShowError] = useState(false)  

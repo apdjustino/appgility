@@ -1,9 +1,9 @@
-import React, { useContext } from 'react'
+import React from 'react'
+import { useAuth0 } from "@auth0/auth0-react";
 import { useFormik } from 'formik'
 import { Modal, Form, Button, Spinner } from "react-bootstrap";
 import { useMutation } from '@apollo/client'
 import { ADD_NEW_EVENT, GET_PERSON_EVENTS } from '../../queries/trials/trials'
-import { AuthContext } from '../../utils/contexts'
 
 interface InitialValues {
   name: string,  
@@ -19,11 +19,13 @@ interface OwnProps {
 }
 
 const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
-  const userAuth = useContext(AuthContext)
+  const { user } = useAuth0();
+  const userId = !!user ? user['https://graph.appgility.com/personId'] : ""
+  
   const [addNewEvent, result] = useMutation(ADD_NEW_EVENT, { 
     update: () => setShowDialog(false),
     refetchQueries: [
-      { query: GET_PERSON_EVENTS, variables: { personId: userAuth.userId} }
+      { query: GET_PERSON_EVENTS, variables: { personId: userId} }
     ]
   })
   const formik = useFormik({
@@ -37,7 +39,7 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
     onSubmit: (values: InitialValues) => {
       addNewEvent({ variables: {
         data: values,
-        personId: userAuth.userId
+        personId: userId
       }})
     },
     validate: (values: InitialValues) => {

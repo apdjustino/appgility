@@ -1,20 +1,23 @@
 import { useQuery } from "@apollo/client";
 import React from "react";
 import { Spinner } from "react-bootstrap";
+import { useParams } from "react-router-dom";
 import { GET_TRIALS } from "../../queries/trials/trials";
 import { EventTrial } from "../../types/trial";
 import TrialCards from "../TrialCards";
 
-type OwnProps = {
-  eventId: string;
-}
 
 type QueryResponse = {
   getEventTrials: EventTrial[]
 }
 
-const ConfigureTrials = ({ eventId }: OwnProps) => {
+type RouteParams = {
+  eventId: string
+}
 
+const ConfigureTrials = () => {
+
+  const { eventId } = useParams<RouteParams>()
   const [addTrialModal, setAddTrialModal] = React.useState<boolean>(false);
   const [selectedTrial, setSelectedTrial] = React.useState<string>("");
 

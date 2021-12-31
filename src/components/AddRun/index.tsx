@@ -5,7 +5,7 @@ import { useQuery, useMutation, useReactiveVar } from '@apollo/client'
 import { Form, Card, Spinner, Button, Alert } from "react-bootstrap";
 import Select from "react-select";
 import { CONFIG_NEW_RUN, ADD_NEW_RUN, GET_TRIAL_RUNS } from '../../queries/runs/runs'
-import { useHistory, useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 import { Ability, EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
 import { addRunFormVar } from "../../reactiveVars";
@@ -49,8 +49,7 @@ const generateClassOptions = (rawOptions: Ability[]) : SelectOptions<string>[] =
 
 }
 
-const AddRun = ({ formik }: OwnProps) => {
-  const history = useHistory()  
+const AddRun = ({ formik }: OwnProps) => {  
   const { eventId } = useParams<ConfigureParams>()  
   const { personId } = addRunFormVar()  
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId}})  

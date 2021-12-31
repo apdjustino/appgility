@@ -1,11 +1,11 @@
-import React, { useContext } from 'react'
-import { AuthContext } from '../../utils/contexts'
+import React from 'react'
+import { useAuth0 } from "@auth0/auth0-react";
 import { useQuery } from '@apollo/client'
 import { GET_PERSON_EVENTS } from '../../queries/trials/trials'
-import history from '../../utils/history'
 import { Spinner } from 'react-bootstrap'
 import { PersonEvent } from '../../types/event'
 import { minMaxDates } from '../../utils/dates'
+import { useNavigate } from "react-router-dom"
 
 type OwnProps = {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>
@@ -15,9 +15,11 @@ type QueryResponse = {
   getPersonEvents: PersonEvent[]
 }
 
-const EventList = ({ setShowDialog }: OwnProps) => {
-  const userAuth = useContext(AuthContext)    
-  const { data, loading } = useQuery<QueryResponse>(GET_PERSON_EVENTS, { variables: { personId: userAuth.userId }})
+const EventList = ({ setShowDialog }: OwnProps) => {  
+  const { user } = useAuth0();
+  const userId = !!user ? user['https://graph.appgility.com/personId'] : ""  
+  const { data, loading } = useQuery<QueryResponse>(GET_PERSON_EVENTS, { variables: { personId: userId }})
+  const navigate = useNavigate();
 
   return (    
     <div className="card">
@@ -43,10 +45,10 @@ const EventList = ({ setShowDialog }: OwnProps) => {
             </tr>
           </thead>
           <tbody className="list">
-            {!!data && !!data.getPersonEvents && data.getPersonEvents.length > 0 ? data.getPersonEvents.map((event) => {              
+            {!!data && !!data.getPersonEvents && data.getPersonEvents.length > 0 ? data.getPersonEvents.map((event, i) => {              
               const minMax = !!event.trialDates && event.trialDates.length > 0 ? minMaxDates(event.trialDates as string[], "MM/dd/y") : null              
               return (
-                <tr key={event.id} className="border-bottom" onClick={() => history.push(`/secretary/events/${event.eventId}/configuration/trials`)} style={{cursor: "pointer"}}>
+                <tr key={`${event.id}-${i}`} className="border-bottom" onClick={() => navigate(`../events/${event.eventId}/configuration/trials`)} style={{cursor: "pointer"}}>
                   <td>{event.name}</td>
                   <td>{!!minMax ? `${minMax[0]} - ${minMax[1]}` :"Dates not set"}</td>
                   <td>{event.locationCity}, {event.locationState}</td>
