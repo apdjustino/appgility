@@ -30,7 +30,7 @@
     "react-dom": "^17.0.2",
     "react-feather": "^2.0.9",
     "react-number-format": "^4.8.0",
-    "react-router-dom": "^5.2.0",
+    "react-router-dom": "6",
     "react-scripts": "3.4.4",
     "react-select": "^5.2.1",
     "react-sizeme": "^3.0.2",

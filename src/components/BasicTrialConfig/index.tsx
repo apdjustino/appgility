@@ -1,24 +1,27 @@
 import { useMutation, useQuery } from "@apollo/client";
+import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import * as Yup from 'yup'
 import NumberFormat from "react-number-format";
 import { Form, Alert, Button, Spinner } from "react-bootstrap";
 import { GET_EVENT, GET_PERSON_EVENTS, UPDATE_EVENT } from "../../queries/trials/trials";
-import { AuthContext } from "../../utils/contexts";
 import { useFormik } from "formik";
+import { useParams } from "react-router-dom";
 import { Event } from "../../types/event";
 
 type QueryResponse = {
   getEvent: Event
 }
 
-type OwnProps = {
+type RouteParams = {
   eventId: string;
 }
 
-const BasicTrialConfig = ({ eventId }: OwnProps) => {  
+const BasicTrialConfig = () => { 
+  const { eventId } = useParams<RouteParams>() 
   const { data, loading, error } = useQuery<QueryResponse>(GET_EVENT, { variables: { eventId }});
-  const { userId } = React.useContext(AuthContext)
+  const { user } = useAuth0();
+  const userId = !!user ? user['https://graph.appgility.com/personId'] : ""
   const [showError, setShowError] = React.useState(false)
 
   const [updateEvent, result] = useMutation(UPDATE_EVENT, {

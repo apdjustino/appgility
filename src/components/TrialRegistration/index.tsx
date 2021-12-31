@@ -43,6 +43,7 @@ type filterAndSearch = {
 
 const TrialRegistration = () => { 
   const { eventId, trialId } = useParams<ConfigureParams>();
+  console.log(trialId)
   const [getRuns, { data, fetchMore, loading }]= useLazyQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }, notifyOnNetworkStatusChange: true})    
   const [filterAndSearch, setFilterAndSearch] = React.useState<filterAndSearch>({})
   const [filterIsOpen, setFilterIsOpen] = React.useState<boolean>(false)
@@ -57,7 +58,7 @@ const TrialRegistration = () => {
       getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular, search: debouncedSearchText.toLowerCase() }})
     }
     
-  }, [filterAndSearch, debouncedSearchText])
+  }, [trialId, filterAndSearch, debouncedSearchText])
 
   const mobileColumns: Column<Run>[] = [
     {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useFormik } from 'formik'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Button, Col, Form, InputGroup, Row, Spinner } from 'react-bootstrap';
 import { Link } from "react-router-dom";
 import { useMutation } from '@apollo/client'
@@ -20,10 +20,10 @@ const SignupForm = () => {
     phone: Yup.string().required('Phone number is required'),
     password: Yup.string().required('Password is required').min(8, 'Password must have a minimum of 8 characters').matches(/(?=^.{16,}$)((?=.*\w)(?=.*[A-Z])(?=.*[0-9])(?=.*[|!$% &@#/()?^'\+\-*]))^.*/, 'Password must include lower case, lower case, numbers, and special characters')
   })
-  const history = useHistory()
+  const navigate = useNavigate()
 
   const [addPerson, result] = useMutation(ADD_PERSON, {
-    update: () => history.push('/home')
+    update: () => navigate('home')
   })
   
   const formik = useFormik({
