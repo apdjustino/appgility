@@ -5,7 +5,6 @@ import { Navbar, Container, Nav, Dropdown } from 'react-bootstrap'
 import { useHistory } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
 import { UserAuth } from '../../types/authentication'
-import { AuthContext } from '../../utils/contexts'
 import { Tool, BookOpen, List, Edit3, Sliders, Home, Bell } from "react-feather"
 import { Link, useLocation } from "react-router-dom";
 import { getEventId, selectedEventMenu } from '../../reactiveVars'
@@ -25,29 +24,8 @@ const MainLayout = ({
   const eventId = getEventId();
   const eventMenu = selectedEventMenu();
 
-  useEffect(() => {   
-    const storedToken = localStorage.getItem('accessToken')
-    if (!storedToken) {
-      getAccessTokenSilently({ audience: 'https://graph.appgility.com'}).then(response => {      
-      localStorage.setItem('accessToken', response)  
-      setUserAuth({
-          accessToken: response,
-          userId: !!user ? user['https://graph.appgility.com/personId'] : ''
-        })      
-      }).catch(() => {
-        // don't really need to log this error
-      })
-    } else {
-      setUserAuth({
-        accessToken: storedToken,
-        userId: !!user ? user['https://graph.appgility.com/personId'] : ''
-      })  
-    }     
-  }, [user, getAccessTokenSilently])
-
-  
-  return (
-    <AuthContext.Provider value={userAuth}>
+  return (    
+    <>
       <Navbar expand="md" className="navbar-vertical fixed-start fs-2" collapseOnSelect={true}>
         <Container fluid>        
         <Navbar.Brand>
@@ -123,7 +101,10 @@ const MainLayout = ({
                   <Dropdown.Item>Settings</Dropdown.Item>
                 </Link>
                 <Dropdown.Divider />
-                <Dropdown.Item onClick={() => logout()}>Logout</Dropdown.Item>
+                <Dropdown.Item onClick={() => {
+                  localStorage.removeItem("appgilityAccessToken");
+                  logout()
+                }}>Logout</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
             <Link to="/secretary/home" className="navbar-user-link" role="button">
@@ -137,8 +118,9 @@ const MainLayout = ({
       <div className="main-content">
         {children}
       </div>
+    </>
       
-    </AuthContext.Provider>
+    
     
   )
 }

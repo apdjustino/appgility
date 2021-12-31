@@ -21,10 +21,11 @@ function App() {
   const withToken = setContext(async (_, { headers }) => {
     // get the authentication token from local storage if it exists      
     // const token = localStorage.getItem('appgilityAccessToken');
-    let token = localStorage.getItem('accessToken')    
+    let token = localStorage.getItem('appgilityAccessToken')    
     if (!token) {
       try {
         token = await getAccessTokenSilently({ audience: 'https://graph.appgility.com'})
+        localStorage.setItem("appgilityAccessToken", token);
       } catch (error) {
         token = ''
       }
