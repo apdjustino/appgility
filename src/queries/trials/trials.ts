@@ -99,7 +99,14 @@ export const GET_TRIALS = gql`
       t2bClass,
       premierStandard,
       premierJumpers,
-      runLimit
+      runLimit,
+      dayToDayMoveup,
+      judges {
+        name,
+        email,
+        phone,
+        akcIdentifier
+      }
     }
   }
 `
@@ -145,7 +152,14 @@ export const GET_EVENT_TRIAL = gql`
       t2bClass,
       premierStandard,
       premierJumpers,
-      runLimit
+      runLimit,
+      dayToDayMoveup,
+      judges {
+        name,
+        email,
+        phone,
+        akcIdentifier
+      }
     }
   }
 `

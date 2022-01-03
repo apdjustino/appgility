@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
 import { useMutation, useQuery } from '@apollo/client'
 import * as Yup from 'yup'
-import { Spinner, Form, Alert, Button } from "react-bootstrap";
-import { useFormik } from 'formik'
+import { Spinner, Form, Alert, Button, Dropdown, Card } from "react-bootstrap";
+import { useFormik, Formik } from 'formik'
 import { ADD_TRIAL, GET_EVENT_TRIAL, GET_TRIALS, UPDATE_TRIAL } from '../../queries/trials/trials'
 import { useParams } from 'react-router-dom'
 import Select from "react-select";
 import { parseInputDate } from "../../utils/dates";
+import { Judge } from '../../types/person';
 
 type ClassesOptions = {
   label: string,
@@ -49,8 +50,17 @@ const AddTrial = ({ trialId } : ownProps) => {
     premierJumpers: Yup.boolean()    
   })
 
+  const judgeValidationSchema = Yup.object().shape({
+    name: Yup.string().required("Required"),
+    email: Yup.string().email("Invalid email format"),
+    phone: Yup.string(),
+    akcIdentifier: Yup.string()
+  })
+
   const params = useParams<ConfigureParams>()
   const [showError, setShowError] = useState(false)
+  const [judgesIsOpen, setJudgesIsOpen] = useState<boolean>(false);
+  const [judges, setJudges] = useState<Judge[]>([]);
 
   const trialQuery = useQuery(GET_EVENT_TRIAL, { variables: { trialId: trialId, eventId: params.eventId} })
   
@@ -66,6 +76,19 @@ const AddTrial = ({ trialId } : ownProps) => {
     ]
   })
 
+  const judgeFormInitialValues: Judge = {
+    name: "",
+    email: "",
+    phone: "",
+    akcIdentifier: ""
+  }
+
+  React.useEffect(() => {
+    if (!!trialQuery.data && !!trialQuery.data.getEventTrial && !!trialQuery.data.getEventTrial.judges && trialQuery.data.getEventTrial.judges.length > 0) {
+      setJudges(trialQuery.data.getEventTrial.judges)
+    } 
+  }, [trialQuery.data])
+
   
   const formik = useFormik({
     initialValues: !trialQuery.data ? {} : trialQuery.data.getEventTrial,
@@ -76,7 +99,10 @@ const AddTrial = ({ trialId } : ownProps) => {
         Object.keys(trialToUpdate).forEach(key => {
           trialToUpdate[key] = (values as any)[key] 
         })
-                
+
+        trialToUpdate["judges"] = judges;
+        trialToUpdate["dayToDayMoveup"] = values.dayToDayMoveup;
+        
         updateTrial({ variables: {
           trialId,
           eventId: params.eventId,
@@ -92,6 +118,8 @@ const AddTrial = ({ trialId } : ownProps) => {
       
       const newTrialDate = parseInputDate(addNewTrial.trialDate);      
       addNewTrial.trialDate = newTrialDate
+
+      addNewTrial.judges = judges;
       
       addTrial({ variables: { eventTrial: addNewTrial }}).catch(() => {
         setShowError(true)
@@ -131,7 +159,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                     value={formik.values.akcTrialNumber}
                     onChange={formik.handleChange}
                     type='text'
-                    isInvalid={!!formik.errors.akcTrialNumber}                  
+                    isInvalid={!!formik.errors.akcTrialNumber && !!formik.touched.akcTrialNumber}                  
                   />
                   <Form.Control.Feedback type="invalid">{formik.errors.akcTrialNumber}</Form.Control.Feedback>
                 </div>
@@ -145,7 +173,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                     value={formik.values.trialDate}
                     onChange={formik.handleChange}                  
                     type='date'
-                    isInvalid={!!formik.errors.trialDate}
+                    isInvalid={!!formik.errors.trialDate && !!formik.touched.trialDate}
                   />
                   <Form.Control.Feedback type="invalid">{formik.errors.trialDate}</Form.Control.Feedback>
                 </div>
@@ -161,7 +189,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                     value={formik.values.onlineEntries}
                     onChange={formik.handleChange}
                     type='number'                  
-                    isInvalid={!!formik.errors.onlineEntries}
+                    isInvalid={!!formik.errors.onlineEntries && !!formik.touched.onlineEntries}
                   />
                   <Form.Control.Feedback type="invalid">{formik.errors.onlineEntries}</Form.Control.Feedback>
                 </div>
@@ -175,7 +203,7 @@ const AddTrial = ({ trialId } : ownProps) => {
                     value={formik.values.mailEntries}
                     type="number"
                     onChange={formik.handleChange}                  
-                    isInvalid={!!formik.errors.mailEntries}
+                    isInvalid={!!formik.errors.mailEntries && !!formik.touched.mailEntries}
                   />
                   <Form.Control.Feedback type="invalid">{formik.errors.mailEntries}</Form.Control.Feedback>
                 </div>
@@ -191,10 +219,110 @@ const AddTrial = ({ trialId } : ownProps) => {
                 value={formik.values.runLimit}
                 onChange={formik.handleChange}
                 type='number'                
-                isInvalid={!!formik.errors.runLimit}
+                isInvalid={!!formik.errors.runLimit && !!formik.touched.runLimit}
               />       
               <Form.Control.Feedback type="invalid">{formik.errors.runLimit}</Form.Control.Feedback>
-            </div>                                          
+            </div>
+
+            <div className="form-group">
+              <Form.Check 
+                name="dayToDayMoveup"
+                label="Allow Day to Day Move ups"
+                value={formik.values.dayToDayMoveup}
+                checked={formik.values.dayToDayMoveup}
+                onChange={formik.handleChange}
+                type="checkbox"
+              />
+            </div>
+
+            <div className="row mb-3">
+              <div className="col d-flex">
+                <div className="pe-3"><Form.Label>Judges: </Form.Label></div>
+                {judges.length > 0 ? judges.map((judge) => (
+                  <div className="btn btn-white btn-sm d-inline-block me-3" style={{cursor: "default"}}>
+                    <span className="align-middle">{judge.name}</span>
+                    <i className="fe fe-x-circle ps-2 align-middle" style={{cursor: "pointer"}} onClick={() => {
+                      const newJudges = judges.filter(j => j.name !== judge.name);
+                      setJudges(newJudges)                 
+                    }}></i>
+                  </div>
+                )): null}
+              </div>
+            </div>
+            <div className="row mb-3">
+              <div className="col d-flex">
+                <div className="pe-3">
+                  <Dropdown show={judgesIsOpen} onToggle={() => setJudgesIsOpen(!judgesIsOpen)}>
+                    <Dropdown.Toggle as="button" className="btn btn-white btn-sm" type="button" onClick={() => setJudgesIsOpen(!judgesIsOpen)}>
+                      Add Judge
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Card.Body style={{minWidth: "300px"}}>
+                       <Formik
+                        initialValues={judgeFormInitialValues}
+                        onSubmit={(values, { resetForm }) => {
+                          const newJudges = [...judges];
+                          newJudges.push(values);
+                          setJudges(newJudges);   
+                          resetForm()                       
+                        }}
+                        validationSchema={judgeValidationSchema}
+                       >
+                         {({ values, errors, touched, submitForm, handleChange }) => (
+                          <Form>
+                            <div className="row">
+                              <div className="col">
+                                <Form.Label>Name</Form.Label>
+                                <Form.Control 
+                                  name="name"
+                                  value={values.name}
+                                  onChange={handleChange}
+                                  isInvalid={!!errors.name && !!touched.name}
+                                />
+                                <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
+                                <Form.Label>Email</Form.Label>
+                                <Form.Control 
+                                  name="email"
+                                  value={values.email as string}
+                                  onChange={handleChange}
+                                  isInvalid={!!errors.email && !!touched.email}
+                                />
+                                <Form.Control.Feedback type="invalid">{errors.email}</Form.Control.Feedback>
+                                <Form.Label>Phone</Form.Label>
+                                <Form.Control 
+                                  name="phone"
+                                  value={values.phone as string}
+                                  onChange={handleChange}
+                                  isInvalid={!!errors.phone && !!touched.phone}
+                                />
+                                <Form.Control.Feedback type="invalid">{errors.phone}</Form.Control.Feedback>
+                                <Form.Label>AKC Id</Form.Label>
+                                <Form.Control 
+                                  name="akcIdentifier"
+                                  value={values.akcIdentifier as string}
+                                  onChange={handleChange}
+                                  isInvalid={!!errors.akcIdentifier && !!touched.akcIdentifier}
+                                />
+                                <Form.Control.Feedback type="invalid">{errors.akcIdentifier}</Form.Control.Feedback>
+                                <div className="mt-3">
+                                  <button type="button" className="btn btn-white" onClick={() => {
+                                    submitForm();                                    
+                                    setJudgesIsOpen(false);
+                                    }}>Add Judge</button>
+                                </div>                                
+                              </div>
+                            </div>                            
+                          </Form>                          
+                         )}
+                       </Formik>
+                       
+                      </Card.Body>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </div>
+            </div>
+
             <h5>Classes: </h5>
             <div className="row">
               <div className="col-3">

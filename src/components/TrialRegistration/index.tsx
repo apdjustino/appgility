@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { useLazyQuery } from '@apollo/client'
-import { Dropdown, Form, InputGroup, ListGroup, Spinner, Card } from "react-bootstrap"
+import { Dropdown, Form, InputGroup, ListGroup, Spinner, Card, Modal } from "react-bootstrap"
 import { useParams, Link } from 'react-router-dom'
 import { GET_TRIAL_RUNS } from '../../queries/runs/runs'
 import { Column } from 'react-table'
@@ -14,6 +14,7 @@ import { SizeMe } from "react-sizeme";
 import { SelectOptions } from '../../types/generic'
 import { isEmpty } from "lodash"
 import { useDebounce } from "use-debounce"
+import RegistrationModal from './modals/RegistrationModal'
 
 type ConfigureParams = {
   eventId: string;
@@ -32,7 +33,7 @@ type filterInitialValues = {
   filterRegular?: boolean;
 }
 
-type filterAndSearch = {
+export type FilterAndSearch = {
   agilityClass?: string[];
   level?: string[];
   jumpHeight?: number[];
@@ -40,18 +41,29 @@ type filterAndSearch = {
   regular?: boolean;
 }
 
+export enum ModalTypes {
+  Moveups = "moveups",
+  Edit = "edit"
+}
+
+export type ModalConfig = {
+  run?: Run;
+  type: ModalTypes
+}
+
 
 const TrialRegistration = () => { 
   const { eventId, trialId } = useParams<ConfigureParams>();
-  console.log(trialId)
+  const [showModal, setShowModal] = React.useState<boolean>(false)
+  const [modalType, setModalType] = React.useState<ModalConfig>({ type: ModalTypes.Moveups});
   const [getRuns, { data, fetchMore, loading }]= useLazyQuery<RunQuery>(GET_TRIAL_RUNS, { variables: { trialId }, notifyOnNetworkStatusChange: true})    
-  const [filterAndSearch, setFilterAndSearch] = React.useState<filterAndSearch>({})
+  const [filterAndSearch, setFilterAndSearch] = React.useState<FilterAndSearch>({})
   const [filterIsOpen, setFilterIsOpen] = React.useState<boolean>(false)
   const [searchText, setSearchText] = React.useState<string>("")
   const [debouncedSearchText] = useDebounce(searchText, 750)
   
   React.useEffect(() => {    
-    const { agilityClass, level, jumpHeight, preferred, regular } = filterAndSearch    
+    const { agilityClass, level, jumpHeight, preferred, regular } = filterAndSearch
     if (!!data && !!data.getTrialRunsPaginated) {
       getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular, search: debouncedSearchText.toLowerCase(), continuationToken: data.getTrialRunsPaginated.continuationToken }})
     } else {
@@ -152,7 +164,7 @@ const TrialRegistration = () => {
         initialValues={filterInitialValues}
         enableReinitialize={true}
         onSubmit={(values) => {                    
-          const newFilterAndSearch: filterAndSearch = {}
+          const newFilterAndSearch: FilterAndSearch = {}
 
           if (isEmpty(values)) {
             setFilterAndSearch({})
@@ -352,7 +364,14 @@ const TrialRegistration = () => {
                       <div className="row">
                         <SizeMe>
                           {({ size }) => !!size.width ? (
-                            <RunTable data={data.getTrialRunsPaginated} width={size.width} loading={loading} fetchMore={fetchMore}/>   
+                            <RunTable 
+                              data={data.getTrialRunsPaginated} 
+                              width={size.width} 
+                              loading={loading} 
+                              fetchMore={fetchMore}
+                              setShowModal={setShowModal}
+                              setModalType={setModalType}
+                            />   
                           ) : <div />}
                         </SizeMe>                
                       </div>          
@@ -367,6 +386,9 @@ const TrialRegistration = () => {
           </div>
         )}        
       </Formik>
+      <Modal className="modal-lighter" centered show={showModal} onHide={() => setShowModal(false)}> 
+        <RegistrationModal config={modalType} setShowModal={setShowModal}/>
+      </Modal>
     </>
   )
 }

@@ -1,4 +1,5 @@
 import { Scalars, Maybe } from './generic'
+import { Judge } from './person';
 
 export type EventTrial = {
   __typename?: 'EventTrial';
@@ -23,6 +24,9 @@ export type EventTrial = {
   premierStandard?: Maybe<Scalars['Boolean']>;
   premierJumpers?: Maybe<Scalars['Boolean']>;
   runLimit?: Maybe<Scalars['Int']>;
+  createdAt?: Maybe<Scalars['String']>;
+  dayToDayMoveup?: Maybe<Scalars['Boolean']>;
+  judges?: Maybe<Array<Maybe<Judge>>>;
 };
 
 export type Ability = {

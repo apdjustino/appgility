@@ -5,6 +5,7 @@ import { parseTimeStamp } from '../../utils/dates';
 import { chunk } from "lodash";
 import { EventTrial } from '../../types/trial'
 import AddTrial from '../AddTrial';
+import { Judge } from '../../types/person';
 
 type SkillLevel = {
   nov: string,
@@ -48,6 +49,10 @@ const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, se
                           <div>Run Limit: <span>{trial.runLimit}</span></div>
                           <div>Online Entries: <span>{trial.onlineEntries}</span></div>
                           <div>Mail-in Entries: <span>{trial.mailEntries}</span></div>
+                          <div>Allow Day to Day Moveups: <span>{!!trial.dayToDayMoveup ? trial.dayToDayMoveup.toString() : "false"}</span></div>
+                          {!!trial.judges && trial.judges.length > 0 ? (
+                            <div>Judges: {trial.judges.map(judge => (judge as Judge).name).join(", ")}</div>
+                          ) : null}
                       </Card.Text>              
                     </div>
                     <div className="row py-2">

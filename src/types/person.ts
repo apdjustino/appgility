@@ -43,3 +43,11 @@ export type AddRunDogView = {
   dogId: Scalars['String'];
   callName: Scalars['String'];
 }
+
+export type Judge = {
+  id?: Maybe<Scalars['String']>;  
+  name: Scalars['String'];
+  email?: Maybe<Scalars['String']>;
+  phone?: Maybe<Scalars['String']>;
+  akcIdentifier?: Maybe<Scalars['String']>;
+};
