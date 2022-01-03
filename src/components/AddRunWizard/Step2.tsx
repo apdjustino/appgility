@@ -42,9 +42,23 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
   const [dogOptions, setDogOptions] = React.useState<DogOptions[]>([]);  
   const runFormData = useReactiveVar(addRunFormVar);
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { eventId, personId: runFormData.personId }});
-  const [addRun, result] = useMutation(ADD_NEW_RUN)
   const [showError, setShowError] = React.useState<string>("");  
   const navigate = useNavigate();
+
+  const [addRun, result] = useMutation(ADD_NEW_RUN, {
+    update: (cache, { data: { addRun } }) => {
+      cache.modify({
+        fields: {
+          getTrialRunsPaginated(paginatedRunResponse) {
+            const updatedResponse = { ...paginatedRunResponse };
+            const updatedRunList = [addRun, ...updatedResponse.runs];
+            updatedResponse.runs = updatedRunList;
+            return updatedResponse
+          }
+        }
+      })
+    }
+  })
 
   React.useEffect(() => {
     if (!!data && !!data.getPersonDogs) {
@@ -112,7 +126,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
             setShowError("No runs to add.");
             return;
           }
-          console.log(runs);
+          
           setShowError("");     
           runs.forEach((run: Run) => {
             addRun({ variables: {
@@ -127,9 +141,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
                 preferred: (run as RunToAdd).preferred,
                 group: (run as RunToAdd).group,
               }
-            }, refetchQueries: [
-              { query: GET_TRIAL_RUNS, variables: { trialId: (run as RunToAdd).trialId }}
-            ]}).then((result) => {
+            }}).then(() => {
               navigate("..");
             }).catch((e) => {
               setShowError(e.message)

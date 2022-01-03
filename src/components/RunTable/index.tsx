@@ -6,15 +6,18 @@ import InfiniteLoader from "react-window-infinite-loader"
 import { FixedSizeList } from "react-window";
 import scrollbarWidth from "./scrollbarWidth"
 import { Dropdown } from 'react-bootstrap';
+import { ModalConfig, ModalTypes } from "../TrialRegistration";
 
 type OwnProps = {  
   data: PaginatedRunResponse,  
   width: number;
   loading: boolean;
   fetchMore: any;
+  setModalType: React.Dispatch<React.SetStateAction<ModalConfig>>;
+  setShowModal: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const RunTable = ({ data, width, loading, fetchMore } : OwnProps) => {
+const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal } : OwnProps) => {
 
   const loadNextPage = () => {
     fetchMore({
@@ -62,16 +65,26 @@ const RunTable = ({ data, width, loading, fetchMore } : OwnProps) => {
       width: width / 7
     },
     {
-      accessor: "runId",
+      accessor: (originalRow) => originalRow,
       Header: "",
-      Cell: ({ value }) => {        
+      id: "actionMenu",
+      Cell: ({ value }: { value: Run}) => {        
         return (
           <Dropdown align="end">
             <Dropdown.Toggle as="span" className="dropdown-ellipses" role="button">
               <MoreVertical size={17}/>
             </Dropdown.Toggle>
             <Dropdown.Menu>
-              <Dropdown.Item href="#!">Move Ups</Dropdown.Item>
+              <Dropdown.Item onClick={() => {
+                const config: ModalConfig = { type: ModalTypes.Moveups, run: value }
+                setModalType(config);
+                setShowModal(true);
+              }}>Move Ups</Dropdown.Item>
+              <Dropdown.Item onClick={() => {
+                const config: ModalConfig = { type: ModalTypes.Edit, run: value }
+                setModalType(config);
+                setShowModal(true);
+              }}>Edit Run</Dropdown.Item>
               <Dropdown.Item href="#!">Remove</Dropdown.Item>              
             </Dropdown.Menu>
           </Dropdown>
