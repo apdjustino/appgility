@@ -17,7 +17,7 @@ import { useDebounce } from "use-debounce"
 import RegistrationModal from './modals/RegistrationModal'
 import { EventTrial } from '../../types/trial'
 import { useTrialDates } from "../../pages/Registration"
-
+        
 type ConfigureParams = {
   eventId: string;
   trialId: string;

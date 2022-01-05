@@ -7,6 +7,7 @@ import { ADD_TRIAL, GET_EVENT_TRIAL, GET_TRIALS, UPDATE_TRIAL } from '../../quer
 import { useParams } from 'react-router-dom'
 import Select from "react-select";
 import { parseInputDate, parseTimeStamp } from "../../utils/dates";
+        
 import { Judge } from '../../types/person';
 
 type ClassesOptions = {
@@ -88,7 +89,6 @@ const AddTrial = ({ trialId } : ownProps) => {
       setJudges(trialQuery.data.getEventTrial.judges)
     } 
   }, [trialQuery.data])
-
 
   
   const formik = useFormik({
