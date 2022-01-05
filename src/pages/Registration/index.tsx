@@ -1,6 +1,6 @@
 import React from 'react'
 import { useQuery } from '@apollo/client'
-import { useLocation, useParams, Outlet, Link, Navigate } from 'react-router-dom'
+import { useLocation, useParams, Outlet, Link, Navigate, useOutletContext } from 'react-router-dom'
 import { orderBy } from "lodash";
 import { getEventId, selectedEventMenu } from "../../reactiveVars"
 import { GET_TRIAL_DATES } from './query'
@@ -11,9 +11,10 @@ type ConfigureParams = {
   trialId: string
 }
 
-type TrialDates = {
+export type TrialDates = {
   trialId: string;
   trialDate: string;
+  dayToDayMoveup: boolean;
 };
 
 type QueryResponse = {
@@ -71,7 +72,7 @@ const Registration = () => {
       </div>
       <div className="card">
         <div className="card-body">
-          <Outlet />    
+          <Outlet context={data.getEventTrials}/>    
         </div>
       </div>
     </div>  
@@ -84,3 +85,7 @@ const Registration = () => {
 }
 
 export default Registration
+
+export const useTrialDates = () => {
+  return useOutletContext<TrialDates[]>();
+}

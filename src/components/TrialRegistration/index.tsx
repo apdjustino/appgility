@@ -15,6 +15,8 @@ import { SelectOptions } from '../../types/generic'
 import { isEmpty } from "lodash"
 import { useDebounce } from "use-debounce"
 import RegistrationModal from './modals/RegistrationModal'
+import { EventTrial } from '../../types/trial'
+import { useTrialDates } from "../../pages/Registration"
 
 type ConfigureParams = {
   eventId: string;
@@ -22,7 +24,7 @@ type ConfigureParams = {
 }
 
 type RunQuery = {
-  getTrialRunsPaginated: PaginatedRunResponse
+  getTrialRunsPaginated: PaginatedRunResponse;  
 }
 
 type filterInitialValues = {
@@ -61,6 +63,7 @@ const TrialRegistration = () => {
   const [filterIsOpen, setFilterIsOpen] = React.useState<boolean>(false)
   const [searchText, setSearchText] = React.useState<string>("")
   const [debouncedSearchText] = useDebounce(searchText, 750)
+  const trialDates = useTrialDates();
   
   React.useEffect(() => {    
     const { agilityClass, level, jumpHeight, preferred, regular } = filterAndSearch
@@ -71,6 +74,8 @@ const TrialRegistration = () => {
     }
     
   }, [trialId, filterAndSearch, debouncedSearchText])
+
+  console.log(data)
 
   const mobileColumns: Column<Run>[] = [
     {
@@ -387,8 +392,8 @@ const TrialRegistration = () => {
         )}        
       </Formik>
       <Modal className="modal-lighter" centered show={showModal} onHide={() => setShowModal(false)}> 
-        <RegistrationModal config={modalType} setShowModal={setShowModal}/>
-      </Modal>
+        <RegistrationModal config={modalType} trialData={trialDates} setShowModal={setShowModal}/>
+      </Modal>      
     </>
   )
 }

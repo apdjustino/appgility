@@ -6,7 +6,7 @@ import { useFormik, Formik } from 'formik'
 import { ADD_TRIAL, GET_EVENT_TRIAL, GET_TRIALS, UPDATE_TRIAL } from '../../queries/trials/trials'
 import { useParams } from 'react-router-dom'
 import Select from "react-select";
-import { parseInputDate } from "../../utils/dates";
+import { parseInputDate, parseTimeStamp } from "../../utils/dates";
 import { Judge } from '../../types/person';
 
 type ClassesOptions = {
@@ -89,9 +89,10 @@ const AddTrial = ({ trialId } : ownProps) => {
     } 
   }, [trialQuery.data])
 
+
   
   const formik = useFormik({
-    initialValues: !trialQuery.data ? {} : trialQuery.data.getEventTrial,
+    initialValues: !trialQuery.data ? {} : { ...trialQuery.data.getEventTrial, trialDate: parseTimeStamp(trialQuery.data.getEventTrial.trialDate, "yyyy-MM-dd") },
     onSubmit: (values) => {        
       if (trialId && trialId !== '') {
         const trialToUpdate = { ...trialQuery.data.getEventTrial }        
@@ -99,6 +100,9 @@ const AddTrial = ({ trialId } : ownProps) => {
         Object.keys(trialToUpdate).forEach(key => {
           trialToUpdate[key] = (values as any)[key] 
         })
+
+        const newTrialDate = parseInputDate(trialToUpdate.trialDate);
+        trialToUpdate.trialDate = newTrialDate;
 
         trialToUpdate["judges"] = judges;
         trialToUpdate["dayToDayMoveup"] = values.dayToDayMoveup;
