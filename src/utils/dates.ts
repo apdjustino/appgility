@@ -1,5 +1,8 @@
 import { parseJSON, format, min, max } from "date-fns"
-export const parseInputDate = (date: string) => {
+export const parseInputDate = (date: string | undefined | null) => {
+    if (!date) {
+      return ""
+    }
     const splitDate = date.split("-");
     const numberDate = [parseInt(splitDate[0]), parseInt(splitDate[1]) - 1, parseInt(splitDate[2])];
     const dateObj = new Date(numberDate[0], numberDate[1], numberDate[2]);
