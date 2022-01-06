@@ -11,14 +11,14 @@ export type Event = {
   status: Scalars['String'];
   trialSite?: Maybe<Scalars['String']>;
   hostClub?: Maybe<Scalars['String']>;
-  price?: Maybe<Scalars['Int']>;
-  altPrice?: Maybe<Scalars['Int']>;
+  runPrices?: Maybe<Array<Maybe<Scalars['Int']>>>;
   premiumLink?: Maybe<Scalars['String']>;
   openingDate?: Maybe<Scalars['String']>;
   closingDate?: Maybe<Scalars['String']>;
   trialChairName?: Maybe<Scalars['String']>;
   trialChairEmail?: Maybe<Scalars['String']>;
   trialChairPhone?: Maybe<Scalars['String']>;
+  createdAt?: Maybe<Scalars['String']>;
 };
 
 export type PersonEvent = {
