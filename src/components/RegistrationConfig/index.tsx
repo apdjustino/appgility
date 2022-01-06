@@ -9,6 +9,7 @@ import { useFormik, Formik, FieldArray } from "formik";
 import { Event } from "../../types/event";
 import { X } from "react-feather"
 import NumberFormat from "react-number-format"
+import { parseInputDate, parseTimeStamp } from "../../utils/dates";
 
 type RouteParams = {
   eventId: string;
@@ -53,11 +54,12 @@ const RegistrationConfig = () => {
   });
 
   const initialValues: InitialValues = !!data && !!data.getEvent && !loading ? {
-    openingDate: data.getEvent.openingDate,
-    closingDate: data.getEvent.closingDate,
-    // price: !!data.getEvent.price ? (data.getEvent.price / 100).toString() : "",
-    // altPrice: !!data.getEvent.altPrice ? (data.getEvent.altPrice / 100).toString() : "",
-    runPrices: []
+    openingDate: parseTimeStamp(data.getEvent.openingDate as string, "yyyy-MM-dd"),
+    closingDate: parseTimeStamp(data.getEvent.closingDate as string, "yyyy-MM-dd"),
+    runPrices: !!data.getEvent.runPrices ? data.getEvent.runPrices.map(rawPrice => {
+      const price: Price = { price: !!rawPrice ? `${rawPrice / 100}` : "0" }
+      return price
+    }) : []
   } : {
     openingDate: "",
     closingDate: "",    
@@ -74,20 +76,19 @@ const RegistrationConfig = () => {
       onSubmit={(values) => {
         if (!!data && !!data.getEvent) {
           const updatedEvent = { ...data.getEvent }      
-          updatedEvent.openingDate = values.openingDate
-          updatedEvent.closingDate = values.closingDate
-          
-          // updatedEvent.price = Math.floor(parseFloat(values.price) * 100)
-          // updatedEvent.altPrice = Math.floor(parseFloat(values.altPrice) * 100)
-  
-          console.log(values)
-          // updateEvent({ variables: {
-          //   eventId,
-          //   personId: userId,
-          //   updatedEvent
-          // }}).catch(() => {
-          //   setShowError(true)
-          // })
+          updatedEvent.openingDate = parseInputDate(values.openingDate)
+          updatedEvent.closingDate = parseInputDate(values.closingDate)
+          updatedEvent.runPrices = values.runPrices.map(({price}) => {
+            return Math.floor(parseFloat(price) * 100)
+          })
+              
+          updateEvent({ variables: {
+            eventId,
+            personId: userId,
+            updatedEvent
+          }}).catch(() => {
+            setShowError(true)
+          })
         }
       }}
       validationSchema={validationSchema}
