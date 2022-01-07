@@ -40,7 +40,7 @@ const AddPerson = ({ setShowAddPersonModal }: OwnProps) => {
       addPerson({ variables: {
         data: values
       }}).then(({ data }) => {          
-        addRunFormVar({ personId: data.addPerson.personId, runs: [], dogId: "" });
+        addRunFormVar({ personId: data.addPerson.personId, runs: [], dog: { callName: "", dogId: "" } });
         selectedPersonForRunVar([{ personId: data.addPerson.personId, email: data.addPerson.email, name: data.addPerson.name }])      
         setShowAddPersonModal(false)        
 

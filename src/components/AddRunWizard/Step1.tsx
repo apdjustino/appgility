@@ -28,8 +28,7 @@ const AsyncTypeaheadControl = AsyncTypeahead as any;
 const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {  
   const [options, setOptions] = React.useState<PersonView[]>([]);
   const [showAddPersonModal, setShowAddPersonModal] = React.useState<boolean>(false);
-  const [searchPerson, { data, loading, error }] = useLazyQuery<QueryResponse>(SEARCH_PERSON);
-  const runInfo = useReactiveVar(addRunFormVar);
+  const [searchPerson, { data, loading, error }] = useLazyQuery<QueryResponse>(SEARCH_PERSON);  
   const selectedOption = useReactiveVar(selectedPersonForRunVar);
 
   React.useEffect(() => {
@@ -48,7 +47,7 @@ const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
     <>
       <div className="row justify-content-center">
         <div className="col-xs-12 col-md-10 col-lg-8 col-xl-6 text-center">
-          <h6 className="mb-4 text-uppercase text-muted">Step {activeStep} of 2</h6>
+          <h6 className="mb-4 text-uppercase text-muted">Step {activeStep} of 3</h6>
           <h1 className="mb-3">Find an Exhibitor</h1>
           <p className="mb-5 text-muted">Search for an existing exhibitor or create a new exhibitor</p>
         </div>        
@@ -68,7 +67,7 @@ const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
               onChange={(selected: PersonView[]) => {
                 selectedPersonForRunVar([]);             
                 if (selected.length > 0) {
-                  addRunFormVar({ personId: selected[0].personId, runs: [], dogId: "" })
+                  addRunFormVar({ personId: selected[0].personId, runs: [], dog: { callName: "", dogId: "" } })
                   selectedPersonForRunVar(selected);
                 }                                
               }}
@@ -124,7 +123,7 @@ const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
           <Button variant="white" type="button" size="lg">Cancel</Button>
         </div>
         <div className="col text-center">
-          <h6 className="text-uppercase text-muted mb-0">Step {activeStep} of 2</h6>
+          <h6 className="text-uppercase text-muted mb-0">Step {activeStep} of 3</h6>
         </div>
         <div className="col-auto">
           <Button size="lg" disabled={selectedOption.length === 0} onClick={() => setActiveStep(activeStep + 1)}>

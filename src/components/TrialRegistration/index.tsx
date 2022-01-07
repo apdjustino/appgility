@@ -16,7 +16,7 @@ import { isEmpty } from "lodash"
 import { useDebounce } from "use-debounce"
 import RegistrationModal from './modals/RegistrationModal'
 import { EventTrial } from '../../types/trial'
-import { useTrialDates } from "../../pages/Registration"
+import { useEventMeta } from "../../pages/Registration"
         
 type ConfigureParams = {
   eventId: string;
@@ -63,7 +63,7 @@ const TrialRegistration = () => {
   const [filterIsOpen, setFilterIsOpen] = React.useState<boolean>(false)
   const [searchText, setSearchText] = React.useState<string>("")
   const [debouncedSearchText] = useDebounce(searchText, 750)
-  const trialDates = useTrialDates();
+  const eventMeta = useEventMeta();
   
   React.useEffect(() => {    
     const { agilityClass, level, jumpHeight, preferred, regular } = filterAndSearch
@@ -392,7 +392,7 @@ const TrialRegistration = () => {
         )}        
       </Formik>
       <Modal className="modal-lighter" centered show={showModal} onHide={() => setShowModal(false)}> 
-        <RegistrationModal config={modalType} trialData={trialDates} setShowModal={setShowModal}/>
+        <RegistrationModal config={modalType} trialData={eventMeta.getEventTrials} setShowModal={setShowModal}/>
       </Modal>      
     </>
   )

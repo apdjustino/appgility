@@ -1,19 +1,17 @@
 import style from './AddRun.module.scss'
 
 import React from 'react'
-import { useQuery, useMutation, useReactiveVar } from '@apollo/client'
+import { useQuery, useReactiveVar } from '@apollo/client'
 import { Form, Card, Spinner, Button, Alert } from "react-bootstrap";
 import Select from "react-select";
-import { CONFIG_NEW_RUN, ADD_NEW_RUN, GET_TRIAL_RUNS } from '../../queries/runs/runs'
+import { CONFIG_NEW_RUN } from '../../queries/runs/runs'
 import { useParams } from 'react-router-dom'
 import { Ability, EventTrial } from '../../types/trial'
 import { Dog } from '../../types/person'
 import { addRunFormVar } from "../../reactiveVars";
-import { Formik, FieldArray, FormikProps } from 'formik'
-import { isEqual } from "lodash";
-import { buildRunsToAdd, NewRunForm, Run, RunToAdd } from './utils'
+import { FieldArray, FormikProps } from 'formik'
+import { NewRunForm } from './utils'
 import { SelectOptions } from '../../types/generic';
-import { X } from "react-feather"
 import { parseTimeStamp } from '../../utils/dates';
 
 type DogOption = {
@@ -52,8 +50,7 @@ const generateClassOptions = (rawOptions: Ability[]) : SelectOptions<string>[] =
 const AddRun = ({ formik }: OwnProps) => {  
   const { eventId } = useParams<ConfigureParams>()  
   const { personId } = addRunFormVar()  
-  const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId}})  
-  const [addRun, result] = useMutation(ADD_NEW_RUN)
+  const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId}})    
   const runFormData = useReactiveVar(addRunFormVar);
   
   const heightValues: SelectOptions<number | null>[] = [
@@ -117,7 +114,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                           const newValue = !formik.values.trials[index].standardPreferred
                                           formik.setFieldValue(`trials.${index}.standardPreferred`, newValue)                                                                                               
                                         }}
-                                        disabled={!runFormData.dogId}                                          
+                                        disabled={!runFormData.dog.dogId}                                          
                                       />                  
                                     </div>                  
                                     <div className="w-100">            
@@ -130,7 +127,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={generateClassOptions(trialObj.standardAbility as Ability[])}
                                         value={formik.values.trials[index].standardLevel as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.standardLevel`, newValue)}                                        
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].standardLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).standardLevel}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).standardLevel : ""}</Form.Control.Feedback>
@@ -147,7 +144,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={heightValues}                                        
                                         value={formik.values.trials[index].standardHeight as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.standardHeight`, newValue)}
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].standardHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).standardHeight}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).standardHeight : ""}</Form.Control.Feedback>                                        
@@ -181,7 +178,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                           const newValue = !formik.values.trials[index].jumpersPreferred
                                           formik.setFieldValue(`trials.${index}.jumpersPreferred`, newValue)                                                
                                         }}
-                                        disabled={!runFormData.dogId}                                          
+                                        disabled={!runFormData.dog.dogId}                                          
                                       />                  
                                     </div>                  
                                     <div className="w-100">            
@@ -194,7 +191,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={generateClassOptions(trialObj.jumpersAbility as Ability[])}
                                         value={formik.values.trials[index].jumpersLevel as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.jumpersLevel`, newValue)}                                        
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].jumpersLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).jumpersLevel}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).jumpersLevel : ""}</Form.Control.Feedback>
@@ -211,7 +208,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={heightValues}                                        
                                         value={formik.values.trials[index].jumpersHeight as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.jumpersHeight`, newValue)}
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].jumpersHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).jumpersHeight}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).jumpersHeight : ""}</Form.Control.Feedback>
@@ -246,7 +243,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                           const newValue = !formik.values.trials[index].fastPreferred
                                           formik.setFieldValue(`trials.${index}.fastPreferred`, newValue);                                                                                              
                                         }}
-                                        disabled={!runFormData.dogId}                                          
+                                        disabled={!runFormData.dog.dogId}                                          
                                       />                  
                                     </div>                  
                                     <div className="w-100">            
@@ -259,7 +256,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={generateClassOptions(trialObj.fastAbility as Ability[])}
                                         value={formik.values.trials[index].fastLevel as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.fastLevel`, newValue)}                                        
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].fastLevel && !!formik.errors.trials && !!(formik.errors.trials[index] as any).fastLevel}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).fastLevel : ""}</Form.Control.Feedback>
@@ -276,7 +273,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={heightValues}                                        
                                         value={formik.values.trials[index].fastHeight as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.fastHeight`, newValue)}
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].fastHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).fastHeight}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).fastHeight : ""}</Form.Control.Feedback>
@@ -309,7 +306,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={heightValues}                                        
                                         value={formik.values.trials[index].t2bHeight as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.t2bHeight`, newValue)}
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].t2bHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).t2bHeight}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).t2bHeight : ""}</Form.Control.Feedback>                                      
@@ -340,7 +337,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={heightValues}                                        
                                         value={formik.values.trials[index].premierStandardHeight as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.premierStandardHeight`, newValue)}
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].premierStandardHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).premierStandardHeight}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).premierStandardHeight : ""}</Form.Control.Feedback> 
@@ -371,7 +368,7 @@ const AddRun = ({ formik }: OwnProps) => {
                                         options={heightValues}                                        
                                         value={formik.values.trials[index].premierJumpersHeight as any}
                                         onChange={(newValue: any) => formik.setFieldValue(`trials.${index}.premierJumpersHeight`, newValue)}
-                                        disabled={!runFormData.dogId}
+                                        disabled={!runFormData.dog.dogId}
                                         isInvalid={!!formik.touched.trials && !!formik.touched.trials[index].premierJumpersHeight && !!formik.errors.trials && !!(formik.errors.trials[index] as any).premierJumpersHeight}
                                       />
                                       <Form.Control.Feedback type="invalid">{!!formik.errors && !!formik.errors.trials ? (formik.errors.trials[index] as any).premierJumpersHeight : ""}</Form.Control.Feedback> 

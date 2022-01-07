@@ -1,16 +1,16 @@
 import React from "react";
-import { Nav, Button, Modal, Form, Spinner, Alert } from "react-bootstrap";
+import { Nav, Button, Modal, Form, Alert } from "react-bootstrap";
 import AddDog from "../AddDog";
 import { EventTrial } from "../../types/trial";
 import { AddRunDogView } from "../../types/person";
-import { useMutation, useQuery, useReactiveVar } from "@apollo/client";
-import { ADD_NEW_RUN, CONFIG_NEW_RUN, GET_TRIAL_RUNS } from "../../queries/runs/runs";
-import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { CONFIG_NEW_RUN } from "../../queries/runs/runs";
+import { useParams } from "react-router-dom";
 import Select from "react-select";
 import { addRunFormVar } from "../../reactiveVars";
 import AddRun from "../AddRun";
 import { Formik } from "formik";
-import { buildRunsToAdd, NewRunForm, Run, RunToAdd } from "../AddRun/utils";
+import { buildRunsToAdd, NewRunForm } from "../AddRun/utils";
 
 type OwnProps ={ 
   activeStep: number;
@@ -38,27 +38,12 @@ type InitialValues = {
 
 const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
   const [showAddDogModal, setShowAddDogModal] = React.useState<boolean>(false);
-  const { eventId, trialId } = useParams<Params>();  
+  const { eventId } = useParams<Params>();  
   const [dogOptions, setDogOptions] = React.useState<DogOptions[]>([]);  
   const runFormData = useReactiveVar(addRunFormVar);
   const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { eventId, personId: runFormData.personId }});
-  const [showError, setShowError] = React.useState<string>("");  
-  const navigate = useNavigate();
+  const [showError, setShowError] = React.useState<string>("");    
 
-  const [addRun, result] = useMutation(ADD_NEW_RUN, {
-    update: (cache, { data: { addRun } }) => {
-      cache.modify({
-        fields: {
-          getTrialRunsPaginated(paginatedRunResponse) {
-            const updatedResponse = { ...paginatedRunResponse };
-            const updatedRunList = [addRun, ...updatedResponse.runs];
-            updatedResponse.runs = updatedRunList;
-            return updatedResponse
-          }
-        }
-      })
-    }
-  })
 
   React.useEffect(() => {
     if (!!data && !!data.getPersonDogs) {
@@ -94,7 +79,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
     <>
       <div className="row justify-content-center">
         <div className="col-xs-12 col-md-10 col-lg-8 col-xl-6 text-center">
-          <h6 className="mb-4 text-uppercase text-muted">Step {activeStep} of 2</h6>
+          <h6 className="mb-4 text-uppercase text-muted">Step {activeStep} of 3</h6>
           <h1 className="mb-3">Create New Agility Runs</h1>
           <p className="mb-5 text-muted">Select or add a dog, then choose the classes and levels for the new agility runs.</p>
         </div>        
@@ -106,9 +91,9 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
             options={dogOptions}
             placeholder="Choose a dog"
             noOptionsMessage={() => <strong>No dogs available, add a new one</strong>}
-            onChange={(newValue: any) => {
+            onChange={(newValue: any) => {              
               const newRunFormData = { ...runFormData };
-              newRunFormData.dogId = newValue.value;
+              newRunFormData.dog = { callName: newValue.label, dogId: newValue.value };
               addRunFormVar(newRunFormData);
             }}
           />
@@ -121,32 +106,18 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
         enableReinitialize={true}
         initialValues={initialValues}
         onSubmit={(values) => {
-          const runs = buildRunsToAdd(values.trials, runFormData.personId, runFormData.dogId)
+          const runs = buildRunsToAdd(eventId as string, values.trials, runFormData.personId, runFormData.dog)
           if (runs.length === 0) {
             setShowError("No runs to add.");
             return;
           }
           
           setShowError("");     
-          runs.forEach((run: Run) => {
-            addRun({ variables: {
-              eventId,
-              trialId: (run as RunToAdd).trialId,
-              personId: (run as RunToAdd).personId,
-              dogId: (run as RunToAdd).dogId,
-              run: {
-                agilityClass: (run as RunToAdd).agilityClass,
-                level: (run as RunToAdd).level,
-                jumpHeight: (run as RunToAdd).jumpHeight,
-                preferred: (run as RunToAdd).preferred,
-                group: (run as RunToAdd).group,
-              }
-            }}).then(() => {
-              navigate("..");
-            }).catch((e) => {
-              setShowError(e.message)
-            })
-          })
+
+          const newRunFormData = { ...runFormData }
+          newRunFormData.runs = runs;
+          addRunFormVar(newRunFormData)
+          setActiveStep(3);
         }}
         validate={({ trials }) => {
           let hasError = false
@@ -207,7 +178,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
         {(formik) => {          
           return (
             <>
-            {!!runFormData.dogId ? (
+            {!!runFormData.dog.dogId ? (
               <div className="row mb-3">
                 <div className="col">
                   <AddRun formik={formik}/>
@@ -223,13 +194,11 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
                 <Button variant="white" type="button" size="lg" onClick={() => setActiveStep(1)}>Back</Button>
               </div>
               <div className="col text-center">
-                <h6 className="text-uppercase text-muted mb-0">Step {activeStep} of 2</h6>
+                <h6 className="text-uppercase text-muted mb-0">Step {activeStep} of 3</h6>
               </div>
               <div className="col-auto">
                 <Button size="lg" type="button" onClick={() => formik.submitForm()}>
-                  {result.loading ? (
-                    <Spinner animation="border" />
-                  ) : "Finish"}
+                  Next
                 </Button>
               </div>
             </Nav>

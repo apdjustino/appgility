@@ -49,6 +49,8 @@ export type Run = {
   obstacles?: Maybe<Array<Maybe<Scalars['Boolean']>>>;
   paid?: Maybe<Scalars['Boolean']>;
   deleted: Scalars['Boolean'];
+  createdAt?: Maybe<Scalars['String']>;
+  price?: Maybe<Scalars['Int']>;
 };
 
 export type RunData = {
@@ -59,10 +61,24 @@ export type RunData = {
   needsMeasured: boolean,
 }
 
+export type RunToAdd = {
+  agilityClass: 'STANDARD' | 'JUMPERS' | 'FAST' | 'T2B' | 'PREMIER_STANDARD' | 'PREMIER_JUMPERS',
+  level: string | null,
+  jumpHeight: number,
+  trialId: string,
+  trialDate: string,
+  group: string,
+  personId: string,
+  dog: { callName: string, dogId: string },
+  preferred: boolean,
+  eventId: string,
+  price?: number
+}
+
 export type AddRunFormData = {
   personId: string,
-  dogId: string,
-  runs: RunData[]
+  dog: { callName: string, dogId: string },
+  runs: RunToAdd[]
 }
 
 export type PaginatedRunResponse = {
