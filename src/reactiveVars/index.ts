@@ -7,6 +7,6 @@ export const getEventId = makeVar<string | undefined>(undefined);
 
 export const selectedEventMenu = makeVar<string | undefined>(undefined);
 
-export const addRunFormVar = makeVar<AddRunFormData>({ personId: '', dogId: '', runs: []});
+export const addRunFormVar = makeVar<AddRunFormData>({ personId: '', dog: { callName: "", dogId: ""}, runs: []});
 
 export const selectedPersonForRunVar = makeVar<PersonView[]>([]);

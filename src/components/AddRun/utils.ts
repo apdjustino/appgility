@@ -1,4 +1,5 @@
 import { SelectOptions } from "../../types/generic"
+import { RunToAdd } from "../../types/run"
 
 export type NewRunForm = {
   trialId: string,
@@ -17,31 +18,21 @@ export type NewRunForm = {
   premierJumpersHeight: SelectOptions<number> | undefined
 }
 
-export type RunToAdd = {
-  agilityClass: 'STANDARD' | 'JUMPERS' | 'FAST' | 'T2B' | 'PREMIER_STANDARD' | 'PREMIER_JUMPERS',
-  level: string,
-  jumpHeight: number,
-  trialId: string,  
-  group: string,
-  personId: string,
-  dogId: string,
-  preferred: boolean,
-  eventId: string
-}
-
 type EmptyRun = {}
 
 export type Run = RunToAdd | EmptyRun
 
-export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: string): Run[] => {
-  const runsToAdd: Run[] = []
+export const buildRunsToAdd = (eventId: string, formData: NewRunForm[], personId: string, dog: { callName: string, dogId: string}): RunToAdd[] => {
+  const runsToAdd: RunToAdd[] = []
 
   formData.forEach(trial => {
     if (!trial.standardPreferred && !!trial.standardLevel && !!trial.standardHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'STANDARD',
         level: trial.standardLevel.value,
         jumpHeight: trial.standardHeight.value,
@@ -52,9 +43,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
     
     if (trial.standardPreferred && !!trial.standardLevel && !!trial.standardHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'STANDARD',
         level: trial.standardLevel.value,
         jumpHeight: trial.standardHeight.value,
@@ -65,9 +58,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (!trial.jumpersPreferred && !!trial.jumpersLevel && !!trial.jumpersHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'JUMPERS',
         level: trial.jumpersLevel.value,
         jumpHeight: trial.jumpersHeight.value,
@@ -78,9 +73,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (trial.jumpersPreferred && !!trial.jumpersLevel && !!trial.jumpersHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'JUMPERS',
         level: trial.jumpersLevel.value,
         jumpHeight: trial.jumpersHeight.value,
@@ -91,9 +88,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (!trial.fastPreferred && !!trial.fastHeight && !!trial.fastLevel) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'FAST',
         level: trial.fastLevel.value,
         jumpHeight: trial.fastHeight.value,
@@ -104,9 +103,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (trial.fastPreferred && !!trial.fastHeight && !!trial.fastLevel) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'FAST',
         level: trial.fastLevel.value,
         jumpHeight: trial.fastHeight.value,
@@ -117,9 +118,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (!!trial.t2bHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'T2B',
         level: null,
         jumpHeight: trial.t2bHeight.value,
@@ -130,9 +133,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (!!trial.premierStandardHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'PREMIER_STANDARD',
         level: null,
         jumpHeight: trial.premierStandardHeight.value,
@@ -143,9 +148,11 @@ export const buildRunsToAdd = (formData: NewRunForm[], personId: string, dogId: 
 
     if (!!trial.premierJumpersHeight) {
       runsToAdd.push({
+        eventId,
         trialId: trial.trialId,
+        trialDate: trial.trialDate,
         personId,
-        dogId,
+        dog,
         agilityClass: 'PREMIER_JUMPERS',
         level: null,
         jumpHeight: trial.premierJumpersHeight.value,

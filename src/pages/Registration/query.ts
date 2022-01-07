@@ -1,14 +1,15 @@
 import { gql } from "@apollo/client";
 
-export const GET_TRIAL_DATES = gql`
-  query GetTrialDates($eventId: String!) {
+export const GET_TRIAL_META = gql`
+  query GetTrialMeta($eventId: String!) {
     getEventTrials(eventId: $eventId) {
       trialId
       trialDate
-      dayToDayMoveup
+      dayToDayMoveup      
     },
     getEvent(eventId: $eventId) {
       name
+      runPrices
     }
   }
 `

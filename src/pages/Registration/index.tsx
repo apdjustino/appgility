@@ -3,7 +3,7 @@ import { useQuery } from '@apollo/client'
 import { useLocation, useParams, Outlet, Link, Navigate, useOutletContext } from 'react-router-dom'
 import { orderBy } from "lodash";
 import { getEventId, selectedEventMenu } from "../../reactiveVars"
-import { GET_TRIAL_DATES } from './query'
+import { GET_TRIAL_META } from './query'
 import { parseTimeStamp } from '../../utils/dates';
 
 type ConfigureParams = {
@@ -11,16 +11,17 @@ type ConfigureParams = {
   trialId: string
 }
 
-export type TrialDates = {
+export type TrialMeta = {
   trialId: string;
   trialDate: string;
   dayToDayMoveup: boolean;
 };
 
-type QueryResponse = {
-  getEventTrials: TrialDates[];
+export type EventAndTrialMeta = {
+  getEventTrials: TrialMeta[];
   getEvent: {
     name: string;
+    runPrices?: number[]
   }
 }
 
@@ -28,7 +29,7 @@ const Registration = () => {
 
   const params = useParams<ConfigureParams>()
   const { pathname } = useLocation();  
-  const { data, error} = useQuery<QueryResponse>(GET_TRIAL_DATES, { variables : { eventId: params.eventId }});  
+  const { data, error} = useQuery<EventAndTrialMeta>(GET_TRIAL_META, { variables : { eventId: params.eventId }});  
   const [firstTrialId, setFirstTrialId] = React.useState<string | undefined>();
 
   React.useEffect(() => {
@@ -72,7 +73,7 @@ const Registration = () => {
       </div>
       <div className="card">
         <div className="card-body">
-          <Outlet context={data.getEventTrials}/>    
+          <Outlet context={data}/>    
         </div>
       </div>
     </div>  
@@ -86,6 +87,6 @@ const Registration = () => {
 
 export default Registration
 
-export const useTrialDates = () => {
-  return useOutletContext<TrialDates[]>();
+export const useEventMeta = () => {
+  return useOutletContext<EventAndTrialMeta>();
 }

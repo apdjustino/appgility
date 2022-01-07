@@ -5,11 +5,11 @@ import MoveupsModal from "./MoveupsModal";
 import EditRunModal from "./EditRunModal";
 import MoveupsWarning from "./MoveupsWarning";
 import { moveUpEligible } from "../../../utils/akcRules/moveUps"; 
-import { TrialDates } from "../../../pages/Registration";
+import { TrialMeta } from "../../../pages/Registration";
 
 type OwnProps = {
   config: ModalConfig;
-  trialData: TrialDates[] | undefined;
+  trialData: TrialMeta[] | undefined;
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;  
 }
 

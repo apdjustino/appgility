@@ -1,9 +1,12 @@
 import React from "react";
+import { useEventMeta } from "../../pages/Registration";
 import Step1 from "./Step1";
 import Step2 from "./Step2";
+import Step3 from "./Step3";
 
 const AddRunWizard = () => {
   const [activeStep, setActiveStep] = React.useState<number>(1);
+  const eventMeta = useEventMeta();
 
   return (
     <div className="main-content">
@@ -15,6 +18,9 @@ const AddRunWizard = () => {
             ) : null}
             {activeStep === 2 ? (
               <Step2 activeStep={activeStep} setActiveStep={setActiveStep} />
+            ) : null}
+            {activeStep === 3 ? (
+              <Step3 activeStep={activeStep} eventMeta={eventMeta} setActiveStep={setActiveStep} />
             ) : null}
           </div>
         </div>
