@@ -85,7 +85,11 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
                 setModalType(config);
                 setShowModal(true);
               }}>Edit Run</Dropdown.Item>
-              <Dropdown.Item href="#!">Remove</Dropdown.Item>              
+              <Dropdown.Item onClick={() => {
+                const config: ModalConfig = { type: ModalTypes.Remove, run: value }
+                setModalType(config);
+                setShowModal(true);
+              }}>Remove</Dropdown.Item>              
             </Dropdown.Menu>
           </Dropdown>
         )

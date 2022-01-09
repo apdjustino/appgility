@@ -45,7 +45,8 @@ export type FilterAndSearch = {
 
 export enum ModalTypes {
   Moveups = "moveups",
-  Edit = "edit"
+  Edit = "edit",
+  Remove = "remove"
 }
 
 export type ModalConfig = {

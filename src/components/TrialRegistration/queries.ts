@@ -20,3 +20,11 @@ export const EDIT_RUN = gql`
     }
   }
 `
+
+export const DELETE_RUN = gql`
+  mutation DeleteRun($eventId: String!, $trialId: String!, $runId: String!) {
+    deleteRun(eventId: $eventId, trialId: $trialId, runId: $runId) {
+      runId
+    }
+  }
+`
