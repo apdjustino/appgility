@@ -6,6 +6,7 @@ import EditRunModal from "./EditRunModal";
 import MoveupsWarning from "./MoveupsWarning";
 import { moveUpEligible } from "../../../utils/akcRules/moveUps"; 
 import { TrialMeta } from "../../../pages/Registration";
+import DeleteRunModal from "./DeleteRunModal";
 
 type OwnProps = {
   config: ModalConfig;
@@ -30,7 +31,10 @@ const RegistrationModal = ({ config, setShowModal, trialData }: OwnProps) => {
       
     
       case ModalTypes.Edit: 
-      return !!config.run ? <EditRunModal run={config.run} setShowModal={setShowModal}/> : null      
+        return !!config.run ? <EditRunModal run={config.run} setShowModal={setShowModal}/> : null   
+      
+      case ModalTypes.Remove:
+        return !!config.run ? <DeleteRunModal run={config.run} setShowModal={setShowModal} /> : null
 
     default:
       return null

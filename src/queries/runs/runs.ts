@@ -68,7 +68,7 @@ export const GET_TRIAL_RUNS = gql`
         agilityClass
         level
         preferred
-        jumpHeight        
+        jumpHeight  
       },
       continuationToken,
       hasMoreResults
