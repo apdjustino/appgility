@@ -8,6 +8,7 @@ import { UserAuth } from '../../types/authentication'
 import { Tool, BookOpen, List, Edit3, Sliders, Home, Bell } from "react-feather"
 import { Link, useLocation, useMatch } from "react-router-dom";
 import { getEventId, selectedEventMenu } from '../../reactiveVars'
+import { User } from "react-feather";
 import logo from "../../assets/icons/logo.svg";
 
 type RouteParams = {
@@ -15,14 +16,21 @@ type RouteParams = {
 }
 
 const MainLayout = () => {
-  const { logout } = useAuth0()
+  const { logout, user } = useAuth0()
   const { eventId } = useParams<RouteParams>()
   const navigate = useNavigate()
   const { pathname } = useLocation();
-  const eventMenu = selectedEventMenu();
   
   const onConfigRoot = !!useMatch(`secretary/events/${eventId}/configuration/*`)
   const onRegistrationRoot = !!useMatch(`secretary/events/${eventId}/registration/*`)
+
+  let initials: string | undefined = undefined;
+  const nameArray = !!user && !!user.name ? user.name.split(" ") : undefined;
+
+  if (!!nameArray && nameArray.length > 0) {
+    initials = `${nameArray[0][0]}${nameArray[nameArray.length - 1][0]}`
+  }
+  
   return (
     <>
       <Navbar expand="md" className="navbar-vertical fixed-start fs-2" collapseOnSelect={true}>
@@ -87,8 +95,8 @@ const MainLayout = () => {
             <Dropdown drop="up">
               <Dropdown.Toggle as="div" size="sm" role="button">
               <div className="rounded-circle bg-primary p-1 ms-2 mt-1 me-4" data-testid="user-icon-wrapper">
-                <span className="fw-bold text-white">
-                  JM
+                <span className="fw-bold text-white text-uppercase">
+                  {!!initials ? initials : (<User />)}
                 </span>
               </div>                
               </Dropdown.Toggle>
