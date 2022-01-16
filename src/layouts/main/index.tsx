@@ -1,13 +1,9 @@
-import style from './main.module.scss'
-
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Navbar, Container, Nav, Dropdown } from 'react-bootstrap'
 import { Outlet, useParams, useNavigate } from 'react-router-dom'
 import { useAuth0 } from '@auth0/auth0-react'
-import { UserAuth } from '../../types/authentication'
 import { Tool, BookOpen, List, Edit3, Sliders, Home, Bell } from "react-feather"
 import { Link, useLocation, useMatch } from "react-router-dom";
-import { getEventId, selectedEventMenu } from '../../reactiveVars'
 import { User } from "react-feather";
 import logo from "../../assets/icons/logo.svg";
 
@@ -110,7 +106,7 @@ const MainLayout = () => {
                 <Dropdown.Divider />
                 <Dropdown.Item onClick={() => {
                   localStorage.removeItem("appgilityAccessToken");
-                  logout()
+                  logout({ returnTo: window.location.origin })
                 }}>Logout</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>

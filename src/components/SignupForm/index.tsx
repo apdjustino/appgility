@@ -18,7 +18,7 @@ const SignupForm = () => {
     name: Yup.string().required('Name is required'),
     email: Yup.string().email('Email is not valid').required('Email is required'),
     phone: Yup.string().required('Phone number is required'),
-    password: Yup.string().required('Password is required').min(8, 'Password must have a minimum of 8 characters').matches(/(?=^.{16,}$)((?=.*\w)(?=.*[A-Z])(?=.*[0-9])(?=.*[|!$% &@#/()?^'\+\-*]))^.*/, 'Password must include lower case, lower case, numbers, and special characters')
+    password: Yup.string().required('Password is required').matches(/(?=^.{8,}$)((?=.*\w)(?=.*[A-Z])(?=.*[0-9]))^.*/, 'Password must be at least 8 characters and include a lowercase character, an uppercase character, and a number')
   })
   const navigate = useNavigate()
 
