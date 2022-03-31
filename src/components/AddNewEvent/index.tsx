@@ -6,7 +6,6 @@ import { useMutation } from "@apollo/client";
 import { ADD_NEW_EVENT, GET_PERSON_EVENTS } from "../../queries/trials/trials";
 
 interface InitialValues {
-    name: string;
     locationCity: string;
     locationState: string;
     trialSite?: string;
@@ -28,7 +27,6 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
     });
     const formik = useFormik({
         initialValues: {
-            name: "",
             locationCity: "",
             locationState: "",
             trialSite: "",
@@ -44,8 +42,8 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
         },
         validate: (values: InitialValues) => {
             const errors: any = {};
-            if (!values.name) {
-                errors.name = "Required";
+            if (!values.hostClub) {
+                errors.hostClub = "Required";
             }
 
             if (!values.locationCity) {
@@ -54,6 +52,10 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
 
             if (!values.locationState) {
                 errors.locationState = "Required";
+            }
+
+            if (!values.trialSite) {
+                errors.trialSite = "Required";
             }
 
             return errors;
@@ -69,15 +71,15 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
                 <Modal.Body>
                     <Form>
                         <div className="form-group">
-                            <Form.Label>Name</Form.Label>
+                            <Form.Label>Host Club</Form.Label>
                             <Form.Control
-                                id="name"
-                                name="name"
-                                value={formik.values.name}
+                                id="hostClub"
+                                name="hostClub"
+                                value={formik.values.hostClub}
                                 onChange={formik.handleChange}
-                                isInvalid={!!formik.errors.name && !!formik.touched.name}
+                                isInvalid={!!formik.errors.hostClub && !!formik.touched.hostClub}
                             />
-                            <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">{formik.errors.hostClub}</Form.Control.Feedback>
                         </div>
                         <div className="form-group">
                             <Form.Label>City</Form.Label>
@@ -111,17 +113,6 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
                                 isInvalid={!!formik.errors.trialSite && !!formik.touched.trialSite}
                             />
                             <Form.Control.Feedback type="invalid">{formik.errors.trialSite}</Form.Control.Feedback>
-                        </div>
-                        <div className="form-group">
-                            <Form.Label>Host Club</Form.Label>
-                            <Form.Control
-                                id="hostClub"
-                                name="hostClub"
-                                value={formik.values.hostClub}
-                                onChange={formik.handleChange}
-                                isInvalid={!!formik.errors.hostClub && !!formik.touched.hostClub}
-                            />
-                            <Form.Control.Feedback type="invalid">{formik.errors.hostClub}</Form.Control.Feedback>
                         </div>
                     </Form>
                 </Modal.Body>

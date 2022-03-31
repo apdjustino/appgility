@@ -4,7 +4,7 @@ export const GET_PERSON_EVENTS = gql`
     query GetPersonEvents($personId: String!) {
         getPersonEvents(personId: $personId) {
             eventId
-            name
+            hostClub
             personId
             locationCity
             locationState
@@ -19,7 +19,6 @@ export const ADD_NEW_EVENT = gql`
     mutation AddEvent($data: CreateNewEventInput, $personId: String) {
         addEvent(data: $data, personId: $personId) {
             eventId
-            name
             status
         }
     }
@@ -31,7 +30,6 @@ export const GET_EVENT = gql`
             id
             type
             eventId
-            name
             locationCity
             locationState
             status
@@ -52,7 +50,6 @@ export const UPDATE_EVENT = gql`
     mutation UpdateEvent($eventId: String!, $updatedEvent: UpdateEventInput!, $personId: String!) {
         updateEvent(eventId: $eventId, updatedEvent: $updatedEvent, personId: $personId) {
             eventId
-            name
         }
     }
 `;

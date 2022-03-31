@@ -32,7 +32,6 @@ const BasicTrialConfig = () => {
     });
 
     const validationSchema = Yup.object().shape({
-        name: Yup.string().required("Required"),
         locationCity: Yup.string().required("Required"),
         locationState: Yup.string().required("Required"),
         trialSite: Yup.string().required("Required"),
@@ -42,21 +41,19 @@ const BasicTrialConfig = () => {
     const initialValues =
         !!data && !!data.getEvent && !loading
             ? {
-                  name: data.getEvent.name,
+                  hostClub: data.getEvent.hostClub,
                   locationCity: data.getEvent.locationCity,
                   locationState: data.getEvent.locationState,
                   trialSite: data.getEvent.trialSite,
-                  hostClub: data.getEvent.hostClub,
                   trialChairName: data.getEvent.trialChairName,
                   trialChairEmail: data.getEvent.trialChairEmail,
                   trialChairPhone: data.getEvent.trialChairPhone,
               }
             : {
-                  name: "",
+                  hostClub: "",
                   locationCity: "",
                   locationState: "",
                   trialSite: "",
-                  hostClub: "",
                   trialChairName: "",
                   trialChairEmail: "",
                   trialChairPhone: "",
@@ -67,7 +64,6 @@ const BasicTrialConfig = () => {
         onSubmit: (values) => {
             if (!!data && !!data.getEvent) {
                 const updatedEvent = { ...data.getEvent };
-                updatedEvent.name = values.name;
                 updatedEvent.locationCity = values.locationCity;
                 updatedEvent.locationState = values.locationState;
                 updatedEvent.trialSite = values.trialSite;
@@ -97,16 +93,16 @@ const BasicTrialConfig = () => {
                 {!!error ? <Alert variant="danger">{error.message}</Alert> : null}
                 <div className="row pb-3">
                     <div className="col">
-                        <Form.Label>Name</Form.Label>
+                        <Form.Label>Host Club</Form.Label>
                         <Form.Control
-                            id="name"
-                            name="name"
-                            placeholder="Name"
-                            value={formik.values.name}
+                            id="hostClub"
+                            name="hostClub"
+                            placeholder="Host Club"
+                            value={formik.values.hostClub as string}
                             onChange={formik.handleChange}
-                            isInvalid={!!formik.errors.name && !!formik.touched.name}
+                            isInvalid={!!formik.errors.hostClub && !!formik.touched.hostClub}
                         />
-                        <Form.Control.Feedback type="invalid">{formik.errors.name}</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">{formik.errors.hostClub}</Form.Control.Feedback>
                     </div>
                 </div>
                 <div className="row pb-3">
