@@ -4,7 +4,6 @@ import { MoreVertical } from "react-feather";
 import { PaginatedRunResponse, Run } from "../../types/run";
 import InfiniteLoader from "react-window-infinite-loader";
 import { FixedSizeList } from "react-window";
-import scrollbarWidth from "./scrollbarWidth";
 import { Dropdown } from "react-bootstrap";
 import { ModalConfig, ModalTypes } from "../TrialRegistration";
 
@@ -109,7 +108,7 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
                 width: width / 7,
             },
         ],
-        [width],
+        [width, setModalType, setShowModal],
     );
 
     const defaultColumn = React.useMemo(
@@ -118,8 +117,6 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
         }),
         [],
     );
-
-    const scrollBarSize = React.useMemo(() => scrollbarWidth(), []);
 
     const tableData = React.useMemo(() => (!!data && data.runs ? data.runs : []), [data]) as Run[];
 
@@ -150,6 +147,7 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
                 </div>
             ) : null;
         },
+        // eslint-disable-next-line
         [prepareRow, rows],
     );
 

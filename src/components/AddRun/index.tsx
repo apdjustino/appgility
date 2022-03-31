@@ -1,5 +1,3 @@
-import style from "./AddRun.module.scss";
-
 import React from "react";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { Form, Card, Spinner, Button, Alert } from "react-bootstrap";
@@ -13,13 +11,6 @@ import { FieldArray, FormikProps } from "formik";
 import { NewRunForm } from "./utils";
 import { SelectOptions } from "../../types/generic";
 import { parseTimeStamp } from "../../utils/dates";
-
-type DogOption = {
-    key: string;
-    text: string;
-    value: string;
-    disabled: boolean;
-};
 
 type ConfigureParams = {
     eventId: string;
@@ -48,7 +39,7 @@ const generateClassOptions = (rawOptions: Ability[]): SelectOptions<string>[] =>
 const AddRun = ({ formik }: OwnProps) => {
     const { eventId } = useParams<ConfigureParams>();
     const { personId } = addRunFormVar();
-    const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId } });
+    const { data, loading } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { personId, eventId } });
     const runFormData = useReactiveVar(addRunFormVar);
 
     const heightValues: SelectOptions<number | null>[] = [
@@ -59,28 +50,6 @@ const AddRun = ({ formik }: OwnProps) => {
         { value: 20, label: '20"' },
         { value: 24, label: '24"' },
     ];
-
-    const initialValues: InitialValues = {
-        trials:
-            !!data && !loading
-                ? data.getEventTrials.map((trial) => ({
-                      trialId: trial.trialId,
-                      trialDate: trial.trialDate as string,
-                      standardPreferred: false,
-                      standardLevel: undefined,
-                      standardHeight: undefined,
-                      jumpersPreferred: false,
-                      jumpersLevel: undefined,
-                      jumpersHeight: undefined,
-                      fastPreferred: false,
-                      fastLevel: undefined,
-                      fastHeight: undefined,
-                      t2bHeight: undefined,
-                      premierStandardHeight: undefined,
-                      premierJumpersHeight: undefined,
-                  }))
-                : [],
-    };
 
     return personId ? (
         <Form onSubmit={formik.handleSubmit}>

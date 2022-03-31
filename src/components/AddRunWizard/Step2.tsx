@@ -41,7 +41,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
     const { eventId } = useParams<Params>();
     const [dogOptions, setDogOptions] = React.useState<DogOptions[]>([]);
     const runFormData = useReactiveVar(addRunFormVar);
-    const { data, loading, error } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { eventId, personId: runFormData.personId } });
+    const { data, loading } = useQuery<QueryResponse>(CONFIG_NEW_RUN, { variables: { eventId, personId: runFormData.personId } });
     const [showError, setShowError] = React.useState<string>("");
 
     React.useEffect(() => {

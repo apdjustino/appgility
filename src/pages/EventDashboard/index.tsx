@@ -1,6 +1,5 @@
 import React from "react";
 import EventList from "../../components/EventList";
-import { Modal } from "react-bootstrap";
 import RecentActivity from "../../components/RecentActivity";
 import RecentCatalogs from "../../components/RecentCatalogs";
 import AddNewTrial from "../../components/AddNewEvent";

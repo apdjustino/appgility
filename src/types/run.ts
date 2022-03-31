@@ -1,5 +1,4 @@
 import { Scalars, Maybe } from "./generic";
-import { Dog, Person } from "./person";
 
 export enum AgilityClass {
     Standard = "STANDARD",

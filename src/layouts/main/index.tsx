@@ -83,7 +83,7 @@ const MainLayout = () => {
                         )}
                     </Navbar.Collapse>
                     <div className="navbar-user d-none d-md-flex">
-                        <a className="navbar-user-link" role="button">
+                        <a href="/" className="navbar-user-link" role="button">
                             <div className="icon">
                                 <Bell size="17" />
                             </div>

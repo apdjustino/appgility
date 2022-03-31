@@ -1,6 +1,5 @@
 import React from "react";
-import { Modal } from "react-bootstrap";
-import { ModalTypes, ModalConfig, FilterAndSearch } from "../index";
+import { ModalTypes, ModalConfig } from "../index";
 import MoveupsModal from "./MoveupsModal";
 import EditRunModal from "./EditRunModal";
 import MoveupsWarning from "./MoveupsWarning";

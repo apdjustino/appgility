@@ -5,7 +5,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { Spinner, Form, Alert, Button } from "react-bootstrap";
 import { GET_EVENT, GET_PERSON_EVENTS, UPDATE_EVENT } from "../../queries/trials/trials";
-import { useFormik, Formik, FieldArray } from "formik";
+import { Formik, FieldArray } from "formik";
 import { Event } from "../../types/event";
 import { X } from "react-feather";
 import NumberFormat from "react-number-format";

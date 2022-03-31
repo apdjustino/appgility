@@ -7,13 +7,6 @@ import { EventTrial } from "../../types/trial";
 import AddTrial from "../AddTrial";
 import { Judge } from "../../types/person";
 
-type SkillLevel = {
-    nov: string;
-    open: string;
-    exc: string;
-    mast: string;
-};
-
 type OwnProps = {
     trials: EventTrial[];
     selectedTrial: string;

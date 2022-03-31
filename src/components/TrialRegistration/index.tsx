@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useLazyQuery } from "@apollo/client";
 import { Dropdown, Form, InputGroup, ListGroup, Spinner, Card, Modal } from "react-bootstrap";
 import { useParams, Link } from "react-router-dom";
@@ -15,7 +15,6 @@ import { SelectOptions } from "../../types/generic";
 import { isEmpty } from "lodash";
 import { useDebounce } from "use-debounce";
 import RegistrationModal from "./modals/RegistrationModal";
-import { EventTrial } from "../../types/trial";
 import { useEventMeta } from "../../pages/Registration";
 
 type ConfigureParams = {
@@ -83,10 +82,11 @@ const TrialRegistration = () => {
         } else {
             getRuns({ variables: { trialId, agilityClass, level, jumpHeight, preferred, regular, search: debouncedSearchText.toLowerCase() } });
         }
+        // eslint-disable-next-line
     }, [trialId, filterAndSearch, debouncedSearchText]);
 
-    console.log(data);
-
+    // TODO add this back in
+    // eslint-disable-next-line
     const mobileColumns: Column<Run>[] = [
         {
             accessor: ({ agilityClass, level, jumpHeight, preferred, dogId, callName, personId, personName, runId }) => ({

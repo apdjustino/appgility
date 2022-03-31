@@ -28,7 +28,7 @@ const AsyncTypeaheadControl = AsyncTypeahead as any;
 const Step1 = ({ activeStep, setActiveStep }: OwnProps) => {
     const [options, setOptions] = React.useState<PersonView[]>([]);
     const [showAddPersonModal, setShowAddPersonModal] = React.useState<boolean>(false);
-    const [searchPerson, { data, loading, error }] = useLazyQuery<QueryResponse>(SEARCH_PERSON);
+    const [searchPerson, { data, loading }] = useLazyQuery<QueryResponse>(SEARCH_PERSON);
     const selectedOption = useReactiveVar(selectedPersonForRunVar);
 
     React.useEffect(() => {

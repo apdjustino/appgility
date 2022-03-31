@@ -66,7 +66,6 @@ const Step3 = ({ activeStep, eventMeta, setActiveStep }: OwnProps) => {
 
     const groupedRuns = groupBy(runData.runs, (run) => run.trialDate);
     let totalPrice = 0;
-    console.log(runPrices);
 
     return (
         <>

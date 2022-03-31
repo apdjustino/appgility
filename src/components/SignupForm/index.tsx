@@ -11,6 +11,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import NumberFormat from "react-number-format";
 
 const SignupForm = () => {
+    // eslint-disable-next-line
     const [showError, setShowError] = useState(false);
     const { loginWithRedirect } = useAuth0();
 

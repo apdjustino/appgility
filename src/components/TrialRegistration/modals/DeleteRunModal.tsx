@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Spinner } from "react-bootstrap";
+import { Modal, Spinner } from "react-bootstrap";
 import { useMutation } from "@apollo/client";
 import { DELETE_RUN } from "../queries";
 import { Run } from "../../../types/run";
