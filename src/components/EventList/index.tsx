@@ -39,7 +39,7 @@ const EventList = ({ setShowDialog }: OwnProps) => {
                 <table className="table table-sm table-nowrap table-hover card-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th>Host</th>
                             <th>Dates</th>
                             <th>Location</th>
                             <th>Trial Site</th>
@@ -57,7 +57,7 @@ const EventList = ({ setShowDialog }: OwnProps) => {
                                         onClick={() => navigate(`../events/${event.eventId}/configuration/trials`)}
                                         style={{ cursor: "pointer" }}
                                     >
-                                        <td>{event.name}</td>
+                                        <td>{event.hostClub}</td>
                                         <td>{!!minMax ? `${minMax[0]} - ${minMax[1]}` : "Dates not set"}</td>
                                         <td>
                                             {event.locationCity}, {event.locationState}
