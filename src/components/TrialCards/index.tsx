@@ -124,7 +124,7 @@ const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, se
                     <Modal.Title>{selectedTrial === "" ? "Add Trial" : "Edit Trial"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <AddTrial trialId={selectedTrial} />
+                    <AddTrial trialId={selectedTrial} onHide={() => setAddTrialModal(false)} />
                 </Modal.Body>
             </Modal>
         </>

@@ -17,13 +17,14 @@ type ClassesOptions = {
 
 type ownProps = {
     trialId: string;
+    onHide: () => void;
 };
 
 type ConfigureParams = {
     eventId: string;
 };
 
-const AddTrial = ({ trialId }: ownProps) => {
+const AddTrial = ({ trialId, onHide }: ownProps) => {
     const classesOptions: ClassesOptions[] = [
         { label: "Novice", value: "nov" },
         { label: "Open", value: "open" },
@@ -105,7 +106,50 @@ const AddTrial = ({ trialId }: ownProps) => {
 
     const formik = useFormik({
         initialValues: !trialQuery.data
-            ? {}
+            ? {
+                  standardClass: false,
+                  jumpersClass: false,
+                  fastClass: false,
+                  t2bClass: false,
+                  premierStandard: false,
+                  premierJumpers: false,
+                  standardAbility: [
+                      { label: "Novice", value: "nov" },
+                      { label: "Open", value: "open" },
+                      { label: "Excellent", value: "exc" },
+                      { label: "Masters", value: "mast" },
+                  ],
+                  standardPreferred: [
+                      { label: "Novice", value: "nov" },
+                      { label: "Open", value: "open" },
+                      { label: "Excellent", value: "exc" },
+                      { label: "Masters", value: "mast" },
+                  ],
+                  jumpersAbility: [
+                      { label: "Novice", value: "nov" },
+                      { label: "Open", value: "open" },
+                      { label: "Excellent", value: "exc" },
+                      { label: "Masters", value: "mast" },
+                  ],
+                  jumpersPreferred: [
+                      { label: "Novice", value: "nov" },
+                      { label: "Open", value: "open" },
+                      { label: "Excellent", value: "exc" },
+                      { label: "Masters", value: "mast" },
+                  ],
+                  fastAbility: [
+                      { label: "Novice", value: "nov" },
+                      { label: "Open", value: "open" },
+                      { label: "Excellent", value: "exc" },
+                      { label: "Masters", value: "mast" },
+                  ],
+                  fastPreferred: [
+                      { label: "Novice", value: "nov" },
+                      { label: "Open", value: "open" },
+                      { label: "Excellent", value: "exc" },
+                      { label: "Masters", value: "mast" },
+                  ],
+              }
             : { ...trialQuery.data.getEventTrial, trialDate: parseTimeStamp(trialQuery.data.getEventTrial.trialDate, "yyyy-MM-dd") },
         onSubmit: (values) => {
             if (trialId && trialId !== "") {
@@ -127,9 +171,13 @@ const AddTrial = ({ trialId }: ownProps) => {
                         eventId: params.eventId,
                         eventTrial: trialToUpdate,
                     },
-                }).catch(() => {
-                    setShowError(true);
-                });
+                })
+                    .then(() => {
+                        onHide();
+                    })
+                    .catch(() => {
+                        setShowError(true);
+                    });
                 return;
             }
 
@@ -141,9 +189,16 @@ const AddTrial = ({ trialId }: ownProps) => {
 
             addNewTrial.judges = judges;
 
-            addTrial({ variables: { eventTrial: addNewTrial } }).catch(() => {
-                setShowError(true);
-            });
+            addTrial({ variables: { eventTrial: addNewTrial } })
+                .catch(() => {
+                    setShowError(true);
+                })
+                .then(() => {
+                    onHide();
+                })
+                .catch(() => {
+                    setShowError(true);
+                });
         },
         enableReinitialize: true,
         validationSchema,
