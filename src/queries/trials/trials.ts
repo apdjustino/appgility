@@ -61,7 +61,6 @@ export const GET_TRIALS = gql`
             trialId
             eventId
             type
-            akcTrialNumber
             trialDate
             onlineEntries
             mailEntries
@@ -114,7 +113,6 @@ export const GET_EVENT_TRIAL = gql`
             trialId
             eventId
             type
-            akcTrialNumber
             trialDate
             onlineEntries
             mailEntries

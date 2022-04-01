@@ -6,6 +6,7 @@ import { useMutation } from "@apollo/client";
 import { ADD_NEW_EVENT, GET_PERSON_EVENTS } from "../../queries/trials/trials";
 
 interface InitialValues {
+    eventNumber: string;
     locationCity: string;
     locationState: string;
     trialSite?: string;
@@ -27,6 +28,7 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
     });
     const formik = useFormik({
         initialValues: {
+            eventNumber: "",
             locationCity: "",
             locationState: "",
             trialSite: "",
@@ -42,6 +44,10 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
         },
         validate: (values: InitialValues) => {
             const errors: any = {};
+            if (!values.eventNumber) {
+                errors.eventNumber = "Required";
+            }
+
             if (!values.hostClub) {
                 errors.hostClub = "Required";
             }
@@ -70,6 +76,17 @@ const AddNewTrial = ({ showDialog, setShowDialog }: OwnProps) => {
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
+                        <div className="form-group">
+                            <Form.Label>Event Number</Form.Label>
+                            <Form.Control
+                                id="eventNumber"
+                                name="eventNumber"
+                                value={formik.values.eventNumber}
+                                onChange={formik.handleChange}
+                                isInvalid={!!formik.errors.eventNumber && !!formik.touched.eventNumber}
+                            />
+                            <Form.Control.Feedback type="invalid">{formik.errors.hostClub}</Form.Control.Feedback>
+                        </div>
                         <div className="form-group">
                             <Form.Label>Host Club</Form.Label>
                             <Form.Control

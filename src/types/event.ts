@@ -5,6 +5,7 @@ export type Event = {
     id: Scalars["String"];
     eventId: Scalars["String"];
     type: Scalars["String"];
+    eventNumber: Scalars["String"];
     locationCity: Scalars["String"];
     locationState: Scalars["String"];
     status: Scalars["String"];
@@ -24,6 +25,7 @@ export type PersonEvent = {
     __typename?: "PersonEvent";
     id: Scalars["String"];
     eventId: Scalars["String"];
+    eventNumber: Scalars["String"];
     personId: Scalars["String"];
     type: Scalars["String"];
     hostClub: Scalars["String"];

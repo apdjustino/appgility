@@ -21,10 +21,10 @@ const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, se
     return (
         <>
             {trials.length > 0 ? (
-                chunkedTrials.map((trialSet) => (
-                    <div className="row py-4">
+                chunkedTrials.map((trialSet, i) => (
+                    <div className="row py-4" key={`trialSet-${i}`}>
                         {trialSet.map((trial) => (
-                            <div className="col-md-4 col-12">
+                            <div key={trial.trialId} className="col-md-4 col-12">
                                 <div className="card card-fill" key={`trial-card-${trial.id}`}>
                                     <div className="card-header">
                                         <h4 className="card-header-title">{parseTimeStamp(trial.trialDate, "EEEE MMMM  do, y")}</h4>
@@ -39,7 +39,7 @@ const TrialCards = ({ trials, selectedTrial, addTrialModal, setSelectedTrial, se
                                         </button>
                                     </div>
 
-                                    <div className="card-body">
+                                    <div className="card-body" style={{ marginTop: "0px" }}>
                                         <div className="row py-2">
                                             <Card.Text>
                                                 <div>
