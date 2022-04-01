@@ -7,7 +7,6 @@ export type EventTrial = {
     trialId: Scalars["String"];
     eventId: Scalars["String"];
     type: Scalars["String"];
-    akcTrialNumber?: Maybe<Scalars["String"]>;
     trialDate?: Maybe<Scalars["String"]>;
     onlineEntries?: Maybe<Scalars["Int"]>;
     mailEntries?: Maybe<Scalars["Int"]>;

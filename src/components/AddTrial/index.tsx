@@ -32,35 +32,40 @@ const AddTrial = ({ trialId }: ownProps) => {
     ];
 
     const validationSchema = Yup.object().shape({
-        akcTrialNumber: Yup.string().required("Required"),
         trialDate: Yup.string().required("Required"),
         mailEntries: Yup.number().min(1, "Minimium is 1 entries").required("Required"),
         onlineEntries: Yup.number().min(1, "Minimium is 1 entries").required("Required"),
         runLimit: Yup.number().min(1, "At least one run is required").required("Required"),
-        standardClass: Yup.boolean(),
         standardAbility: Yup.array().when("standardClass", {
             is: true,
-            then: Yup.array().required("At least one ability is required"),
-            otherwise: Yup.array(),
+            then: Yup.array().required("At least one ability is required").nullable(),
+            otherwise: Yup.array().nullable(),
         }),
         standardPreferred: Yup.array().when("standardClass", {
             is: true,
-            then: Yup.array().required("At least one ability is required"),
-            otherwise: Yup.array(),
+            then: Yup.array().required("At least one ability is required").nullable(),
+            otherwise: Yup.array().nullable(),
         }),
-        jumpersClass: Yup.boolean(),
-        jumpersAbility: Yup.array().when("jumpersClass", { is: true, then: Yup.array().required("At least one ability is required"), otherwise: Yup.array() }),
+        jumpersAbility: Yup.array().when("jumpersClass", {
+            is: true,
+            then: Yup.array().required("At least one ability is required").nullable(),
+            otherwise: Yup.array().nullable(),
+        }),
         jumpersPreferred: Yup.array().when("jumpersClass", {
             is: true,
-            then: Yup.array().required("At least one ability is required"),
-            otherwise: Yup.array(),
+            then: Yup.array().required("At least one ability is required").nullable(),
+            otherwise: Yup.array().nullable(),
         }),
-        fastClass: Yup.boolean(),
-        fastAbility: Yup.array().when("fastClass", { is: true, then: Yup.array().required("At least one ability is required"), otherwise: Yup.array() }),
-        fastPreferred: Yup.array().when("fastClass", { is: true, then: Yup.array().required("At least one ability is required"), otherwise: Yup.array() }),
-        t2bClass: Yup.boolean(),
-        premierStandard: Yup.boolean(),
-        premierJumpers: Yup.boolean(),
+        fastAbility: Yup.array().when("fastClass", {
+            is: true,
+            then: Yup.array().required("At least one ability is required").nullable(),
+            otherwise: Yup.array().nullable(),
+        }),
+        fastPreferred: Yup.array().when("fastClass", {
+            is: true,
+            then: Yup.array().required("At least one ability is required").nullable(),
+            otherwise: Yup.array().nullable(),
+        }),
     });
 
     const judgeValidationSchema = Yup.object().shape({
@@ -162,21 +167,7 @@ const AddTrial = ({ trialId }: ownProps) => {
                 <div>
                     <>
                         <div className="row pb-2">
-                            <div className="col-6">
-                                <div className="form-group">
-                                    <Form.Label>AKC Trial Number</Form.Label>
-                                    <Form.Control
-                                        id="akcTrialNumber"
-                                        name="akcTrialNumber"
-                                        value={formik.values.akcTrialNumber}
-                                        onChange={formik.handleChange}
-                                        type="text"
-                                        isInvalid={!!formik.errors.akcTrialNumber && !!formik.touched.akcTrialNumber}
-                                    />
-                                    <Form.Control.Feedback type="invalid">{formik.errors.akcTrialNumber}</Form.Control.Feedback>
-                                </div>
-                            </div>
-                            <div className="col-6">
+                            <div className="col-12">
                                 <div className="form-group">
                                     <Form.Label>Date</Form.Label>
                                     <Form.Control

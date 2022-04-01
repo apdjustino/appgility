@@ -41,6 +41,7 @@ const BasicTrialConfig = () => {
     const initialValues =
         !!data && !!data.getEvent && !loading
             ? {
+                  eventNumber: data.getEvent.eventNumber,
                   hostClub: data.getEvent.hostClub,
                   locationCity: data.getEvent.locationCity,
                   locationState: data.getEvent.locationState,
@@ -50,6 +51,7 @@ const BasicTrialConfig = () => {
                   trialChairPhone: data.getEvent.trialChairPhone,
               }
             : {
+                  eventNumber: "",
                   hostClub: "",
                   locationCity: "",
                   locationState: "",
@@ -64,6 +66,7 @@ const BasicTrialConfig = () => {
         onSubmit: (values) => {
             if (!!data && !!data.getEvent) {
                 const updatedEvent = { ...data.getEvent };
+                updatedEvent.eventNumber = values.eventNumber;
                 updatedEvent.locationCity = values.locationCity;
                 updatedEvent.locationState = values.locationState;
                 updatedEvent.trialSite = values.trialSite;
@@ -91,6 +94,20 @@ const BasicTrialConfig = () => {
                 {result.called && !!result.data ? <Alert variant="success">Event data updated succesfully</Alert> : null}
                 {result.error && showError ? <Alert variant="danger">{result.error.message}</Alert> : null}
                 {!!error ? <Alert variant="danger">{error.message}</Alert> : null}
+                <div className="row pb-3">
+                    <div className="col">
+                        <Form.Label>Event Number</Form.Label>
+                        <Form.Control
+                            id="eventNumber"
+                            name="eventNumber"
+                            placeholder="Event Number"
+                            value={formik.values.eventNumber as string}
+                            onChange={formik.handleChange}
+                            isInvalid={!!formik.errors.eventNumber && !!formik.touched.eventNumber}
+                        />
+                        <Form.Control.Feedback type="invalid">{formik.errors.hostClub}</Form.Control.Feedback>
+                    </div>
+                </div>
                 <div className="row pb-3">
                     <div className="col">
                         <Form.Label>Host Club</Form.Label>
