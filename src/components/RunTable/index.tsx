@@ -30,38 +30,38 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
             {
                 accessor: "agilityClass",
                 Header: "Class",
-                Cell: ({ value }) => String(value),
+                Cell: ({ value }) => <p className="text-capitalize">{String(value).toLowerCase()}</p>,
                 width: width / 7,
             },
             {
                 accessor: "level",
                 Header: "Level",
-                Cell: ({ value }) => (!!value ? String(value) : "--"),
+                Cell: ({ value }) => <span className="text-capitalize">{!!value ? String(value).split("_").join(" ").toLowerCase() : "--"}</span>,
                 width: width / 7,
             },
             {
                 accessor: "jumpHeight",
                 Header: "Jump Height",
-                Cell: ({ value }) => String(value),
+                Cell: ({ value }) => <span className="text-capitalize">{String(value).toLowerCase()}"</span>,
                 width: width / 7,
             },
             {
                 accessor: "preferred",
                 Header: "Preferred",
-                Cell: ({ value }) => String(value),
+                Cell: ({ value }) => <span className="text-capitalize">{String(value).toLowerCase()}</span>,
                 width: width / 7,
             },
             {
                 accessor: "callName",
                 Header: "Call Name",
-                Cell: ({ value }) => String(value),
+                Cell: ({ value }) => <span className="text-capitalize">{String(value).toLowerCase()}</span>,
                 width: width / 7,
             },
             {
                 accessor: "personName",
                 Header: "Owner",
-                Cell: ({ value }) => String(value),
-                width: width / 7,
+                Cell: ({ value }) => <span className="text-capitalize">{String(value).toLowerCase()}</span>,
+                width: 200,
             },
             {
                 accessor: (originalRow) => originalRow,
@@ -105,7 +105,7 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
                         </Dropdown>
                     );
                 },
-                width: width / 7,
+                width: 100,
             },
         ],
         [width, setModalType, setShowModal],
@@ -139,7 +139,7 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
                 <div {...row.getRowProps({ style })}>
                     {row.cells.map((cell) => {
                         return (
-                            <div {...cell.getCellProps({ style: { padding: "1rem" } })} className="border-top border-bottom">
+                            <div {...cell.getCellProps({ style: { padding: "1rem" } })} className="border-top border-bottom text-center">
                                 {cell.render("Cell")}
                             </div>
                         );
@@ -158,7 +158,7 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
                     <div {...headerGroup.getHeaderGroupProps()}>
                         {headerGroup.headers.map((column) => (
                             <div
-                                className="text-muted text-uppercase fs-5 border-top border-bottom"
+                                className="text-muted text-uppercase fs-5 border-top border-bottom text-center"
                                 {...column.getHeaderProps({
                                     style: {
                                         backgroundColor: "#F9FBFD",
