@@ -20,7 +20,7 @@ export type TrialMeta = {
 export type EventAndTrialMeta = {
     getEventTrials: TrialMeta[];
     getEvent: {
-        name: string;
+        hostClub: string;
         runPrices?: number[];
     };
 };
@@ -52,7 +52,7 @@ const Registration = () => {
                         <div className="row align-items-end">
                             <div className="col">
                                 <h6 className="header-pretitle">Event Configuration</h6>
-                                <h1 className="header-title">{!!data && !!data.getEvent ? data.getEvent.name : null}</h1>
+                                <h1 className="header-title">{!!data && !!data.getEvent ? data.getEvent.hostClub : null}</h1>
                             </div>
                             <div className="col-auto">
                                 <ul className="nav nav-tabs header-tabs fs-3">

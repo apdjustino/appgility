@@ -150,7 +150,8 @@ const TrialRegistration = () => {
     ];
 
     const levelOptions: SelectOptions<string>[] = [
-        { label: "Novice", value: "NOVICE" },
+        { label: "Novice A", value: "NOVICEA" },
+        { label: "Novice B", value: "NOVICEB" },
         { label: "Open", value: "OPEN" },
         { label: "Excellent", value: "EXCELLENT" },
         { label: "Masters", value: "MASTERS" },

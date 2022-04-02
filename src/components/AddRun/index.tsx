@@ -32,7 +32,7 @@ type OwnProps = {
 const generateClassOptions = (rawOptions: Ability[]): SelectOptions<string>[] => {
     return rawOptions.map((option) => ({
         label: option.label,
-        value: option.label.toUpperCase(),
+        value: option.value,
     }));
 };
 

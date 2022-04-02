@@ -8,7 +8,7 @@ export const GET_TRIAL_META = gql`
             dayToDayMoveup
         }
         getEvent(eventId: $eventId) {
-            name
+            hostClub
             runPrices
         }
     }

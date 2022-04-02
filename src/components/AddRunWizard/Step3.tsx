@@ -105,7 +105,7 @@ const Step3 = ({ activeStep, eventMeta, setActiveStep }: OwnProps) => {
                                                 <ListGroup.Item key={`${trialDate}-${i}`}>
                                                     <div className="row">
                                                         <div className="col auto">
-                                                            <h4 className="text-body">
+                                                            <h4 className="text-body text-capitalize">
                                                                 {run.agilityClass}
                                                                 {!!run.level ? ` - ${run.level} ` : ""} - {`${run.jumpHeight}"`} -{" "}
                                                                 {!!run.preferred ? "Preferred" : "Regular"} {price}
