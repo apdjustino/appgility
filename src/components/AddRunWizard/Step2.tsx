@@ -82,7 +82,7 @@ const Step2 = ({ activeStep, setActiveStep }: OwnProps) => {
             <div className="row justify-content-center">
                 <div className="col-xs-12 col-md-10 col-lg-8 col-xl-6 text-center">
                     <h6 className="mb-4 text-uppercase text-muted">Step {activeStep} of 3</h6>
-                    <h1 className="mb-3">Create New Agility Runs</h1>
+                    <h1 className="mb-3">Select Classes</h1>
                     <p className="mb-5 text-muted">Select or add a dog, then choose the classes and levels for the new agility runs.</p>
                 </div>
             </div>
