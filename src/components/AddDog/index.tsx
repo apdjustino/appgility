@@ -228,7 +228,7 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
             </div>
             <div className="row mb-3">
                 <div className="col-md-4 col-12">
-                    <Form.Label>Breeder</Form.Label>
+                    <Form.Label>Breeder *Optional</Form.Label>
                     <Form.Control
                         id="breeder"
                         name="breeder"
@@ -239,7 +239,7 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
                     <Form.Control.Feedback type="invalid">{formik.errors.breeder}</Form.Control.Feedback>
                 </div>
                 <div className="col-md-4 col-12">
-                    <Form.Label>Sire</Form.Label>
+                    <Form.Label>Sire *Optional</Form.Label>
                     <Form.Control
                         id="sire"
                         name="sire"
@@ -250,7 +250,7 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
                     <Form.Control.Feedback type="invalid">{formik.errors.sire}</Form.Control.Feedback>
                 </div>
                 <div className="col-md-4 col-12">
-                    <Form.Label>Dam</Form.Label>
+                    <Form.Label>Dam *Optional</Form.Label>
                     <Form.Control
                         id="dam"
                         name="dam"
