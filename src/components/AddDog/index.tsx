@@ -37,6 +37,10 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
     const validationSchema = Yup.object().shape({
         callName: Yup.string().required("Call name is required"),
         akcNumber: Yup.string().required("AKC Number is required"),
+        numberType: Yup.object().required("Number type is required").shape({
+            label: Yup.string(),
+            value: Yup.string(),
+        }),
         akcName: Yup.string().required("AKC Name is required"),
         needsMeasured: Yup.boolean(),
         withersHeight: Yup.string(),
@@ -57,6 +61,7 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
         initialValues: {
             callName: "",
             akcNumber: "",
+            numberType: "",
             akcName: "",
             needsMeasured: false,
             withersHeight: "",
@@ -72,8 +77,9 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
         onSubmit: (values) => {
             const valuesCopy = { ...values };
 
-            if (!!values.sex) {
+            if (!!values.sex && !!values.numberType) {
                 valuesCopy.sex = (values.sex as any).value;
+                valuesCopy.numberType = (values.numberType as any).value;
             }
 
             addDog({
@@ -92,6 +98,13 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
     const sexValues: SelectOptions<string>[] = [
         { value: "MALE", label: "Male" },
         { value: "FEMALE", label: "Female" },
+    ];
+
+    const numberTypeValues: SelectOptions<string>[] = [
+        { value: "AKC", label: "AKC" },
+        { value: "ILP", label: "ILP" },
+        { value: "PAL", label: "PAL" },
+        { value: "FOREIGN", label: "Foreign" },
     ];
 
     return (
@@ -125,7 +138,23 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
                 </div>
             </div>
             <div className="row mb-3">
-                <div className="col-12">
+                <div className="col-4">
+                    <Form.Label>Number Type</Form.Label>
+                    <Form.Control
+                        id="numberType"
+                        name="numberType"
+                        className="bg-transparent border-0 p-0"
+                        as={Select}
+                        value={formik.values.numberType}
+                        onChange={(newValue: any) => {
+                            formik.setFieldValue("numberType", newValue);
+                        }}
+                        options={numberTypeValues}
+                        isInvalid={!!formik.errors.numberType && !!formik.touched.numberType}
+                    />
+                    <Form.Control.Feedback type="invalid">{formik.errors.numberType}</Form.Control.Feedback>
+                </div>
+                <div className="col-8">
                     <Form.Label>AKC Number</Form.Label>
                     <Form.Control
                         id="akcNumber"
