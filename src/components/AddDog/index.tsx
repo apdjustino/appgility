@@ -44,10 +44,6 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
         variety: Yup.string(),
         placeOfBirth: Yup.string(),
         dob: Yup.string().required("Date of Birth is required"),
-        jumpHeight: Yup.object().required("Jump Height is required").shape({
-            label: Yup.string(),
-            value: Yup.string(),
-        }),
         sex: Yup.object().required("Sex is required").shape({
             label: Yup.string(),
             value: Yup.string(),
@@ -68,7 +64,6 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
             variety: "",
             placeOfBirth: "",
             dob: "",
-            jumpHeight: undefined,
             sex: undefined,
             breeder: "",
             sire: "",
@@ -77,8 +72,7 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
         onSubmit: (values) => {
             const valuesCopy = { ...values };
 
-            if (!!values.jumpHeight && !!values.sex) {
-                valuesCopy.jumpHeight = (values.jumpHeight as any).value;
+            if (!!values.sex) {
                 valuesCopy.sex = (values.sex as any).value;
             }
 
@@ -94,15 +88,6 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
         },
         validationSchema,
     });
-
-    const heightValues: SelectOptions<string>[] = [
-        { value: "4", label: '4"' },
-        { value: "8", label: '8"' },
-        { value: "12", label: '12"' },
-        { value: "16", label: '16"' },
-        { value: "20", label: '20"' },
-        { value: "24", label: '24"' },
-    ];
 
     const sexValues: SelectOptions<string>[] = [
         { value: "MALE", label: "Male" },
@@ -174,23 +159,6 @@ const AddDog = ({ setShowAddDogModal }: OwnProps) => {
                         isInvalid={!!formik.errors.withersHeight && !!formik.touched.withersHeight}
                     />
                     <Form.Control.Feedback type="invalid">{formik.errors.withersHeight}</Form.Control.Feedback>
-                </div>
-                <div className="col-md-4 col-12">
-                    <Form.Label>Jump Height</Form.Label>
-                    <Form.Control
-                        id="jumpHeight"
-                        name="jumpHeight"
-                        className="bg-transparent border-0 p-0"
-                        as={Select}
-                        value={formik.values.jumpHeight}
-                        onChange={(newValue: any) => {
-                            formik.setFieldValue("jumpHeight", newValue);
-                        }}
-                        options={heightValues}
-                        placeholder="Choose a jump height"
-                        isInvalid={!!formik.errors.jumpHeight && !!formik.touched.jumpHeight}
-                    />
-                    <Form.Control.Feedback type="invalid">{formik.errors.jumpHeight}</Form.Control.Feedback>
                 </div>
             </div>
             <div className="row mb-3">

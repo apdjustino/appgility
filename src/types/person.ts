@@ -14,13 +14,18 @@ export type Dog = {
     callName: Scalars["String"];
     akcNumber?: Maybe<Scalars["String"]>;
     akcName?: Maybe<Scalars["String"]>;
-    akcPrefix?: Maybe<Scalars["String"]>;
-    akcSuffix?: Maybe<Scalars["String"]>;
+    withersHeight?: Maybe<Scalars["String"]>;
+    needsMeasured?: Maybe<Scalars["Boolean"]>;
     breed?: Maybe<Scalars["String"]>;
+    variety?: Maybe<Scalars["String"]>;
+    placeOfBirth?: Maybe<Scalars["String"]>;
     dob?: Maybe<Scalars["String"]>;
-    jumpHeight?: Maybe<Scalars["Int"]>;
     sex?: Maybe<Sex>;
+    breeder?: Maybe<Scalars["String"]>;
+    sire?: Maybe<Scalars["String"]>;
+    dam?: Maybe<Scalars["String"]>;
     deleted?: Maybe<Scalars["Boolean"]>;
+    createdAt?: Maybe<Scalars["String"]>;
 };
 
 export type Person = {
