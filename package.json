@@ -78,6 +78,7 @@
         "eslint-plugin-prettier": "4.0.0",
         "prettier": "2.6.1",
         "prettier-eslint-cli": "5.0.1",
-        "sass": "1.49.10"
+        "sass": "1.49.10",
+        "@babel/plugin-proposal-private-property-in-object": "7.21.11"
     }
 }
