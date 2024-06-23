@@ -21,6 +21,7 @@ type OwnProps = {
 };
 
 const AddDog = ({ setShowAddDogModal }: OwnProps) => {
+    // validates
     const { user } = useAuth0();
     const userId = !!user ? user["https://graph.appgility.com/personId"] : "";
     const { personId } = addRunFormVar();
