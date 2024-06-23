@@ -129,7 +129,7 @@ const RunTable = ({ data, width, loading, fetchMore, setModalType, setShowModal 
     const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable<Run>({ columns, data: tableData, defaultColumn }, useBlockLayout);
 
     const RenderRow = React.useCallback(
-        ({ index, style }) => {
+        ({ index, style }: any) => {
             const row = rows[index];
             if (!!row) {
                 prepareRow(row);

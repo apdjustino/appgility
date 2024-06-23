@@ -240,7 +240,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                         type="date"
                                         isInvalid={!!formik.errors.trialDate && !!formik.touched.trialDate}
                                     />
-                                    <Form.Control.Feedback type="invalid">{formik.errors.trialDate}</Form.Control.Feedback>
+                                    <Form.Control.Feedback type="invalid">{formik.errors.trialDate as string}</Form.Control.Feedback>
                                 </div>
                             </div>
                         </div>
@@ -256,7 +256,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                         type="number"
                                         isInvalid={!!formik.errors.onlineEntries && !!formik.touched.onlineEntries}
                                     />
-                                    <Form.Control.Feedback type="invalid">{formik.errors.onlineEntries}</Form.Control.Feedback>
+                                    <Form.Control.Feedback type="invalid">{formik.errors.onlineEntries as string}</Form.Control.Feedback>
                                 </div>
                             </div>
                             <div className="col-6">
@@ -270,7 +270,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                         onChange={formik.handleChange}
                                         isInvalid={!!formik.errors.mailEntries && !!formik.touched.mailEntries}
                                     />
-                                    <Form.Control.Feedback type="invalid">{formik.errors.mailEntries}</Form.Control.Feedback>
+                                    <Form.Control.Feedback type="invalid">{formik.errors.mailEntries as string}</Form.Control.Feedback>
                                 </div>
                             </div>
                         </div>
@@ -285,7 +285,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                 type="number"
                                 isInvalid={!!formik.errors.runLimit && !!formik.touched.runLimit}
                             />
-                            <Form.Control.Feedback type="invalid">{formik.errors.runLimit}</Form.Control.Feedback>
+                            <Form.Control.Feedback type="invalid">{formik.errors.runLimit as string}</Form.Control.Feedback>
                         </div>
 
                         <div className="form-group">
@@ -419,7 +419,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                     style={{ marginRight: "8px" }}
                                     isInvalid={!!formik.errors.standardClass}
                                 />
-                                <Form.Control.Feedback type="invalid">{formik.errors.standardClass}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">{formik.errors.standardClass as string}</Form.Control.Feedback>
                             </div>
                             <div className="col-9">
                                 {formik.values.standardClass ? (
@@ -438,7 +438,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                         />
                                         {!!formik.errors.standardAbility ? (
                                             <Alert variant="danger" id="error-standard-ability">
-                                                {formik.errors.standardAbility}
+                                                {formik.errors.standardAbility as string}
                                             </Alert>
                                         ) : null}
                                     </div>
@@ -458,7 +458,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                     style={{ marginRight: "8px" }}
                                     isInvalid={!!formik.errors.jumpersClass}
                                 />
-                                <Form.Control.Feedback type="invalid">{formik.errors.jumpersClass}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">{formik.errors.jumpersClass as string}</Form.Control.Feedback>
                             </div>
                             <div className="col-9">
                                 {formik.values.jumpersClass ? (
@@ -477,7 +477,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                         />
                                         {!!formik.errors.jumpersAbility ? (
                                             <Alert variant="danger" id="error-standard-ability">
-                                                {formik.errors.jumpersAbility}
+                                                {formik.errors.jumpersAbility as string}
                                             </Alert>
                                         ) : null}
                                     </div>
@@ -496,7 +496,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                     type="checkbox"
                                     isInvalid={!!formik.errors.fastClass}
                                 />
-                                <Form.Control.Feedback type="invalid">{formik.errors.fastClass}</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">{formik.errors.fastClass as string}</Form.Control.Feedback>
                             </div>
                             <div className="col-9">
                                 {formik.values.fastClass ? (
@@ -515,7 +515,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                                         />
                                         {!!formik.errors.fastAbility ? (
                                             <Alert variant="danger" id="error-standard-ability">
-                                                {formik.errors.fastAbility}
+                                                {formik.errors.fastAbility as string}
                                             </Alert>
                                         ) : null}
                                     </div>
@@ -532,7 +532,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                             type="checkbox"
                             isInvalid={!!formik.errors.t2bClass}
                         />
-                        <Form.Control.Feedback type="invalid">{formik.errors.t2bClass}</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">{formik.errors.t2bClass as string}</Form.Control.Feedback>
                         <Form.Check
                             id="premierStandard"
                             name="premierStandard"
@@ -543,7 +543,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                             type="checkbox"
                             isInvalid={!!formik.errors.premierStandard}
                         />
-                        <Form.Control.Feedback type="invalid">{formik.errors.premierStandard}</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">{formik.errors.premierStandard as string}</Form.Control.Feedback>
                         <Form.Check
                             id="premierJumpers"
                             name="premierJumpers"
@@ -553,7 +553,7 @@ const AddTrial = ({ trialId, onHide }: ownProps) => {
                             label="Premier Jumpers"
                             isInvalid={!!formik.errors.premierJumpers}
                         />
-                        <Form.Control.Feedback type="invalid">{formik.errors.premierJumpers}</Form.Control.Feedback>
+                        <Form.Control.Feedback type="invalid">{formik.errors.premierJumpers as string}</Form.Control.Feedback>
                         <br />
                     </>
                 </div>

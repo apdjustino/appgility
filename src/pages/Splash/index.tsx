@@ -13,10 +13,10 @@ const Splash = () => {
             <Card>
                 <Card.Content>
                     <Card.Header>
-                        <Header as="h2" textAlign="center">
+                        <h2 style={{ textAlign: "center" }}>
                             <Icon name="signup" />
                             <Header.Content>Appgility</Header.Content>
-                        </Header>
+                        </h2>
                     </Card.Header>
                     <Card.Meta>
                         <span>Trial Secretary Signup</span>
